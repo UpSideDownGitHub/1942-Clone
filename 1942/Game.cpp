@@ -171,6 +171,8 @@ void Game::update()
 	if (inMainMenus)
 	{
 		inMainMenus = !startScreens.checkButtonPress(window);
+		if (!inMainMenus)
+			audio.audio[1]->play();
 	}
 	else
 	{
@@ -213,6 +215,7 @@ void Game::update()
 			}
 			else if (calculateInfomationOnce)
 			{
+				audio.audio[2]->play();
 				calculateInfomationOnce = false;
 				// SHOT DOWN %
 				float percent = ((float)spawner.currentEnemyDestroyed / (float)spawner.currentEnemySpawned) * 100.00f;
@@ -272,6 +275,7 @@ void Game::update()
 			}
 			else if (calculateInfomationOnce)
 			{
+				audio.audio[2]->play();
 				calculateInfomationOnce = false;
 				// SHOOT DOWN PERCENTAGE
 				ssDownPercent.str("");
@@ -343,13 +347,13 @@ void Game::update()
 					}
 				}
 				// PLAYER MOVEMENT AND SHOOTING
-				player.update(this->window);
+				player.update(this->window, &audio);
 
 				#if defined(TESTING)
 					spawner.test_update(&player);
 				#else
 					// SPANWER SPAWNING AND ENEMY DEATH COLLECTION
-					spawner.update(&player);
+					spawner.update(&player, &audio);
 				#endif
 				//		COLLISION DETECTION	
 				// PLAYER BULLETS OF ENEMYS
@@ -361,6 +365,7 @@ void Game::update()
 						if (bullet->makeExplosion)
 						{
 							spawner.popUps.push_back(new PopUp(bullet->getPosition(), clock(), 200, true));
+							audio.audio[5]->play();
 						}
 					}
 					player.bullets = checkCollisions.bulletsToCopy;
@@ -372,8 +377,8 @@ void Game::update()
 				if (player.takeDamage)
 				{
 					updateDodgesText = true;
-					//checkCollisions.checkEnemyHitPlayer(&player, spawner.enemys);
-					//checkCollisions.checkEnemyBulletCollisions(player.enemyBullets, &player);
+					checkCollisions.checkEnemyHitPlayer(&player, spawner.enemys);					
+					checkCollisions.checkEnemyBulletCollisions(player.enemyBullets, &player);
 				}
 				else if (updateDodgesText)
 				{
@@ -388,25 +393,47 @@ void Game::update()
 				}
 				if (checkCollisions.changedLives)
 				{
-					if (player.lives >= 0)
+					if (player.shootingMethod == 4)
 					{
+						player.shootingMethod--;
+						player.lives++;
 						checkCollisions.changedLives = false;
-						showingLevelInfo = true;
-						spawner.enemys.clear();
 						player.enemyBullets.clear();
-						livesnum.str("");
-						for (int k = 0; k < player.lives; k++)
-						{
-							livesnum << "O ";
-						}
-						lives.setString(livesnum.str());
-						startTime = time(0);
 					}
-					else if (player.lives < 0)
+					else if (player.shootingMethod == 3)
 					{
-						showingLevelEndInfo2 = true;
-						startTime3 = time(0);
-						spawner.enemys.clear();
+						player.shootingMethod--;
+						player.leftFighter = true;
+						player.lives++;
+						checkCollisions.changedLives = false;
+						player.enemyBullets.clear();
+					}
+					else if (player.shootingMethod <= 2)
+					{
+						player.shootingMethod = 0;
+
+						if (player.lives >= 0)
+						{
+							audio.audio[3]->play();
+							checkCollisions.changedLives = false;
+							showingLevelInfo = true;
+							spawner.enemys.clear();
+							player.enemyBullets.clear();
+							livesnum.str("");
+							for (int k = 0; k < player.lives; k++)
+							{
+								livesnum << "O ";
+							}
+							lives.setString(livesnum.str());
+							startTime = time(0);
+						}
+						else if (player.lives < 0)
+						{
+							audio.audio[4]->play();
+							showingLevelEndInfo2 = true;
+							startTime3 = time(0);
+							spawner.enemys.clear();
+						}
 					}
 				}
 
@@ -427,6 +454,8 @@ void Game::update()
 			}
 			else
 			{
+				audio.audio[2]->play();
+
 				if (spawner.currentLevel == 31)
 				{
 					startTime4 = time(0);
@@ -458,7 +487,7 @@ void Game::checkPowerUps(int num, int num2)
 	{
 		spawner.currentPoints += 1000;
 		// ENABLE QUAD SHOOTING
-		player.shootingTwo = true;
+		player.shootingMethod = 1;
 	}
 	else if (num == 1)
 	{
@@ -473,7 +502,7 @@ void Game::checkPowerUps(int num, int num2)
 	{
 		spawner.currentPoints += 1000;
 		// ENABLE SEXT SHOOTING
-		player.shootingThree = true;
+		player.shootingMethod = 4;
 	}
 	else if (num == 3)
 	{

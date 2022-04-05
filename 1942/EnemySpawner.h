@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "PowerUp.h"
 #include "PopUp.h"
+#include "Audio.h"
 
 #pragma once
 class EnemySpawner
@@ -171,8 +172,8 @@ public:
 	EnemySpawner();
 
 	// METHODS
-	void update(Player *player);
-	void moveEnemy(Player *player);
+	void update(Player *player, Audio *audio);
+	void moveEnemy(Player *player, Audio *audio);
 	void spawnEnemy();
 	void render(sf::RenderTarget *target);
 	void spawnPowerUp(sf::Vector2f pos);

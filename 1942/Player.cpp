@@ -20,7 +20,7 @@ Player::Player()
 /*
 	UPDATE ALL ELEMENTS OF THE PLAYER'S SHIP
 */
-void Player::update(sf::RenderWindow *window)
+void Player::update(sf::RenderWindow *window, Audio *audio)
 {
 	input.pollEvents(window);
 	if (input.buttonPresses[0])
@@ -32,14 +32,16 @@ void Player::update(sf::RenderWindow *window)
 	if (input.buttonPresses[3])
 		movement.x += movementSpeed;
 
-	if (float(clock() - startTimeForDodge) / CLOCKS_PER_SEC * 1000 >= dogeIFrames)
+	if (float(clock() - startTimeForDodge) / CLOCKS_PER_SEC * 1000 >= dogeIFrames && !takeDamage)
 	{
 		takeDamage = true;
 		shape.setFillColor(sf::Color::Green);
+		audio->audio[1]->play();
 	}
 	if (input.buttonPresses[5] && dodges-1 >= 0 && takeDamage)
 	{
 		// MAKE THE SHIP INVISABLE
+		audio->audio[1]->play();
 		dodges--;
 		takeDamage = false;
 		startTimeForDodge = clock();
@@ -63,11 +65,13 @@ void Player::update(sf::RenderWindow *window)
 		{
 			canShoot = false;
 			start = time(0);
+			audio->audio[7]->play();
 			shoot();
 		}
 		else if (time(0) - start > secondsToNextShot)
 		{
 			start = start + secondsToNextShot;
+			audio->audio[7]->play();
 			shoot();
 		}
 	}
@@ -107,17 +111,17 @@ void Player::render(sf::RenderTarget *target)
 
 void Player::shoot()
 {
-	if (shootingThree)
+	if (shootingMethod == 1)
 	{
-		// LARGE BULLET
+		// REGULAR BULLET
 		bullets.push_back(new Bullet(
-			getPosition().x,	// X POSITION
-			getPosition().y,	// Y POSITION
+			getPosition().x,		// X POSITION
+			getPosition().y,		// Y POSITION
 			6,						// SPEED
 			true,					// PLAYER BULLET
-			{120,15}));				// SIZE
+			{ 30,15 }));				// SIZE
 	}
-	else if (shootingTwo)
+	else if (shootingMethod == 2)
 	{
 		// MEDIUM BULLET
 		bullets.push_back(new Bullet(
@@ -125,18 +129,43 @@ void Player::shoot()
 			getPosition().y,	// Y POSITION
 			6,						// SPEED
 			true,					// PLAYER BULLET
-			{80,15}));				// SIZE
+			{ 80,15 }));				// SIZE
 	}
-	else if (shootingOne)
+	else if (shootingMethod == 3)
 	{
-		// REGULAR BULLET
-		bullets.push_back( new Bullet (
-			getPosition().x,		// X POSITION
-			getPosition().y,		// Y POSITION
+		if (leftFighter)
+		{
+			// ONE FIGHTER BULLET
+			bullets.push_back(new Bullet(
+				getPosition().x-10,	// X POSITION
+				getPosition().y,	// Y POSITION
+				6,						// SPEED
+				true,					// PLAYER BULLET
+				{ 100,15 }));				// SIZE
+		}
+		else
+		{
+			// ONE FIGHTER BULLET
+			bullets.push_back(new Bullet(
+				getPosition().x+10,	// X POSITION
+				getPosition().y,	// Y POSITION
+				6,						// SPEED
+				true,					// PLAYER BULLET
+				{ 100,15 }));				// SIZE
+		}
+	}
+	else if (shootingMethod == 4)
+	{
+		std::cout << "HELLO";
+		// LARGE BULLET
+		bullets.push_back(new Bullet(
+			getPosition().x,	// X POSITION
+			getPosition().y,	// Y POSITION
 			6,						// SPEED
 			true,					// PLAYER BULLET
-			{30,15}));				// SIZE
+			{ 120,15 }));				// SIZE
 	}
+
 }
 
 /*

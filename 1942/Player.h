@@ -5,6 +5,7 @@
 
 #include "Input.h"
 #include "Bullet.h"
+#include "Audio.h"
 
 
 #pragma once
@@ -21,9 +22,13 @@ public:
 	float movementSpeed = 3;
 	int secondsToNextShot = 1;
 
+	/*
 	bool shootingOne = true;
 	bool shootingTwo = false;
 	bool shootingThree = false;
+	*/
+	int shootingMethod = 4;
+	bool leftFighter = true;
 
 	int lives = 3;
 
@@ -37,7 +42,7 @@ public:
 	Player();
 
 	//		METHODS
-	void update(sf::RenderWindow *window);
+	void update(sf::RenderWindow *window, Audio *audio);
 	void render(sf::RenderTarget *target);
 	void shoot();
 

@@ -51,6 +51,10 @@ void CheckCollisions::checkEnemyBulletCollisions(std::vector<Bullet *> enemyBull
 		if (player->getGlobalBounds().intersects(enemyBullets[i]->getBounds()))
 		{
 			player->lives--;
+			if (enemyBullets[i]->getPosition().x < player->getPosition().x)
+			{
+				player->leftFighter = false;
+			}
 			changedLives = true;
 		}
 	}

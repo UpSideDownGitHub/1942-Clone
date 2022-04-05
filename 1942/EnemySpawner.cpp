@@ -104,7 +104,7 @@ void EnemySpawner::startLevel(int level)
 
 
 
-void EnemySpawner::update(Player *player)
+void EnemySpawner::update(Player *player, Audio *audio)
 {
 	for (PowerUp *powerUp : powerups)
 	{
@@ -125,6 +125,7 @@ void EnemySpawner::update(Player *player)
 		if ((currentLevel == 32 - 25 || currentLevel == 32 - 15 || currentLevel == 32 - 10 || currentLevel == 32 - 5 || currentLevel == 32 - 1) && !bossSpawned && !bossKilled)
 		{
 			// spawn boss enemy
+			audio->audio[0]->play();
 			enemys.push_back(new Ayako());
 			bossSpawned = true;
 		}
@@ -133,12 +134,12 @@ void EnemySpawner::update(Player *player)
 	}
 	if (playLevel)
 	{
-		moveEnemy(player);
+		moveEnemy(player, audio);
 		if (canSpawn)
 			spawnEnemy();
 	}
 }
-void EnemySpawner::moveEnemy(Player *player)
+void EnemySpawner::moveEnemy(Player *player, Audio *audio)
 {
 	// call update functions
 	for (int i = 0; i < enemys.size(); i++)
@@ -152,6 +153,10 @@ void EnemySpawner::moveEnemy(Player *player)
 			{
 				totalEnemyDestroyed++;
 				currentEnemyDestroyed++;
+				if (enemys[i]->type() == 12)
+					audio->audio[4]->play();
+				else
+					audio->audio[3]->play();
 			}
 
 			if (enemys[i]->type() == 0)
