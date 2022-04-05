@@ -1,6 +1,6 @@
 # Large Files
 *.ipch
-*.wav
+
 
 # Prerequisites
 *.d
