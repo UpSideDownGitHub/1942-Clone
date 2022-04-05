@@ -330,18 +330,7 @@ void EnemySpawner::spawnPowerUp(sf::Vector2f pos)
 		return;
 	}
 
-	int ran;
-	if (hasSextShot)
-	{
-		do
-		{
-			ran = rand() % (6 + 1 - 1) + 1;
-		} while (ran == 2);
-	}
-	else
-	{
-		ran = rand() % (6 + 1 - 1) + 1;
-	}
+	int ran = rand() % (6 + 1 - 1) + 1;
 	
 	if (ran == 1) // WHITE
 	{
