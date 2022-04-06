@@ -43,6 +43,7 @@ public:
 	//	POINTS
 	int currentPoints = 0;
 	int daihiryuPointsMultiplier = 0;
+	bool scoreChanged = false;
 
 	//					SPAWN CHANCE
 	// TIMING

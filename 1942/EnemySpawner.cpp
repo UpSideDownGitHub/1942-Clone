@@ -151,6 +151,7 @@ void EnemySpawner::moveEnemy(Player *player, Audio *audio)
 			currentEnemySpawned++;
 			if (enemys[i]->die)
 			{
+				scoreChanged = true;
 				totalEnemyDestroyed++;
 				currentEnemyDestroyed++;
 				if (enemys[i]->type() == 12)

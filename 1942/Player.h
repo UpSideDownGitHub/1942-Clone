@@ -27,6 +27,7 @@ public:
 
 	int lives = 3;
 
+
 	// DODGING
 	time_t startTimeForDodge;
 	float dogeIFrames = 2000;

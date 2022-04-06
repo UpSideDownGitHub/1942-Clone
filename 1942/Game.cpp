@@ -71,12 +71,12 @@ void Game::render()
 	else
 	{
 		// PLAYER
-		player.render(this->window);
+		player.render(this->window);	// USES LOTS OF CPU POWER
 
 		// ENEMYS
 		spawner.render(this->window);
 
-		renderScoreInfomation();
+		renderScoreInfomation();		// USES LOTS OF CPU POWER 
 
 		if (showingWeGiveUpScreen)
 			renderWeGiveUpScreen();
@@ -97,22 +97,26 @@ void Game::render()
 		window->draw(dodges);
 	}
 	// DISPLAY WHAT HAS BEEN DRAWN TO THE WINDOW
-	window->display();
+	window->display();					// USES LOTS OF CPU POWER BUT CAN DO NOTHING ABOUT THAT
 }
 
 void Game::renderScoreInfomation()
 {
-	P1score = spawner.currentPoints;
-	ssScoreP1.str("");
-	ssScoreP1 << P1score;
-	scoreP1Num.setString(ssScoreP1.str());
-	scoreP1Num.setOrigin(scoreP1Num.getLocalBounds().width / 2, scoreP1Num.getLocalBounds().height / 2);
-	if (P1score > highScore)
+	if (spawner.scoreChanged)
 	{
-		ssHighscore.str("");
-		ssHighscore << P1score;
-		highScoreText.setString(ssHighscore.str());
-		highScoreText.setOrigin(scoreP1Num.getLocalBounds().width / 2, scoreP1Num.getLocalBounds().height / 2);
+		spawner.scoreChanged = false;
+		P1score = spawner.currentPoints;
+		ssScoreP1.str("");
+		ssScoreP1 << P1score;
+		scoreP1Num.setString(ssScoreP1.str());
+		scoreP1Num.setOrigin(round(scoreP1Num.getLocalBounds().width / 2), round(scoreP1Num.getLocalBounds().height / 2));
+		if (P1score > highScore)
+		{
+			ssHighscore.str("");
+			ssHighscore << P1score;
+			highScoreText.setString(ssHighscore.str());
+			highScoreText.setOrigin(round(scoreP1Num.getLocalBounds().width / 2), round(scoreP1Num.getLocalBounds().height / 2));
+		}
 	}
 
 	window->draw(scoreP1);
@@ -222,6 +226,7 @@ void Game::update()
 			}
 			else if (calculateInfomationOnce)
 			{
+				spawner.scoreChanged = true;
 				audio.audio[2]->play();
 				calculateInfomationOnce = false;
 				// SHOT DOWN %
@@ -282,6 +287,7 @@ void Game::update()
 			}
 			else if (calculateInfomationOnce)
 			{
+				spawner.scoreChanged = true;
 				audio.audio[2]->play();
 				calculateInfomationOnce = false;
 				// SHOOT DOWN PERCENTAGE
@@ -326,6 +332,7 @@ void Game::update()
 		{
 			if (!addedScore)
 			{
+				spawner.scoreChanged = true;
 				spawner.currentPoints += 10000000;
 				addedScore = true;
 			}
@@ -490,7 +497,7 @@ void Game::update()
 void Game::checkPowerUps(int num, int num2)
 {
 	audio.audio[6]->play();
-
+	spawner.scoreChanged = true;
 	if (num == 0)
 	{
 		spawner.currentPoints += 1000;
@@ -628,7 +635,7 @@ void Game::initGUI()
 	scoreP1Num.setPosition({ 120, 30 });
 	scoreP1Num.setFont(arial);
 	scoreP1Num.setString(ssScoreP1.str());
-	scoreP1Num.setOrigin(scoreP1Num.getLocalBounds().width / 2, scoreP1Num.getLocalBounds().height / 2);
+	scoreP1Num.setOrigin(round(scoreP1Num.getLocalBounds().width / 2), round(scoreP1Num.getLocalBounds().height / 2));
 
 	// PLAYER 2 SCORE
 	scoreP2.setCharacterSize(20);
@@ -642,7 +649,7 @@ void Game::initGUI()
 	scoreP2Num.setPosition({ 450, 30});
 	scoreP2Num.setFont(arial);
 	scoreP2Num.setString(ssP2Num.str());
-	scoreP2Num.setOrigin(scoreP2Num.getLocalBounds().width / 2, scoreP2Num.getLocalBounds().height / 2);
+	scoreP2Num.setOrigin(round(scoreP2Num.getLocalBounds().width / 2), round(scoreP2Num.getLocalBounds().height / 2));
 
 	// HIGHSCORE
 	highScoreLabel.setCharacterSize(20);
@@ -659,7 +666,7 @@ void Game::initGUI()
 	highScoreText.setPosition({ 280, 30});
 	highScoreText.setFont(arial);
 	highScoreText.setString(ssHighscore.str());
-	highScoreText.setOrigin(highScoreText.getLocalBounds().width / 2, highScoreText.getLocalBounds().height / 2);
+	highScoreText.setOrigin(round(highScoreText.getLocalBounds().width / 2), round(highScoreText.getLocalBounds().height / 2));
 
 	//			LEVEL INFO SCREEN
 	// LEVEL NAME
