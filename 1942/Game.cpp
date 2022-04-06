@@ -168,6 +168,10 @@ void Game::renderWeGiveUpScreen()
 */
 void Game::update()
 {
+	sf::Event event;
+	//while (sf::)
+
+
 	if (inMainMenus)
 	{
 		inMainMenus = !startScreens.checkButtonPress(window);
@@ -410,7 +414,8 @@ void Game::update()
 					}
 					else if (player.shootingMethod <= 2)
 					{
-						player.shootingMethod = 0;
+						player.shootingMethod = 1;
+						spawner.hasQuadShot = false;
 
 						if (player.lives >= 0)
 						{
@@ -487,7 +492,7 @@ void Game::checkPowerUps(int num, int num2)
 	{
 		spawner.currentPoints += 1000;
 		// ENABLE QUAD SHOOTING
-		player.shootingMethod = 1;
+		player.shootingMethod = 2;
 	}
 	else if (num == 1)
 	{

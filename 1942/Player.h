@@ -22,12 +22,7 @@ public:
 	float movementSpeed = 3;
 	int secondsToNextShot = 1;
 
-	/*
-	bool shootingOne = true;
-	bool shootingTwo = false;
-	bool shootingThree = false;
-	*/
-	int shootingMethod = 4;
+	int shootingMethod = 1;
 	bool leftFighter = true;
 
 	int lives = 3;
