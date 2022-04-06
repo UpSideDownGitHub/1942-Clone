@@ -169,7 +169,10 @@ void Game::renderWeGiveUpScreen()
 void Game::update()
 {
 	sf::Event event;
-	//while (sf::)
+	while (window->pollEvent(event))
+	{
+		// THIS IS TO MAKE THE WINDOW RESPOND
+	}
 
 
 	if (inMainMenus)
