@@ -12,6 +12,8 @@ public:
 	bool player;
 	bool makeExplosion = false;
 
+	
+
 	// ACCESSORS
 	const sf::FloatRect getBounds() const;
 	const sf::Vector2f getPosition() const;

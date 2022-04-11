@@ -42,6 +42,10 @@ public:
 	void render(sf::RenderTarget *target);
 	void shoot();
 
+	void drawBullet(int num);
+	void drawBullet2(int num);
+	sf::RenderTarget *target;
+
 
 	// ACCESSORS
 	const sf::Vector2f getPosition() const;

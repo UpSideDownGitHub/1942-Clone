@@ -98,7 +98,9 @@ void Player::render(sf::RenderTarget *target)
 {
 	// PLAYER
 	target->draw(this->shape);
+	
 	// BULLETS
+	this->target = target;
 	for (Bullet *bullet : bullets)
 	{
 		bullet->render(target);
@@ -107,7 +109,9 @@ void Player::render(sf::RenderTarget *target)
 	{
 		bullet->render(target);
 	}
+	
 }
+
 
 void Player::shoot()
 {

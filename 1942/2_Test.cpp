@@ -30,9 +30,13 @@ int main()
 	while (game.running())
 	{
 		// FOR THE GAMEPLAY
+
 		game.update();
+
 		// RENDERING THE UI
 		game.render();
+
+		
 	}
 
 	// END OF APPLICATION
