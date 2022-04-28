@@ -57,8 +57,6 @@ void Game::start()
 	ssLevel << 32 - level << " Stage";
 	levelNumber.setString(ssLevel.str());
 	levelNumber.setOrigin(levelNumber.getLocalBounds().width / 2, levelNumber.getLocalBounds().height / 2);
-
-
 }
 
 /*
@@ -106,11 +104,22 @@ void Game::render()
 
 		window->draw(lives);
 		window->draw(dodges);
+
+		if (paused)
+			renderPauseMenu();
 	}
 	// DISPLAY WHAT HAS BEEN DRAWN TO THE WINDOW
 	window->display();					// USES LOTS OF CPU POWER BUT CAN DO NOTHING ABOUT THAT
 }
 
+void Game::renderPauseMenu()
+{
+	window->draw(box);
+	for (sf::Text text : options)
+	{
+		window->draw(text);
+	}
+}
 void Game::renderScoreInfomation()
 {
 	if (spawner.scoreChanged)
@@ -188,8 +197,6 @@ void Game::update()
 	{
 		// THIS IS TO MAKE THE WINDOW RESPOND
 	}
-
-
 	if (inHighScoreScreen)
 	{
 		highScoreScreen.update(window);
@@ -202,9 +209,70 @@ void Game::update()
 	}
 	else if (inMainMenus)
 	{
-		inMainMenus = !startScreens.checkButtonPress(window);
+		startScreens.checkButtonPress(window);
+		inMainMenus = !startScreens.play;
 		if (!inMainMenus)
 			audio.audio[1]->play();
+	}
+	else if (paused)
+	{
+		if (doOnce2)
+		{
+			doOnce2 = false;
+			startTime6 = clock();
+			startTime7 = clock();
+		}
+		input.pollEvents(window);
+		if (float(clock() - startTime7) / CLOCKS_PER_SEC * 1000 >= timeToWait2)
+		{
+			if (input.buttonPresses[1]) // DOWN
+			{
+				if (float(clock() - startTime6) / CLOCKS_PER_SEC * 1000 >= timeToWait1)
+				{
+					startTime6 = clock();
+					if (selected < 3)
+					{
+						options[selected].setFillColor(sf::Color::White);
+						selected++;
+						options[selected].setFillColor(sf::Color::Yellow);
+					}
+				}
+			}
+			else if (input.buttonPresses[2]) // UP
+			{
+				if (float(clock() - startTime6) / CLOCKS_PER_SEC * 1000 >= timeToWait1)
+				{
+					startTime6 = clock();
+					if (selected > 0)
+					{
+						options[selected].setFillColor(sf::Color::White);
+						selected--;
+						options[selected].setFillColor(sf::Color::Yellow);
+					}
+				}
+			}
+			if (input.spacePressed)
+			{
+				doOnce2 = true;
+				if (selected == 0)
+				{
+					paused = false;
+				}
+				else if (selected == 1)
+				{
+					paused = false;
+					inMainMenus = true;
+				}
+				else if (selected == 2)
+				{
+					// TOGGLE THE SOUND EFFECTS
+				}
+				else if (selected == 3)
+				{
+					window->close();
+				}
+			}
+		}
 	}
 	else
 	{
@@ -877,6 +945,27 @@ void Game::initGUI()
 	presentedText.setFont(arial);
 	presentedText.setFillColor(sf::Color::White);
 	presentedText.setString("Presented By Reuben");
+
+	// PAUSE MENU
+	int xOffset = 280;
+	int yOffset = 200;
+	int yMulti = 60;
+	for (int i = 0; i < 4; i++)
+	{
+		sf::Text temp;
+		temp.setCharacterSize(30);
+		temp.setPosition(xOffset, yOffset + i * yMulti);
+		temp.setFont(arial);
+		temp.setString(pauseOptionTexts[i]);
+		temp.setOrigin(temp.getGlobalBounds().width / 2, temp.getGlobalBounds().height / 2);
+		options.push_back(temp);
+	}
+
+	box.setFillColor(sf::Color::Blue);
+	box.setPosition(100, 150);
+	box.setSize({ 350, 300});
+
+	options[selected].setFillColor(sf::Color::Yellow);
 }
 
 /*

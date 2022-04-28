@@ -32,6 +32,7 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 #include "SaveData.h"
 #include "Audio.h"
 #include "HighScoreScreen.h"
+#include "Input.h"
 
 #pragma once
 class Game
@@ -48,6 +49,7 @@ public:
 	SaveData saveData;
 	Audio audio;
 	HighScoreScreen highScoreScreen;
+	Input input;
 
 	// HIGH SCORE SCEEN
 	bool inHighScoreScreen = false;
@@ -145,6 +147,19 @@ public:
 
 	bool runStart = true;
 
+	// GAME MODES
+
+	// PAUSE MENU
+	bool paused = true;
+	sf::RectangleShape box;
+	bool doOnce2 = true;
+	time_t startTime6, startTime7;
+	int timeToWait1 = 65, timeToWait2 = 100;
+
+	std::string pauseOptionTexts[4] = { "Resume", "Main Menu", "Sound On/Off", "Exit"};
+	std::vector<sf::Text> options;
+	int selected = 0;
+
 	// CONSTRUCTORS
 	Game();
 
@@ -153,6 +168,7 @@ public:
 	void update();
 	void render();
 
+	void renderPauseMenu();
 	void renderLevelInfoScreen();
 	void renderLevelEndScreenND();
 	void renderLevelEndScreenD();
