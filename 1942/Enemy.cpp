@@ -1,11 +1,15 @@
 #include "Enemy.h"
-
+//#define TESTING
 /*
 	ENEMY CLASS METHODS
 */
 Enemy::Enemy()
 {
-	shape.setSize({ 20, 20 });
+	shape.setPointCount(4);
+	shape.setPoint(0, { 0,0 });
+	shape.setPoint(1, { 10,0 });
+	shape.setPoint(2, { 10,10 });
+	shape.setPoint(3, { 0,10 });
 	shape.setOrigin({ 20 / 2, 20 / 2 });
 	shape.setPosition(10,10);
 }
@@ -24,6 +28,7 @@ void Enemy::update(Player *player)
 void Enemy::render(sf::RenderTarget *target)
 {
 	target->draw(shape);
+	target->draw(center);
 }
 
 int Enemy::type()
@@ -33,7 +38,7 @@ int Enemy::type()
 
 void Enemy::shoot(Player *player, float randomDeviation)
 {
-	sf::Vector2f curPos = this->shape.getPosition();
+	sf::Vector2f curPos = shape.getPosition();
 	sf::Vector2f position = player->getPosition();
 	sf::Vector2f aimDir = position - curPos;
 	aimDir.x += -randomDeviation + (float(rand()) / float((RAND_MAX)) * (randomDeviation * 2));
@@ -68,11 +73,32 @@ const sf::FloatRect Enemy::getGlobalBounds() const
 */
 Zero::Zero(float xOffset, float yOffset)
 {
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
-	shape.setPosition(xOffset, yOffset);
-	shape.setFillColor(sf::Color::White);
+	shape.setPointCount(14);
+	shape.setPoint(0, {  0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, {  8,10 });
+	shape.setPoint(3, {  8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, {  7,32 });
+	shape.setPoint(8, {  3,32 });
+	shape.setPoint(9, {  0,28 });
+	shape.setPoint(10, {-10,25 });
+	shape.setPoint(11, {-10,20 });
+	shape.setPoint(12, {  2,15 });
+	shape.setPoint(13, {  2,10 });
 
+	shape.setOrigin(5, 20);
+	shape.setPosition(xOffset, yOffset);
+	shape.setFillColor(sf::Color(23,115,60,255));
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getOrigin().x, shape.getOrigin().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 	maxVertSpeed = 2;
 	verMoveSpeed = maxVertSpeed;
 	horMoveSpeed = 0.6;
@@ -83,10 +109,18 @@ Zero::Zero(float xOffset, float yOffset)
 
 	health = 1;
 }
-
 void Zero::update(Player *player)
 {
 	shape.move({ horMoveSpeed, verMoveSpeed });
+#ifdef TESTING
+	center.move({ horMoveSpeed, verMoveSpeed });
+#endif
+
+	const float PI = 3.14159265;
+	float dx = horMoveSpeed;
+	float dy = verMoveSpeed;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
 	if (!stopChange)
 	{
 		if (!startChange && shape.getPosition().y > player->getPosition().y - distanceToPlayer)
@@ -109,7 +143,6 @@ void Zero::update(Player *player)
 		}
 	}
 }
-
 int Zero::type()
 {
 	return 0;
@@ -125,14 +158,37 @@ int BVD::type()
 }
 BVD::BVD(bool onLeft, int xOffset, int yOffset)
 {
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	int x = 3;
+	shape.setPointCount(14);
+	shape.setPoint(0, sf::Vector2f( 0*x,5*x ));
+	shape.setPoint(1, sf::Vector2f(10 * x,5 * x ));
+	shape.setPoint(2, sf::Vector2f(8 * x,10 * x ));
+	shape.setPoint(3, sf::Vector2f(8 * x,15 * x ));
+	shape.setPoint(4, sf::Vector2f(20 * x,20 * x ));
+	shape.setPoint(5, sf::Vector2f(20 * x,25 * x ));
+	shape.setPoint(6, sf::Vector2f(10 * x,28 * x ));
+	shape.setPoint(7, sf::Vector2f(7 * x,32 * x ));
+	shape.setPoint(8, sf::Vector2f(3 * x,32 * x ));
+	shape.setPoint(9, sf::Vector2f(0 * x,28 * x ));
+	shape.setPoint(10, sf::Vector2f(-10 * x,25 * x ));
+	shape.setPoint(11, sf::Vector2f(-10 * x,20 * x ));
+	shape.setPoint(12, sf::Vector2f(2 * x,15 * x ));
+	shape.setPoint(13, sf::Vector2f(2 * x,10 * x ));
+
+	shape.setOrigin(5*x, 20*x);
 	shape.setPosition(560 - xOffset , yOffset);
-	shape.setFillColor(sf::Color::Green);
+	shape.setFillColor(sf::Color(23, 115, 60, 255));
 	
 	leftSide = onLeft;
 	if (leftSide)
 		shape.setPosition(xOffset, yOffset);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -185,7 +241,8 @@ void BVD::update(Player *player)
 	}
 
 
-
+	float dx = 0;
+	float dy = 0;
 	if (down)
 	{
 		if (verMoveSpeed <= maxHorMoveSpeed && !decDown)
@@ -193,6 +250,7 @@ void BVD::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, verMoveSpeed });
+		dy = verMoveSpeed;
 	}
 	if (left)
 	{
@@ -201,6 +259,7 @@ void BVD::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ -horMoveSpeed, 0 });
+		dx = -horMoveSpeed;
 	}
 	if (right)
 	{
@@ -209,6 +268,7 @@ void BVD::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ horMoveSpeed, 0 });
+		dx = horMoveSpeed;
 	}
 	if (up)
 	{
@@ -217,7 +277,15 @@ void BVD::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, -verMoveSpeed });
+		dy = -verMoveSpeed;
 	}
+	const float PI = 3.14159265;
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+
 	nextMove(player);
 
 }
@@ -286,10 +354,33 @@ int Daihiryu::type()
 }
 Daihiryu::Daihiryu(int xOffset, int yOffset)
 {
-	shape.setFillColor(sf::Color::Blue);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	int x = 4;
+	shape.setPointCount(14);
+	shape.setPoint(0, sf::Vector2f(0 * x, 5 * x));
+	shape.setPoint(1, sf::Vector2f(10 * x, 5 * x));
+	shape.setPoint(2, sf::Vector2f(8 * x, 10 * x));
+	shape.setPoint(3, sf::Vector2f(8 * x, 15 * x));
+	shape.setPoint(4, sf::Vector2f(20 * x, 20 * x));
+	shape.setPoint(5, sf::Vector2f(20 * x, 25 * x));
+	shape.setPoint(6, sf::Vector2f(10 * x, 28 * x));
+	shape.setPoint(7, sf::Vector2f(7 * x, 32 * x));
+	shape.setPoint(8, sf::Vector2f(3 * x, 32 * x));
+	shape.setPoint(9, sf::Vector2f(0 * x, 28 * x));
+	shape.setPoint(10, sf::Vector2f(-10 * x, 25 * x));
+	shape.setPoint(11, sf::Vector2f(-10 * x, 20 * x));
+	shape.setPoint(12, sf::Vector2f(2 * x, 15 * x));
+	shape.setPoint(13, sf::Vector2f(2 * x, 10 * x));
+
+	shape.setFillColor(sf::Color(13, 74, 6, 255));
+	shape.setOrigin(5 * x, 20 * x);
 	shape.setPosition(xOffset, 640 + yOffset);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -410,7 +501,9 @@ void Daihiryu::update(Player *player)
 			right = false;
 		}
 	}
-
+	
+	float dx = 0;
+	float dy = 0;
 	if (down)
 	{
 		if (verMoveSpeed <= maxHorMoveSpeed && !decDown)
@@ -418,6 +511,7 @@ void Daihiryu::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, verMoveSpeed });
+		dy = verMoveSpeed;
 	}
 	if (left)
 	{
@@ -426,6 +520,7 @@ void Daihiryu::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ -horMoveSpeed, 0 });
+		dx = -horMoveSpeed;
 	}
 	if (right)
 	{
@@ -434,6 +529,7 @@ void Daihiryu::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ horMoveSpeed, 0 });
+		dx = horMoveSpeed;
 	}
 	if (up)
 	{
@@ -442,10 +538,17 @@ void Daihiryu::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, -verMoveSpeed });
+		dy = -verMoveSpeed;
 	}
+	const float PI = 3.14159265;
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+
 	nextMove(player);
 }
-
 void Daihiryu::nextMove(Player *player)
 {
 	if (shape.getPosition().y <= moveUpDistance && up && !end)
@@ -499,14 +602,37 @@ int Akamizu::type()
 }
 Akamizu::Akamizu(bool shipMovingLeft, int xOffset, int yOffset)
 {
-	shape.setFillColor(sf::Color::White);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	shape.setPointCount(14);
+	shape.setPoint(0, { 0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, { 8,10 });
+	shape.setPoint(3, { 8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, { 7,32 });
+	shape.setPoint(8, { 3,32 });
+	shape.setPoint(9, { 0,28 });
+	shape.setPoint(10, { -10,25 });
+	shape.setPoint(11, { -10,20 });
+	shape.setPoint(12, { 2,15 });
+	shape.setPoint(13, { 2,10 });
+
+	shape.setOrigin(5, 20);
+	shape.setFillColor(sf::Color(23, 115, 60, 255));
 
 	if (!shipMovingLeft)
 		shape.setPosition(560 - xOffset, yOffset);
 	else
 		shape.setPosition(xOffset, yOffset);
+
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -563,6 +689,8 @@ void Akamizu::update(Player *player)
 		}
 	}
 
+	float dx = 0;
+	float dy = 0;
 	if (down)
 	{
 		if (verMoveSpeed <= maxHorMoveSpeed && !decDown)
@@ -570,6 +698,7 @@ void Akamizu::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, verMoveSpeed });
+		dy = verMoveSpeed;
 	}
 	if (left)
 	{
@@ -578,6 +707,7 @@ void Akamizu::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ -horMoveSpeed, 0 });
+		dx = -horMoveSpeed;
 	}
 	if (right)
 	{
@@ -586,6 +716,7 @@ void Akamizu::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ horMoveSpeed, 0 });
+		dx = horMoveSpeed;
 	}
 	if (up)
 	{
@@ -594,8 +725,14 @@ void Akamizu::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, -verMoveSpeed });
+		dy = -verMoveSpeed;
 	}
-	//std::cout << "X: " << shape.getPosition().x << "\n";
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
 	nextMove(player);
 }
 
@@ -684,10 +821,32 @@ int Raizan::type()
 }
 Raizan::Raizan(int xOffset, int yOffset)
 {
-	shape.setFillColor(sf::Color::White);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	shape.setPointCount(14);
+	shape.setPoint(0, { 0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, { 8,10 });
+	shape.setPoint(3, { 8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, { 7,32 });
+	shape.setPoint(8, { 3,32 });
+	shape.setPoint(9, { 0,28 });
+	shape.setPoint(10, { -10,25 });
+	shape.setPoint(11, { -10,20 });
+	shape.setPoint(12, { 2,15 });
+	shape.setPoint(13, { 2,10 });
+
+	shape.setOrigin(5, 20);
+	shape.setFillColor(sf::Color(23, 115, 60, 255));
 	shape.setPosition(xOffset, yOffset);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 
 	maxHorSpeed = 2;
 	verMoveSpeed = 2;
@@ -703,6 +862,15 @@ Raizan::Raizan(int xOffset, int yOffset)
 void Raizan::update(Player *player)
 {
 	shape.move({ horMoveSpeed, verMoveSpeed });
+#ifdef TESTING
+	center.move({ horMoveSpeed, verMoveSpeed });
+#endif
+
+	const float PI = 3.14159265;
+	float dx = horMoveSpeed;
+	float dy = verMoveSpeed;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
 
 	if (shape.getPosition().y > player->getPosition().y - shootDistance && once)
 	{
@@ -747,9 +915,24 @@ int Red::type()
 }
 Red::Red(int num, int yOffset)
 {
+	shape.setPointCount(14);
+	shape.setPoint(0, { 0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, { 8,10 });
+	shape.setPoint(3, { 8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, { 7,32 });
+	shape.setPoint(8, { 3,32 });
+	shape.setPoint(9, { 0,28 });
+	shape.setPoint(10, { -10,25 });
+	shape.setPoint(11, { -10,20 });
+	shape.setPoint(12, { 2,15 });
+	shape.setPoint(13, { 2,10 });
+
+	shape.setOrigin(5, 20);
 	shape.setFillColor(sf::Color::Red);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
 
 	if (num == 1)
 		shape.setPosition(0, yOffset);
@@ -761,6 +944,13 @@ Red::Red(int num, int yOffset)
 		shape.setPosition(-150, yOffset);
 	if (num == 5)
 		shape.setPosition(-200, yOffset);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Green);
+#endif
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -816,6 +1006,8 @@ void Red::update(Player *player)
 		}
 	}
 
+	float dx = 0;
+	float dy = 0;
 	if (down)
 	{
 		if (verMoveSpeed <= maxHorMoveSpeed && !decDown)
@@ -823,6 +1015,7 @@ void Red::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, verMoveSpeed });
+		dy = verMoveSpeed;
 	}
 	if (left)
 	{
@@ -831,6 +1024,7 @@ void Red::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ -horMoveSpeed, 0 });
+		dx = -horMoveSpeed;
 	}
 	if (right)
 	{
@@ -839,6 +1033,7 @@ void Red::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ horMoveSpeed, 0 });
+		dx = horMoveSpeed;
 	}
 	if (up)
 	{
@@ -847,8 +1042,15 @@ void Red::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, -verMoveSpeed });
+		dy = -verMoveSpeed;
 	}
-	//std::cout << "X: " << shape.getPosition().x << "\n";
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+	
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
 	nextMove();
 }
 
@@ -917,14 +1119,37 @@ int Shoryu::type()
 }
 Shoryu::Shoryu(bool onLeft, int xOffset, int yOffset)
 {
-	shape.setFillColor(sf::Color::Green);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	int x = 3;
+	shape.setPointCount(14);
+	shape.setPoint(0, sf::Vector2f(0 * x, 5 * x));
+	shape.setPoint(1, sf::Vector2f(10 * x, 5 * x));
+	shape.setPoint(2, sf::Vector2f(8 * x, 10 * x));
+	shape.setPoint(3, sf::Vector2f(8 * x, 15 * x));
+	shape.setPoint(4, sf::Vector2f(20 * x, 20 * x));
+	shape.setPoint(5, sf::Vector2f(20 * x, 25 * x));
+	shape.setPoint(6, sf::Vector2f(10 * x, 28 * x));
+	shape.setPoint(7, sf::Vector2f(7 * x, 32 * x));
+	shape.setPoint(8, sf::Vector2f(3 * x, 32 * x));
+	shape.setPoint(9, sf::Vector2f(0 * x, 28 * x));
+	shape.setPoint(10, sf::Vector2f(-10 * x, 25 * x));
+	shape.setPoint(11, sf::Vector2f(-10 * x, 20 * x));
+	shape.setPoint(12, sf::Vector2f(2 * x, 15 * x));
+	shape.setPoint(13, sf::Vector2f(2 * x, 10 * x));
+
+	shape.setOrigin(5 * x, 20 * x);
+	shape.setFillColor(sf::Color(23, 115, 60, 255));
 	shape.setPosition(560 - xOffset, yOffset);
 
 	leftSide = onLeft;
 	if (leftSide)
 		shape.setPosition(xOffset, yOffset);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -976,8 +1201,8 @@ void Shoryu::update(Player *player)
 		}
 	}
 
-
-
+	float dx = 0;
+	float dy = 0;
 	if (down)
 	{
 		if (verMoveSpeed <= maxHorMoveSpeed && !decDown)
@@ -985,6 +1210,7 @@ void Shoryu::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, verMoveSpeed });
+		dy = verMoveSpeed;
 	}
 	if (left)
 	{
@@ -993,6 +1219,7 @@ void Shoryu::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ -horMoveSpeed, 0 });
+		dx = -horMoveSpeed;
 	}
 	if (right)
 	{
@@ -1001,6 +1228,7 @@ void Shoryu::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ horMoveSpeed, 0 });
+		dx = horMoveSpeed;
 	}
 	if (up)
 	{
@@ -1009,7 +1237,16 @@ void Shoryu::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, -verMoveSpeed });
+		dy = -verMoveSpeed;
 	}
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
+
 	nextMove(player);
 
 }
@@ -1077,9 +1314,24 @@ int BounsFighter::type()
 }
 BounsFighter::BounsFighter(bool left, int xOffset, int yOffset)
 {
-	shape.setFillColor(sf::Color::Cyan);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	shape.setPointCount(14);
+	shape.setPoint(0, { 0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, { 8,10 });
+	shape.setPoint(3, { 8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, { 7,32 });
+	shape.setPoint(8, { 3,32 });
+	shape.setPoint(9, { 0,28 });
+	shape.setPoint(10, { -10,25 });
+	shape.setPoint(11, { -10,20 });
+	shape.setPoint(12, { 2,15 });
+	shape.setPoint(13, { 2,10 });
+
+	shape.setOrigin(5, 20);
+	shape.setFillColor(sf::Color(217, 165, 46, 255));
 	if (left)
 	{
 		moveLeft = true;
@@ -1092,6 +1344,13 @@ BounsFighter::BounsFighter(bool left, int xOffset, int yOffset)
 		shape.setPosition(-xOffset, 640 + yOffset);
 		horMoveSpeed = 1;
 	}
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Green);
+#endif
 	verMoveSpeed = -2;
 	rateOfChange = 0.007;
 	increaseInSpeed = -0.01;
@@ -1102,6 +1361,16 @@ BounsFighter::BounsFighter(bool left, int xOffset, int yOffset)
 void BounsFighter::update(Player *player)
 {
 	shape.move({ horMoveSpeed, verMoveSpeed });
+
+#ifdef TESTING
+	center.move({ horMoveSpeed, verMoveSpeed });
+#endif
+
+	float dx = horMoveSpeed;
+	float dy = verMoveSpeed;
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
 	verMoveSpeed += increaseInSpeed;
 	if (moveLeft)
 	{
@@ -1124,10 +1393,33 @@ int Qing::type()
 }
 Qing::Qing(int xOffset, int yOffset)
 {
-	shape.setFillColor(sf::Color::Green);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	int x = 3;
+	shape.setPointCount(14);
+	shape.setPoint(0, sf::Vector2f(0 * x, 5 * x));
+	shape.setPoint(1, sf::Vector2f(10 * x, 5 * x));
+	shape.setPoint(2, sf::Vector2f(8 * x, 10 * x));
+	shape.setPoint(3, sf::Vector2f(8 * x, 15 * x));
+	shape.setPoint(4, sf::Vector2f(20 * x, 20 * x));
+	shape.setPoint(5, sf::Vector2f(20 * x, 25 * x));
+	shape.setPoint(6, sf::Vector2f(10 * x, 28 * x));
+	shape.setPoint(7, sf::Vector2f(7 * x, 32 * x));
+	shape.setPoint(8, sf::Vector2f(3 * x, 32 * x));
+	shape.setPoint(9, sf::Vector2f(0 * x, 28 * x));
+	shape.setPoint(10, sf::Vector2f(-10 * x, 25 * x));
+	shape.setPoint(11, sf::Vector2f(-10 * x, 20 * x));
+	shape.setPoint(12, sf::Vector2f(2 * x, 15 * x));
+	shape.setPoint(13, sf::Vector2f(2 * x, 10 * x));
+
+	shape.setOrigin(5 * x, 20 * x);
+	shape.setFillColor(sf::Color(23, 115, 60, 255));
 	shape.setPosition(xOffset, yOffset);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 
 	verMoveSpeed = 1.5;
 
@@ -1137,6 +1429,15 @@ Qing::Qing(int xOffset, int yOffset)
 void Qing::update(Player *player)
 {
 	shape.move({ 0, -verMoveSpeed });
+#ifdef TESTING
+	center.move({ 0, -verMoveSpeed });
+#endif
+
+	float dx = 0;
+	float dy = -verMoveSpeed;
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
 }
 
 
@@ -1149,14 +1450,36 @@ int Fukusuke::type()
 }
 Fukusuke::Fukusuke(bool shipMovingLeft, int xOffset, int yOffset)
 {
-	shape.setFillColor(sf::Color::White);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	shape.setPointCount(14);
+	shape.setPoint(0, { 0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, { 8,10 });
+	shape.setPoint(3, { 8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, { 7,32 });
+	shape.setPoint(8, { 3,32 });
+	shape.setPoint(9, { 0,28 });
+	shape.setPoint(10, { -10,25 });
+	shape.setPoint(11, { -10,20 });
+	shape.setPoint(12, { 2,15 });
+	shape.setPoint(13, { 2,10 });
+
+	shape.setOrigin(5, 20);
+	shape.setFillColor(sf::Color(23, 115, 60, 255));
 
 	if (!shipMovingLeft)
 		shape.setPosition(560 - xOffset, yOffset);
 	else
 		shape.setPosition(xOffset, yOffset);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Green);
+#endif
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -1218,6 +1541,8 @@ void Fukusuke::update(Player *player)
 		}
 	}
 
+	float dx = 0;
+	float dy = 0;
 	if (down)
 	{
 		if (verMoveSpeed <= maxVerMoveSpeed && !decDown)
@@ -1225,6 +1550,7 @@ void Fukusuke::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, verMoveSpeed });
+		dy = verMoveSpeed;
 	}
 	if (left)
 	{
@@ -1233,6 +1559,7 @@ void Fukusuke::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ -horMoveSpeed, 0 });
+		dx = -horMoveSpeed;
 	}
 	if (right)
 	{
@@ -1241,6 +1568,7 @@ void Fukusuke::update(Player *player)
 			horMoveSpeed += rateOfChange;
 		}
 		shape.move({ horMoveSpeed, 0 });
+		dx = horMoveSpeed;
 	}
 	if (up)
 	{
@@ -1249,8 +1577,15 @@ void Fukusuke::update(Player *player)
 			verMoveSpeed += rateOfChange;
 		}
 		shape.move({ 0, -verMoveSpeed });
+		dy = -verMoveSpeed;
 	}
-	//std::cout << "X: " << shape.getPosition().x << "\n";
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
 	nextMove(player);
 }
 
@@ -1323,9 +1658,24 @@ int Red2::type()
 }
 Red2::Red2(int num)
 {
+	shape.setPointCount(14);
+	shape.setPoint(0, { 0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, { 8,10 });
+	shape.setPoint(3, { 8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, { 7,32 });
+	shape.setPoint(8, { 3,32 });
+	shape.setPoint(9, { 0,28 });
+	shape.setPoint(10, { -10,25 });
+	shape.setPoint(11, { -10,20 });
+	shape.setPoint(12, { 2,15 });
+	shape.setPoint(13, { 2,10 });
+
+	shape.setOrigin(5, 20);
 	shape.setFillColor(sf::Color::Red);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
 
 	if (num == 1)
 		shape.setPosition(-200, 100);
@@ -1338,6 +1688,13 @@ Red2::Red2(int num)
 	if (num == 5)
 		shape.setPosition(-200, 300);
 
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Green);
+#endif
+
 	horMoveSpeed = 3;
 
 	health = 1;
@@ -1346,6 +1703,15 @@ Red2::Red2(int num)
 void Red2::update(Player *player)
 {
 	shape.move({ horMoveSpeed, 0 });
+	float dx = horMoveSpeed;
+	float dy = 0;
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
 }
 
 /*
@@ -1357,9 +1723,24 @@ int Red3::type()
 }
 Red3::Red3(int num)
 {
+	shape.setPointCount(14);
+	shape.setPoint(0, { 0,5 });
+	shape.setPoint(1, { 10,5 });
+	shape.setPoint(2, { 8,10 });
+	shape.setPoint(3, { 8,15 });
+	shape.setPoint(4, { 20,20 });
+	shape.setPoint(5, { 20,25 });
+	shape.setPoint(6, { 10,28 });
+	shape.setPoint(7, { 7,32 });
+	shape.setPoint(8, { 3,32 });
+	shape.setPoint(9, { 0,28 });
+	shape.setPoint(10, { -10,25 });
+	shape.setPoint(11, { -10,20 });
+	shape.setPoint(12, { 2,15 });
+	shape.setPoint(13, { 2,10 });
+
+	shape.setOrigin(5, 20);
 	shape.setFillColor(sf::Color::Red);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
 
 	if (num == 1)
 		shape.setPosition(0, 50);
@@ -1372,6 +1753,13 @@ Red3::Red3(int num)
 	if (num == 5)
 		shape.setPosition(-200, 250);
 
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Green);
+#endif
+
 	horMoveSpeed = 3;
 
 	health = 1;
@@ -1380,6 +1768,16 @@ Red3::Red3(int num)
 void Red3::update(Player *player)
 {
 	shape.move({ horMoveSpeed, 0 });
+
+	float dx = horMoveSpeed;
+	float dy = 0;
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+
+#ifdef TESTING
+	center.move({ dx, dy });
+#endif
 }
 
 /*
@@ -1391,10 +1789,33 @@ int Ayako::type()
 }
 Ayako::Ayako()
 {
-	shape.setFillColor(sf::Color::Blue);
-	shape.setSize({ 20, 20 });
-	shape.setOrigin({ 20 / 2, 20 / 2 });
+	int x = 5;
+	shape.setPointCount(14);
+	shape.setPoint(0, sf::Vector2f(0 * x, -5 * x));
+	shape.setPoint(1, sf::Vector2f(10 * x, -5 * x));
+	shape.setPoint(2, sf::Vector2f(8 * x, 0 * x));
+	shape.setPoint(3, sf::Vector2f(8 * x, 15 * x));
+	shape.setPoint(4, sf::Vector2f(40 * x, 20 * x));
+	shape.setPoint(5, sf::Vector2f(40 * x, 25 * x));
+	shape.setPoint(6, sf::Vector2f(10 * x, 28 * x));
+	shape.setPoint(7, sf::Vector2f(7 * x, 32 * x));
+	shape.setPoint(8, sf::Vector2f(3 * x, 32 * x));
+	shape.setPoint(9, sf::Vector2f(0 * x, 28 * x));
+	shape.setPoint(10, sf::Vector2f(-30 * x, 25 * x));
+	shape.setPoint(11, sf::Vector2f(-30 * x, 20 * x));
+	shape.setPoint(12, sf::Vector2f(2 * x, 15 * x));
+	shape.setPoint(13, sf::Vector2f(2 * x, 0 * x));
+
+	shape.setOrigin(5 * x, 20 * x);
+	shape.setFillColor(sf::Color(13, 74, 6, 255));
 	shape.setPosition(280, 640);
+
+#if defined(TESTING)
+	center.setSize({ 10, 10 });
+	center.setOrigin({ 5,5 });
+	center.setPosition(shape.getPosition().x, shape.getPosition().y);
+	center.setFillColor(sf::Color::Red);
+#endif
 
 	startTime1 = clock();
 	startTime2 = clock() - 500;
@@ -1423,6 +1844,17 @@ void Ayako::shoot(Player *player, float randomDeviation, sf::Vector2f spawnPos)
 void Ayako::update(Player *player)
 {
 	shape.move({ 0, verMoveSpeed });
+
+#ifdef TESTING
+	center.move({ 0, verMoveSpeed });
+#endif
+
+	float dx = 0;
+	float dy = verMoveSpeed;
+	const float PI = 3.14159265;
+	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
+	shape.setRotation(rotation);
+
 	nextMove();
 
 	sf::Vector2f shootPoint1 = shape.getPosition(); // center (just postion)

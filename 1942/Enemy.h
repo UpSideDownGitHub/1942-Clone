@@ -30,7 +30,8 @@ public:
 	
 protected:
 	// VARIABLES
-	sf::RectangleShape shape;
+	sf::ConvexShape shape;
+	sf::RectangleShape center;
 
 	// METHODS
 
@@ -56,8 +57,7 @@ public:
 	Zero(float xOffset, float yOffset);
 	virtual void update(Player *player);
 	virtual int type();
-private:
-
+protected:
 };
 
 class BVD : public Enemy

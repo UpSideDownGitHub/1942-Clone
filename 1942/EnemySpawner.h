@@ -167,7 +167,7 @@ public:
 	bool canSpawn = true;
 
 	time_t startLevelTime;
-	int levelLength = 10; // 120
+	int levelLength = 120; // 120
 
 	// CONSTRUCTOR
 	EnemySpawner();

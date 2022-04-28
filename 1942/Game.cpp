@@ -411,12 +411,12 @@ void Game::update()
 				// PLAYER MOVEMENT AND SHOOTING
 				player.update(this->window, &audio);
 
-				#if defined(TESTING)
+#if defined(TESTING)
 					spawner.test_update(&player);
-				#else
+#else
 					// SPANWER SPAWNING AND ENEMY DEATH COLLECTION
 					spawner.update(&player, &audio);
-				#endif
+#endif
 				//		COLLISION DETECTION	
 				// PLAYER BULLETS OF ENEMYS
 				checkCollisions.checkPlayerBulletCollisions(player.bullets, spawner.enemys);
@@ -426,8 +426,12 @@ void Game::update()
 					{
 						if (bullet->makeExplosion)
 						{
+#if defined(TESTING)
+
+#else
 							spawner.popUps.push_back(new PopUp(bullet->getPosition(), clock(), 200, true));
 							audio.audio[5]->play();
+#endif
 						}
 					}
 					player.bullets = checkCollisions.bulletsToCopy;
@@ -439,8 +443,12 @@ void Game::update()
 				if (player.takeDamage)
 				{
 					updateDodgesText = true;
+#if defined(TESTING)
+
+#else
 					checkCollisions.checkEnemyHitPlayer(&player, spawner.enemys);					
 					checkCollisions.checkEnemyBulletCollisions(player.enemyBullets, &player);
+#endif
 				}
 				else if (updateDodgesText)
 				{

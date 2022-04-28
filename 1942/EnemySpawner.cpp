@@ -30,6 +30,8 @@ void EnemySpawner::test_moveEnemy(Player *player)
 }
 void EnemySpawner::test_spawnEnemy()
 {
+	minAmmountTest = 1;
+	maxAmmountTest = 1;
 	// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
 	if (currentTestSpawns < 1)
 	{
@@ -37,24 +39,8 @@ void EnemySpawner::test_spawnEnemy()
 		{
 			for (int i = 0; i < maxAmmountTest; i++)
 			{
-				if (i < minAmmountTest)
-				{
-					int temp1 = rand() % (fukusukeMaxX + 1 - fukusukeMinX) + fukusukeMinX;
-					int temp2 = rand() % (fukusukeMaxY + 1 - fukusukeMinY) + fukusukeMinY;
-					enemys.push_back(new Ayako());
-					currentTestSpawns++;
-				}
-				else
-				{
-				int ran2 = rand() % (100 + 1 - 0) + 0;
-				if (ran2 < 1 * 100)
-				{
-					int temp1 = rand() % (fukusukeMaxX + 1 - fukusukeMinX) + fukusukeMinX;
-					int temp2 = rand() % (fukusukeMaxY + 1 - fukusukeMinY) + fukusukeMinY;
-					enemys.push_back(new Ayako());
-					currentTestSpawns++;
-				}
-				}
+				enemys.push_back(new Ayako());
+				currentTestSpawns += 1;
 			}
 		}
 	}
