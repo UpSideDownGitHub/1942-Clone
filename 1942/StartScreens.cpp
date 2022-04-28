@@ -14,10 +14,20 @@ StartScreens::StartScreens()
 */
 bool StartScreens::checkButtonPress(sf::RenderWindow* win)
 {
-	input.pollEvents(win);
-	if (input.spacePressed)
+	if (doOnce)
 	{
-		return true;
+		doOnce = false;
+		startTime = clock();
+	}
+	if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+	{
+		input.pollEvents(win);
+		if (input.spacePressed)
+		{
+			doOnce = true;
+			return true;
+		}
+		return false;
 	}
 	return false;
 }

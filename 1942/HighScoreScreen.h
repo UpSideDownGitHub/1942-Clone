@@ -20,7 +20,7 @@ public:
 	//		VARIABLES
 	Input input;
 	SaveData saveData;
-	bool menu1 = true, menu2 = false;
+	bool close = false;
 
 	// MOVING AROUND MENU
 	// Wait Between Presses

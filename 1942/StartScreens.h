@@ -20,7 +20,10 @@ public:
 	//		VARIABLES
 	Input input;
 	SaveData saveData;
-	bool menu1 = true, menu2 = false;
+
+	time_t startTime;
+	float timeToWait = 150;
+	bool doOnce = true;
 
 	// MAIN WINDOW
 	sf::Font arial;

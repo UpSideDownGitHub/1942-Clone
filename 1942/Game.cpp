@@ -43,16 +43,22 @@ void Game::start()
 	showingWeGiveUpScreen = false;
 	addedScore = false;
 	showingLevelInfo = true;
-	
+	livesUsed = 0;
 	player = Player();
 	spawner = EnemySpawner();
 	startTime = time(0);
 	level = 0; // 0
 	P1score = 0;
+	ssScoreP1.str("");
+	ssScoreP1 << P1score;
+	scoreP1Num.setString(ssScoreP1.str());
+	scoreP1Num.setOrigin(round(scoreP1Num.getLocalBounds().width / 2), round(scoreP1Num.getLocalBounds().height / 2));
 	ssLevel.str("");
 	ssLevel << 32 - level << " Stage";
 	levelNumber.setString(ssLevel.str());
 	levelNumber.setOrigin(levelNumber.getLocalBounds().width / 2, levelNumber.getLocalBounds().height / 2);
+
+
 }
 
 /*
@@ -67,6 +73,7 @@ void Game::render()
 	if (inHighScoreScreen)
 	{
 		highScoreScreen.render(window);
+		renderScoreInfomation();
 	}
 	else if (inMainMenus)
 	{
@@ -185,12 +192,13 @@ void Game::update()
 
 	if (inHighScoreScreen)
 	{
-		if (doOnce100)
-		{
-			highScoreScreen.initilise(9999999, 10);
-			doOnce100 = false;
-		}
 		highScoreScreen.update(window);
+		if (highScoreScreen.close)
+		{
+			inMainMenus = true;
+			inHighScoreScreen = false;
+			highScoreScreen.close = false;
+		}
 	}
 	else if (inMainMenus)
 	{
@@ -295,11 +303,26 @@ void Game::update()
 				{
 					level = 0;
 					runStart = true;
-					inMainMenus = true;
+
+					// MAKE THIS SHOW THE NEW HIGHSCORE SCREEN IF THE PLAYER ACHIVED A NEW HIGHSCORE
+					saveData.loadFile();
+					SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+					for (int i = 0; i < 5; i++)
+					{
+						if (spawner.currentPoints > leaderboard[i].Score)
+						{
+							highScoreScreen.initilise(spawner.currentPoints, livesUsed);
+							inHighScoreScreen = true;
+							break;
+						}
+					}
+					if (!inHighScoreScreen)
+						inMainMenus = true;
 				}
 			}
 			else if (calculateInfomationOnce)
 			{
+				std::cout << "HELLO" << "\n";
 				spawner.scoreChanged = true;
 				audio.audio[2]->play();
 				calculateInfomationOnce = false;
@@ -355,9 +378,21 @@ void Game::update()
 				gameBeaten = false;
 				addedScore = false;
 				// WILL NEED TO MAKE THIS TAKE THE PLAYER TO THE ENTER USERNAME SCREEN THAT WILL LET THEM SAVE THERE HIGHSCORE
+				saveData.loadFile();
+				SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+				for (int i = 0; i < 5; i++)
+				{
+					if (spawner.currentPoints > leaderboard[i].Score)
+					{
+						highScoreScreen.initilise(spawner.currentPoints, livesUsed);
+						inHighScoreScreen = true;
+						break;
+					}
+				}
+				if (!inHighScoreScreen)
+					inMainMenus = true;
 				level = 0;
 				runStart = true;
-				inMainMenus = true;
 			}
 		}
 		// PLAY LEVEL
@@ -422,6 +457,7 @@ void Game::update()
 				{
 					if (player.shootingMethod == 4)
 					{
+						livesUsed++;
 						player.shootingMethod--;
 						player.lives++;
 						checkCollisions.changedLives = false;
@@ -429,6 +465,7 @@ void Game::update()
 					}
 					else if (player.shootingMethod == 3)
 					{
+						livesUsed++;
 						player.shootingMethod--;
 						player.leftFighter = true;
 						player.lives++;
@@ -437,6 +474,7 @@ void Game::update()
 					}
 					else if (player.shootingMethod <= 2)
 					{
+						livesUsed++;
 						player.shootingMethod = 1;
 						spawner.hasQuadShot = false;
 

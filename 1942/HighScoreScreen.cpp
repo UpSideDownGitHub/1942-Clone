@@ -11,6 +11,7 @@ HighScoreScreen::HighScoreScreen()
 
 void HighScoreScreen::initilise(int score, int lives)
 {
+	close = false;
 	saveData.loadFile();
 	SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
 	
@@ -271,6 +272,8 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 
 		leaderboard[currentSelectScoreToChange].Name = temp;
 		saveData.saveFile();
+
+		close = true;
 	}
 }
 

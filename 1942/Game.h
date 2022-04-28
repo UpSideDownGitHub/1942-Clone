@@ -50,11 +50,11 @@ public:
 	HighScoreScreen highScoreScreen;
 
 	// HIGH SCORE SCEEN
-	bool inHighScoreScreen = true;
-	bool doOnce100 = true;
+	bool inHighScoreScreen = false;
 
 	// MAIN MENU
 	bool inMainMenus = true;
+	int livesUsed = 0;
 
 	//			GUI ELEMENTS
 	// LIVES
