@@ -64,7 +64,11 @@ void Game::render()
 	// CLEAR WHAT HAS BEEN PREVIOSLY DRAWN TO THE WINDOW
 	window->clear();
 
-	if (inMainMenus)
+	if (inHighScoreScreen)
+	{
+		highScoreScreen.render(window);
+	}
+	else if (inMainMenus)
 	{
 		startScreens.render(window);
 	}
@@ -179,7 +183,11 @@ void Game::update()
 	}
 
 
-	if (inMainMenus)
+	if (inHighScoreScreen)
+	{
+		highScoreScreen.update(window);
+	}
+	else if (inMainMenus)
 	{
 		inMainMenus = !startScreens.checkButtonPress(window);
 		if (!inMainMenus)

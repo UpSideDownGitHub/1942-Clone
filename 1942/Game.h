@@ -31,6 +31,7 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 #include "PopUp.h"
 #include "SaveData.h"
 #include "Audio.h"
+#include "HighScoreScreen.h"
 
 #pragma once
 class Game
@@ -46,6 +47,10 @@ public:
 	CheckCollisions checkCollisions;
 	SaveData saveData;
 	Audio audio;
+	HighScoreScreen highScoreScreen;
+
+	// HIGH SCORE SCEEN
+	bool inHighScoreScreen = true;
 
 	// MAIN MENU
 	bool inMainMenus = true;
