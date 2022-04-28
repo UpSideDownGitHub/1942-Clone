@@ -8,12 +8,80 @@ HighScoreScreen::HighScoreScreen()
 	// CALL "initGUI()"
 	initGUI();
 }
-/*
-	THIS METHOD CHECKS IF THE BUTTONS IN THE MAIN MENU'S HAVE BEEN PRESSED
-*/
-void HighScoreScreen::checkButtonPress(sf::RenderWindow* win)
-{
 
+void HighScoreScreen::initilise(int score, int lives)
+{
+	saveData.loadFile();
+	SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+	
+	for (int i = 0; i < 5; i++)
+	{
+		if (leaderboard[i].Score < score)
+		{
+			currentSelectScoreToChange = i;
+			for (int j = 4; j > i; j--)
+			{
+				leaderboard[j] = leaderboard[j - 1];
+			}
+			leaderboard[i].Score = score;
+			leaderboard[i].LivesUsed = lives;
+			leaderboard[i].Name = "";
+			break;
+		}
+	}
+
+	ssTopName.str("");
+	ssTopName << leaderboard[0].Name;
+	topName.setString(ssTopName.str());
+	ssTopScore.str("");
+	ssTopScore << leaderboard[0].Score;
+	topScore.setString(ssTopScore.str());
+	ssTopLives.str("");
+	ssTopLives << leaderboard[0].LivesUsed;
+	topLives.setString(ssTopLives.str());
+
+	ssSecondName.str("");
+	ssSecondName << leaderboard[1].Name;
+	secondName.setString(ssSecondName.str());
+	ssSecondScore.str("");
+	ssSecondScore << leaderboard[1].Score;
+	secondScore.setString(ssSecondScore.str());
+	ssSecondLives.str("");
+	ssSecondLives << leaderboard[1].LivesUsed;
+	secondLives.setString(ssSecondLives.str());
+
+	ssThirdName.str("");
+	ssThirdName << leaderboard[2].Name;
+	thirdName.setString(ssThirdName.str());
+	ssThirdScore.str("");
+	ssThirdScore << leaderboard[2].Score;
+	thirdScore.setString(ssThirdScore.str());
+	ssThirdLives.str("");
+	ssThirdLives << leaderboard[2].LivesUsed;
+	thirdLives.setString(ssThirdLives.str());
+
+	ssForthName.str("");
+	ssForthName << leaderboard[3].Name;
+	forthName.setString(ssForthName.str());
+	ssForthScore.str("");
+	ssForthScore << leaderboard[3].Score;
+	forthScore.setString(ssForthScore.str());
+	ssForthLives.str("");
+	ssForthLives << leaderboard[3].LivesUsed;
+	forthLives.setString(ssForthLives.str());
+
+	ssFithName.str("");
+	ssFithName << leaderboard[4].Name;
+	fithName.setString(ssFithName.str());
+	ssFithScore.str("");
+	ssFithScore << leaderboard[4].Score;
+	fithScore.setString(ssFithScore.str());
+	ssFithLives.str("");
+	ssFithLives << leaderboard[4].LivesUsed;
+	fithLives.setString(ssFithLives.str());
+	
+	
+	saveData.saveFile();
 }
 
 /*
@@ -22,11 +90,11 @@ void HighScoreScreen::checkButtonPress(sf::RenderWindow* win)
 void HighScoreScreen::update(sf::RenderWindow* win)
 {
 	input.pollEvents(win);
-	if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+	if (input.buttonPresses[0]) // LEFT
 	{
-		startTime = clock();
-		if (input.buttonPresses[0]) // LEFT
+		if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 		{
+			startTime = clock();
 			if (currentlySelected != 0 && currentlySelected != 10 && currentlySelected != 20)
 			{
 				letterButtons[currentlySelected].setFillColor(sf::Color::Red);
@@ -35,8 +103,12 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				currentLetter = letterText[currentlySelected].getString();
 			}
 		}
-		else if (input.buttonPresses[1]) // DOWN
+	}
+	else if (input.buttonPresses[1]) // DOWN
+	{
+		if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 		{
+			startTime = clock();
 			if (currentlySelected >= 0 && currentlySelected <= 9)
 			{
 				letterButtons[currentlySelected].setFillColor(sf::Color::Red);
@@ -52,8 +124,12 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				currentLetter = letterText[currentlySelected].getString();
 			}
 		}
-		else if (input.buttonPresses[2]) // UP
+	}
+	else if (input.buttonPresses[2]) // UP
+	{
+		if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 		{
+			startTime = clock();
 			if (currentlySelected >= 10 && currentlySelected <= 19)
 			{
 				letterButtons[currentlySelected].setFillColor(sf::Color::Red);
@@ -69,8 +145,12 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				currentLetter = letterText[currentlySelected].getString();
 			}
 		}
-		else if (input.buttonPresses[3]) // RIGHT
+	}
+	else if (input.buttonPresses[3]) // RIGHT
+	{
+		if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 		{
+			startTime = clock();
 			if (currentlySelected != 9 && currentlySelected != 19 && currentlySelected != 25)
 			{
 				letterButtons[currentlySelected].setFillColor(sf::Color::Red);
@@ -79,6 +159,118 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				currentLetter = letterText[currentlySelected].getString();
 			}
 		}
+	}
+
+
+	if (input.buttonPresses[4]) // add a leter
+	{
+		if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait2)
+		{
+			startTime2 = clock();
+			if (currentSelectScoreToChange == 0 && currentCharacters < maxCharacters)
+			{
+				currentCharacters++;
+				ssTopName << currentLetter;
+				topName.setString(ssTopName.str());
+			}
+			else if (currentSelectScoreToChange == 1 && currentCharacters < maxCharacters)
+			{
+				currentCharacters++;
+				ssSecondName << currentLetter;
+				secondName.setString(ssSecondName.str());
+			}
+			else if (currentSelectScoreToChange == 2 && currentCharacters < maxCharacters)
+			{
+				currentCharacters++;
+				ssThirdName << currentLetter;
+				thirdName.setString(ssThirdName.str());
+			}
+			else if (currentSelectScoreToChange == 3 && currentCharacters < maxCharacters)
+			{
+				currentCharacters++;
+				ssForthName << currentLetter;
+				forthName.setString(ssForthName.str());
+			}
+			else if (currentSelectScoreToChange == 4 && currentCharacters < maxCharacters)
+			{
+				currentCharacters++;
+				ssFithName << currentLetter;
+				fithName.setString(ssFithName.str());
+			}
+		}
+	}
+	else if (input.buttonPresses[5]) // remove a letter
+	{
+		if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait2)
+		{
+			startTime2 = clock();
+			if (currentSelectScoreToChange == 0 && currentCharacters > 0)
+			{
+				currentCharacters--;
+				std::string temp = ssTopName.str();
+				temp.pop_back();
+				ssTopName.str("");
+				ssTopName << temp;
+				topName.setString(ssTopName.str());
+			}
+			else if (currentSelectScoreToChange == 1 && currentCharacters > 0)
+			{
+				currentCharacters--;
+				std::string temp = ssSecondName.str();
+				temp.pop_back();
+				ssSecondName.str("");
+				ssSecondName << temp;
+				secondName.setString(ssSecondName.str());
+			}
+			else if (currentSelectScoreToChange == 2 && currentCharacters > 0)
+			{
+				currentCharacters--;
+				std::string temp = ssThirdName.str();
+				temp.pop_back();
+				ssThirdName.str("");
+				ssThirdName << temp;
+				thirdName.setString(ssThirdName.str());
+			}
+			else if (currentSelectScoreToChange == 3 && currentCharacters > 0)
+			{
+				currentCharacters--;
+				std::string temp = ssForthName.str();
+				temp.pop_back();
+				ssForthName.str("");
+				ssForthName << temp;
+				forthName.setString(ssForthName.str());
+			}
+			else if (currentSelectScoreToChange == 4 && currentCharacters > 0)
+			{
+				currentCharacters--;
+				std::string temp = ssFithName.str();
+				temp.pop_back();
+				ssFithName.str("");
+				ssFithName << temp;
+				fithName.setString(ssFithName.str());
+			}
+		}
+	}
+
+	if (input.spacePressed)
+	{
+		saveData.loadFile();
+		SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+		std::string temp;
+		if (currentSelectScoreToChange == 0)
+			temp = topName.getString();
+		else if (currentSelectScoreToChange == 1)
+			temp = secondName.getString();
+		else if (currentSelectScoreToChange == 2)
+			temp = thirdName.getString();
+		else if (currentSelectScoreToChange == 3)
+			temp = forthName.getString();
+		else if (currentSelectScoreToChange == 4)
+			temp = fithName.getString();
+
+
+		leaderboard[currentSelectScoreToChange].Name = temp;
+		saveData.saveFile();
 	}
 }
 
@@ -197,7 +389,7 @@ void HighScoreScreen::initGUI()
 	topScore.setString(ssTopScore.str());
 
 	ssTopName.str("");
-	ssTopName << "WWWWWWWW";
+	ssTopName << "";
 	topName.setCharacterSize(30);
 	topName.setPosition({ 230, 400 });
 	topName.setFont(arial);
@@ -322,4 +514,5 @@ void HighScoreScreen::initGUI()
 	letterButtons[currentlySelected].setFillColor(sf::Color::Green);
 	currentLetter = letterText[currentlySelected].getString();
 	startTime = clock();
+	startTime2 = clock();
 }

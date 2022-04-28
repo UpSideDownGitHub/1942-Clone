@@ -70,7 +70,7 @@ int SaveData::getDailyHighestPercent()
 {
 	return savedata.dailyHighestPercent;
 }
-std::map<std::string, int> SaveData::getLeaderboard()
+SaveData::PlayerInfo* SaveData::getLeaderboard()
 {
 	return savedata.leaderboard;
 }
@@ -87,7 +87,11 @@ void SaveData::setDailyHighestPercent(int percent)
 {
 	savedata.dailyHighestPercent = percent;
 }
-void SaveData::setLeaderbaord(std::map<std::string, int> map)
+void SaveData::setLeaderbaord(PlayerInfo info[5])
 {
-	savedata.leaderboard = map;
+	savedata.leaderboard[0] = info[0];
+	savedata.leaderboard[1] = info[1];
+	savedata.leaderboard[2] = info[2];
+	savedata.leaderboard[3] = info[3];
+	savedata.leaderboard[4] = info[4];
 }

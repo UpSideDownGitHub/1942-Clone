@@ -185,6 +185,11 @@ void Game::update()
 
 	if (inHighScoreScreen)
 	{
+		if (doOnce100)
+		{
+			highScoreScreen.initilise(9999999, 10);
+			doOnce100 = false;
+		}
 		highScoreScreen.update(window);
 	}
 	else if (inMainMenus)

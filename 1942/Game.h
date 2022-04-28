@@ -51,6 +51,7 @@ public:
 
 	// HIGH SCORE SCEEN
 	bool inHighScoreScreen = true;
+	bool doOnce100 = true;
 
 	// MAIN MENU
 	bool inMainMenus = true;

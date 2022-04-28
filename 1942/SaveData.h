@@ -1,13 +1,27 @@
 #pragma once
+#include <SFML/Graphics.hpp>
+#include <list>
+#include <stdlib.h>
+#include <sstream>
+#include <Windows.h>
+#include <ctime>
+#include <chrono>
 #include <iostream>
 #include <fstream>
-#include <Map>
 
 class SaveData
 {
 public:
 	// CONSTRUCTOR
 	SaveData();
+	
+	// VARIABLES
+	struct PlayerInfo
+	{
+		std::string Name;
+		int Score;
+		int LivesUsed;
+	};
 
 	//			METHODS
 	void loadFile();
@@ -16,12 +30,12 @@ public:
 	// GET METHODS
 	int getHighScore();
 	int getDailyHighestPercent();
-	std::map<std::string, int> getLeaderboard();
+	PlayerInfo* getLeaderboard();
 
 	// SET METHODS
 	void setHighScore(int score);
 	void setDailyHighestPercent(int percent);
-	void setLeaderbaord(std::map<std::string, int> map);
+	void setLeaderbaord(PlayerInfo info[5]);
 
 private:
 	// VARIABLES
@@ -29,7 +43,7 @@ private:
 	{
 		int highScore;
 		int dailyHighestPercent;
-		std::map<std::string, int> leaderboard;
+		PlayerInfo leaderboard[5];
 	};
 	gameSaveData savedata;
 };

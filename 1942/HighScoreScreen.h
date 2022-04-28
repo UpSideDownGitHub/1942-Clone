@@ -14,10 +14,9 @@ public:
 	HighScoreScreen();
 
 	// METHODS
-	void checkButtonPress(sf::RenderWindow* win);
+	void initilise(int score, int lives);
 	void update(sf::RenderWindow* win);
 	void render(sf::RenderTarget* target);
-
 	//		VARIABLES
 	Input input;
 	SaveData saveData;
@@ -25,8 +24,10 @@ public:
 
 	// MOVING AROUND MENU
 	// Wait Between Presses
-	time_t startTime;
-	float timeToWait = 50;
+	time_t startTime, startTime2;
+	float timeToWait = 60, timeToWait2 = 75;
+
+	int currentSelectScoreToChange = 999;
 
 	int currentlySelected = 9;
 	std::string currentLetter = "";
