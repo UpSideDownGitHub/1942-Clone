@@ -110,6 +110,37 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 				}
 			}
 		}
+		else
+		{
+			if (input.buttonPresses[0]) // LEFT
+			{
+				if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+				{
+					startTime2 = clock();
+					if (selected2 > 0)
+					{
+						gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
+						selected2--;
+						gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
+						loadLeaderboard();
+					}
+				}
+			}
+			else if (input.buttonPresses[3]) // RIGHT
+			{
+				if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+				{
+					startTime2 = clock();
+					if (selected2 < 4)
+					{
+						gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
+						selected2++;
+						gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
+						loadLeaderboard();
+					}
+				}
+			}
+		}
 		if (input.spacePressed)
 		{
 			if (leaderboard)
@@ -124,6 +155,75 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 			}
 		}
 	}
+}
+
+void StartScreens::loadLeaderboard()
+{
+	gameModeName.setString(gameModes[selected2]);
+	gameModeName.setOrigin(gameModeName.getGlobalBounds().width / 2, gameModeName.getGlobalBounds().height / 2);
+
+	saveData.loadFile();
+	SaveData::PlayerInfo* leaderboard;
+	if (selected2 == 0)
+		leaderboard = saveData.getLeaderboard();
+	else if (selected2 == 1)
+		leaderboard = saveData.getLeaderboardEndless();
+	else if (selected2 == 2)
+		leaderboard = saveData.getLeaderboardNoPowerUps();
+	else if (selected2 == 3)
+		leaderboard = saveData.getLeaderboardInsane();
+	else
+		leaderboard = saveData.getLeaderboardRandom();
+
+	ssTopName.str("");
+	ssTopName << leaderboard[0].Name;
+	topName.setString(ssTopName.str());
+	ssTopScore.str("");
+	ssTopScore << leaderboard[0].Score;
+	topScore.setString(ssTopScore.str());
+	ssTopLives.str("");
+	ssTopLives << leaderboard[0].LivesUsed;
+	topLives.setString(ssTopLives.str());
+
+	ssSecondName.str("");
+	ssSecondName << leaderboard[1].Name;
+	secondName.setString(ssSecondName.str());
+	ssSecondScore.str("");
+	ssSecondScore << leaderboard[1].Score;
+	secondScore.setString(ssSecondScore.str());
+	ssSecondLives.str("");
+	ssSecondLives << leaderboard[1].LivesUsed;
+	secondLives.setString(ssSecondLives.str());
+
+	ssThirdName.str("");
+	ssThirdName << leaderboard[2].Name;
+	thirdName.setString(ssThirdName.str());
+	ssThirdScore.str("");
+	ssThirdScore << leaderboard[2].Score;
+	thirdScore.setString(ssThirdScore.str());
+	ssThirdLives.str("");
+	ssThirdLives << leaderboard[2].LivesUsed;
+	thirdLives.setString(ssThirdLives.str());
+
+	ssForthName.str("");
+	ssForthName << leaderboard[3].Name;
+	forthName.setString(ssForthName.str());
+	ssForthScore.str("");
+	ssForthScore << leaderboard[3].Score;
+	forthScore.setString(ssForthScore.str());
+	ssForthLives.str("");
+	ssForthLives << leaderboard[3].LivesUsed;
+	forthLives.setString(ssForthLives.str());
+
+	ssFithName.str("");
+	ssFithName << leaderboard[4].Name;
+	fithName.setString(ssFithName.str());
+	ssFithScore.str("");
+	ssFithScore << leaderboard[4].Score;
+	fithScore.setString(ssFithScore.str());
+	ssFithLives.str("");
+	ssFithLives << leaderboard[4].LivesUsed;
+	fithLives.setString(ssFithLives.str());
 }
 
 void StartScreens::selectMode(sf::RenderWindow* win)
@@ -182,31 +282,41 @@ void StartScreens::render(sf::RenderTarget* target)
 	if (leaderboard)
 	{
 		target->draw(box);
+
+		target->draw(gameModeName);
+		for (sf::Text text : gamemodeNameOptions)
+		{
+			target->draw(text);
+		}
+
 		target->draw(topFiveMessage);
 
 		target->draw(top);
 		target->draw(topScore);
 		target->draw(topName);
-		target->draw(topLives);
+		if (selected2 != 1)
+		{
+			target->draw(topLives);
+			target->draw(secondLives);
+			target->draw(thirdLives);
+			target->draw(forthLives);
+			target->draw(fithLives);
+		}
 		target->draw(second);
 		target->draw(secondScore);
 		target->draw(secondName);
-		target->draw(secondLives);
 
 		target->draw(third);
 		target->draw(thirdScore);
 		target->draw(thirdName);
-		target->draw(thirdLives);
 
 		target->draw(forth);
 		target->draw(forthScore);
 		target->draw(forthName);
-		target->draw(forthLives);
 
 		target->draw(fith);
 		target->draw(fithScore);
 		target->draw(fithName);
-		target->draw(fithLives);
 	}
 }
 
@@ -274,11 +384,34 @@ void StartScreens::initGUI()
 
 	options[selected].setFillColor(sf::Color::Yellow);
 
+	//					LEADERBOARD
+	// LEADERBOARD SELECTION
+	int xOffset2 = 50;
+	int yOffset2 = 50;
+	int xMulti2 = 110;
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Text temp;
+		temp.setCharacterSize(20);
+		temp.setPosition(xOffset2 + i * xMulti2, yOffset2 );
+		temp.setFont(arial);
+		temp.setString(gameModes[i]);
+		temp.setOrigin(temp.getGlobalBounds().width / 2, temp.getGlobalBounds().height / 2);
+		gamemodeNameOptions.push_back(temp);
+	}
+	// GAME MODE NAME
+	gameModeName.setCharacterSize(50);
+	gameModeName.setPosition( 270,100 );
+	gameModeName.setFont(arial);
+	gameModeName.setString(gameModes[selected2]);
+	gameModeName.setOrigin(gameModeName.getGlobalBounds().width / 2, gameModeName.getGlobalBounds().height / 2);
 
+	gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
 
+	int i = 175;
 	// TOP 5 RANKING SCORE TEXT
 	topFiveMessage.setCharacterSize(40);
-	topFiveMessage.setPosition({ 80,30 });
+	topFiveMessage.setPosition(80,30 + i);
 	topFiveMessage.setFont(arial);
 	topFiveMessage.setString("Top 5 Ranking Scores");
 
@@ -288,135 +421,135 @@ void StartScreens::initGUI()
 
 	// Top Score
 	top.setCharacterSize(30);
-	top.setPosition({ 20,150 });
+	top.setPosition( 20,150 + i);
 	top.setFont(arial);
 	top.setString("Top");
 
 	ssTopScore.str("");
 	ssTopScore << 99999999;
 	topScore.setCharacterSize(30);
-	topScore.setPosition({ 90, 150 });
+	topScore.setPosition( 90, 150 + i );
 	topScore.setFont(arial);
 	topScore.setString(ssTopScore.str());
 
 	ssTopName.str("");
 	ssTopName << "";
 	topName.setCharacterSize(30);
-	topName.setPosition({ 240, 150 });
+	topName.setPosition( 240, 150 + i );
 	topName.setFont(arial);
 	topName.setString(ssTopName.str());
 
 	ssTopLives.str("");
 	ssTopLives << 100;
 	topLives.setCharacterSize(30);
-	topLives.setPosition({ 480, 150 });
+	topLives.setPosition( 480, 150 + i );
 	topLives.setFont(arial);
 	topLives.setString(ssTopLives.str());
 
 	// 2ND	
 	second.setCharacterSize(30);
-	second.setPosition({ 20,200 });
+	second.setPosition( 20,200 + i );
 	second.setFont(arial);
 	second.setString("2ND");
 
 	ssSecondScore.str("");
 	ssSecondScore << 99999999;
 	secondScore.setCharacterSize(30);
-	secondScore.setPosition({ 90, 200 });
+	secondScore.setPosition( 90, 200 + i );
 	secondScore.setFont(arial);
 	secondScore.setString(ssSecondScore.str());
 
 	ssSecondName.str("");
 	ssSecondName << "WWWWWWWW";
 	secondName.setCharacterSize(30);
-	secondName.setPosition({ 240, 200 });
+	secondName.setPosition( 240, 200 + i );
 	secondName.setFont(arial);
 	secondName.setString(ssSecondName.str());
 
 	ssSecondLives.str("");
 	ssSecondLives << 100;
 	secondLives.setCharacterSize(30);
-	secondLives.setPosition({ 480, 200 });
+	secondLives.setPosition( 480, 200 + i );
 	secondLives.setFont(arial);
 	secondLives.setString(ssSecondLives.str());
 
 	// 3RD
 	third.setCharacterSize(30);
-	third.setPosition({ 20,250 });
+	third.setPosition( 20,250 + i );
 	third.setFont(arial);
 	third.setString("3RD");
 
 	ssThirdScore.str("");
 	ssThirdScore << 99999999;
 	thirdScore.setCharacterSize(30);
-	thirdScore.setPosition({ 90, 250 });
+	thirdScore.setPosition( 90, 250 + i );
 	thirdScore.setFont(arial);
 	thirdScore.setString(ssThirdScore.str());
 
 	ssThirdName.str("");
 	ssThirdName << "WWWWWWWW";
 	thirdName.setCharacterSize(30);
-	thirdName.setPosition({ 240, 250 });
+	thirdName.setPosition( 240, 250 + i );
 	thirdName.setFont(arial);
 	thirdName.setString(ssThirdName.str());
 
 	ssThirdLives.str("");
 	ssThirdLives << 100;
 	thirdLives.setCharacterSize(30);
-	thirdLives.setPosition({ 480, 250 });
+	thirdLives.setPosition( 480, 250 + i );
 	thirdLives.setFont(arial);
 	thirdLives.setString(ssThirdLives.str());
 
 	// 4TH
 	forth.setCharacterSize(30);
-	forth.setPosition({ 20,300 });
+	forth.setPosition( 20,300 + i );
 	forth.setFont(arial);
 	forth.setString("4TH");
 
 	ssForthScore.str("");
 	ssForthScore << 99999999;
 	forthScore.setCharacterSize(30);
-	forthScore.setPosition({ 90, 300 });
+	forthScore.setPosition( 90, 300 + i );
 	forthScore.setFont(arial);
 	forthScore.setString(ssForthScore.str());
 
 	ssForthName.str("");
 	ssForthName << "WWWWWWWW";
 	forthName.setCharacterSize(30);
-	forthName.setPosition({ 240, 300 });
+	forthName.setPosition( 240, 300 + i );
 	forthName.setFont(arial);
 	forthName.setString(ssForthName.str());
 
 	ssForthLives.str("");
 	ssForthLives << 100;
 	forthLives.setCharacterSize(30);
-	forthLives.setPosition({ 480, 300 });
+	forthLives.setPosition( 480, 300 + i );
 	forthLives.setFont(arial);
 	forthLives.setString(ssForthLives.str());
 	// 5TH
 	fith.setCharacterSize(30);
-	fith.setPosition({ 20,350 });
+	fith.setPosition( 20,350 + i );
 	fith.setFont(arial);
 	fith.setString("5TH");
 
 	ssFithScore.str("");
 	ssFithScore << 99999999;
 	fithScore.setCharacterSize(30);
-	fithScore.setPosition({ 90, 350 });
+	fithScore.setPosition( 90, 350 + i );
 	fithScore.setFont(arial);
 	fithScore.setString(ssFithScore.str());
 
 	ssFithName.str("");
 	ssFithName << "WWWWWWWW";
 	fithName.setCharacterSize(30);
-	fithName.setPosition({ 240, 350 });
+	fithName.setPosition( 240, 350 + i );
 	fithName.setFont(arial);
 	fithName.setString(ssFithName.str());
 
 	ssFithLives.str("");
 	ssFithLives << 100;
 	fithLives.setCharacterSize(30);
-	fithLives.setPosition({ 480, 350 });
+	fithLives.setPosition( 480, 350 + i );
 	fithLives.setFont(arial);
 	fithLives.setString(ssFithLives.str());
 }

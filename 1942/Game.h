@@ -152,6 +152,7 @@ public:
 	sf::Text endlessMode;
 
 	// PAUSE MENU
+	bool muted = false;
 	bool paused = false;
 	sf::RectangleShape box;
 	bool doOnce2 = true;

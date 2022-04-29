@@ -17,7 +17,7 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 #include "Game.h"
 
 //#define TESTING
-#define TESTING2
+//#define TESTING2
 
 /*
 	CONSTRUCTOR FOR THE GAME CLASS
@@ -73,6 +73,8 @@ void Game::start()
 	ssLevel << 32 - level << " Stage";
 	levelNumber.setString(ssLevel.str());
 	levelNumber.setOrigin(levelNumber.getLocalBounds().width / 2, levelNumber.getLocalBounds().height / 2);
+	levelName.setString("Midway");
+	levelName.setOrigin(levelName.getLocalBounds().width / 2, levelName.getLocalBounds().height / 2);
 }
 
 /*
@@ -293,7 +295,21 @@ void Game::update()
 				}
 				else if (selected == 2)
 				{
-					// TOGGLE THE SOUND EFFECTS
+					if (muted)
+					{
+						for (int i = 0; i < 9; i++)
+						{
+							audio.audio[i]->setVolume(0);
+						}
+					}
+					else
+					{
+						for (int i = 0; i < 9; i++)
+						{
+							audio.audio[i]->setVolume(100);
+						}
+					}
+					muted = !muted;
 				}
 				else if (selected == 3)
 				{
@@ -347,6 +363,29 @@ void Game::update()
 					levelNumber.setString(ssLevel.str());
 					levelNumber.setOrigin(levelNumber.getLocalBounds().width / 2, levelNumber.getLocalBounds().height / 2);
 
+
+					std::string nameOfLevel;
+					int curLevel = 32 - level;
+					if (curLevel <= 32 && curLevel >= 29)
+						nameOfLevel = "Midway";
+					else if (curLevel <= 28 && curLevel >= 25)
+						nameOfLevel = "Marshall";
+					else if (curLevel <= 24 && curLevel >= 21)
+						nameOfLevel = "Attu";
+					else if (curLevel <= 20 && curLevel >= 17)
+						nameOfLevel = "Rabaul";
+					else if (curLevel <= 16 && curLevel >= 13)
+						nameOfLevel = "Leyte";
+					else if (curLevel <= 12 && curLevel >= 9)
+						nameOfLevel = "Saipan";
+					else if (curLevel <= 8 && curLevel >= 5)
+						nameOfLevel = "Iwojima";
+					else if (curLevel <= 4 && curLevel >= 1)
+						nameOfLevel = "Okinawa";
+
+					levelName.setString(nameOfLevel);
+					levelName.setOrigin(levelName.getLocalBounds().width / 2, levelName.getLocalBounds().height / 2);
+
 					showingLevelInfo = true;
 					startTime = time(0);
 				}
@@ -365,19 +404,19 @@ void Game::update()
 				int bonus = 0;
 				if (percent == 100)
 					bonus = 50000;
-				else if (percent >= 95 && percent <= 99)
+				else if (percent >= 95 && percent < 100)
 					bonus = 20000;
-				else if (percent >= 90 && percent <= 94)
+				else if (percent >= 90 && percent < 95)
 					bonus = 10000;
-				else if (percent >= 85 && percent <= 89)
+				else if (percent >= 85 && percent < 90)
 					bonus = 5000;
-				else if (percent >= 80 && percent <= 84)
+				else if (percent >= 80 && percent < 85)
 					bonus = 4000;
-				else if (percent >= 70 && percent <= 79)
+				else if (percent >= 70 && percent < 80)
 					bonus = 3000;
-				else if (percent >= 60 && percent <= 69)
+				else if (percent >= 60 && percent < 70)
 					bonus = 2000;
-				else if (percent >= 50 && percent <= 59)
+				else if (percent >= 50 && percent < 60)
 					bonus = 1000;
 				else if (percent < 50)
 					bonus = 0;

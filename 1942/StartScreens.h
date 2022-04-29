@@ -17,6 +17,7 @@ public:
 	void checkButtonPress(sf::RenderWindow* win);
 	void render(sf::RenderTarget* target);
 	void selectMode(sf::RenderWindow* win);
+	void loadLeaderboard();
 
 	//		VARIABLES
 	Input input;
@@ -42,7 +43,12 @@ public:
 	bool play = false;
 	bool normal = false, endless = false, noPowerUp = false, insane = false, random = false, leaderboard = false;
 
-	// LEADERBOARD
+	//			 LEADERBOARD
+	// LEADERBOARD SELECTION
+	std::vector<sf::Text> gamemodeNameOptions;
+	int selected2 = 0;
+	sf::Text gameModeName;
+
 	sf::Text topFiveMessage;
 	sf::RectangleShape box;
 	// TOP
