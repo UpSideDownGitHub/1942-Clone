@@ -81,13 +81,43 @@ void EnemySpawner::startLevel(int level)
 	currentEnemySpawned = 0;
 	daihiryuPointsMultiplier = 0;
 
-	for (int i = 0; i < currentLevel; i += 10)
+	if (!insaneMode)
 	{
-		smallMinToSpawnMore += 2;
-		mediumMinToSpawnMore++;
+		for (int i = 0; i < currentLevel; i += 10)
+		{
+			smallMinToSpawnMore += 2;
+			mediumMinToSpawnMore++;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 32 + currentLevel; i += 10)
+		{
+			smallMinToSpawnMore += 2;
+			mediumMinToSpawnMore++;
+		}
 	}
 }
-
+void EnemySpawner::startEndlessMode()
+{
+	endlessMode = true;
+	startLevel(32);
+}
+void EnemySpawner::startNoPowerUpMode(int level)
+{
+	noPowerUpsMode = true;
+	startLevel(level);
+}
+void EnemySpawner::startInsaneMode(int level)
+{
+	insaneMode = true;
+	startLevel(level);
+}
+void EnemySpawner::startRandomMode(int level)
+{
+	randomMode = true;
+	startLevel(level);
+}
 
 
 void EnemySpawner::update(Player *player, Audio *audio)
@@ -104,25 +134,37 @@ void EnemySpawner::update(Player *player, Audio *audio)
 		}
 	}
 
-
-	if (time(0) - startLevelTime > levelLength && playLevel) // WILL NEED TO ADD AN EXCEPTION WHEN THERE IS A BOSS TO FIGHT
-	{
-		canSpawn = false;
-		if ((currentLevel == 32 - 25 || currentLevel == 32 - 15 || currentLevel == 32 - 10 || currentLevel == 32 - 5 || currentLevel == 32 - 1) && !bossSpawned && !bossKilled)
-		{
-			// spawn boss enemy
-			audio->audio[0]->play();
-			enemys.push_back(new Ayako());
-			bossSpawned = true;
-		}
-		if (curreentAmmountOfSmallEnemy <= 0 && currentAmmountOfMediumEnemy <= 0 && currentAmmountOfSpecialEnemy <= 0 && !bossSpawned && !miniBossSpawned)
-			playLevel = false;
-	}
-	if (playLevel)
+	if (endlessMode)
 	{
 		moveEnemy(player, audio);
-		if (canSpawn)
-			spawnEnemy();
+		spawnEnemy();
+	}
+	else
+	{
+		if (time(0) - startLevelTime > levelLength && playLevel) // WILL NEED TO ADD AN EXCEPTION WHEN THERE IS A BOSS TO FIGHT
+		{
+			canSpawn = false;
+			if ((currentLevel == 32 - 25 || currentLevel == 32 - 15 || currentLevel == 32 - 10 || currentLevel == 32 - 5 || currentLevel == 32 - 1) && !bossSpawned && !bossKilled)
+			{
+				// spawn boss enemy
+				audio->audio[0]->play();
+				enemys.push_back(new Ayako());
+				bossSpawned = true;
+			}
+			if (curreentAmmountOfSmallEnemy <= 0 && currentAmmountOfMediumEnemy <= 0 && currentAmmountOfSpecialEnemy <= 0 && !bossSpawned && !miniBossSpawned)
+				playLevel = false;
+		}
+		if (playLevel)
+		{
+			moveEnemy(player, audio);
+			if (canSpawn)
+			{
+				if (randomMode)
+					randomSpawnEnemy();
+				else
+					spawnEnemy();
+			}
+		}
 	}
 }
 void EnemySpawner::moveEnemy(Player *player, Audio *audio)
@@ -346,8 +388,305 @@ void EnemySpawner::spawnPowerUp(sf::Vector2f pos)
 		powerups.push_back(new RedPowerUp(pos));
 	}
 }
+
+void EnemySpawner::randomSpawnEnemy()
+{
+	// IF ENOUGH TIME HAS PASSED SINCE THE LAST MINI BOSS ENEMY HAS SPAWNED
+	if (float(clock() - startTime4) / CLOCKS_PER_SEC * 1000 >= timeToWaitMiniBoss)
+	{
+		Spawn();
+	}
+	// IF ENOUGH TIME HAS PASSED SINCE THE LAST SPECIAL ENEMY HAS SPAWNED
+	if (float(clock() - startTime3) / CLOCKS_PER_SEC * 1000 >= timeToWaitSpecialEnemy)
+	{
+		Spawn();
+	}
+	// IF ENOUGH TIME HAS PASSED TO SPAWN ANOTHER MEDIUM ENEMY
+	if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWaitMediumEnemy)
+	{
+		Spawn();
+	}
+	// IF ENOUGH TIME HAS PASSED SINCE THE LAST SMALL ENEMY HAS SPAWNED
+	if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWaitSmallEnemy)
+	{
+		Spawn();
+	}
+}
+void EnemySpawner::Spawn()
+{
+	int enemyToSpawn = rand() % (12 + 1 - 0) + 0;
+
+	if (enemyToSpawn == 0)
+	{
+		startTime4 = clock();
+		if (!miniBossSpawned && rand() % 10 == 0)
+		{
+			int temp1 = rand() % (daihiryuMaxX + 1 - daihiryuMinX) + daihiryuMinX;
+			int temp2 = rand() % (daihiryuMaxY + 1 - daihiryuMinY) + daihiryuMinY;
+			enemys.push_back(new Daihiryu(temp1, temp2));
+			miniBossSpawned = true;
+			return;
+		}
+	}
+	else if (enemyToSpawn == 1)
+	{
+		startTime3 = clock();
+		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
+		if (currentAmmountOfSpecialEnemy < 1)
+		{
+			int temp2 = rand() % (red1MaxY + 1 - red1MinY) + red1MinY;
+			enemys.push_back(new Red(1, temp2));
+			enemys.push_back(new Red(2, temp2));
+			enemys.push_back(new Red(3, temp2));
+			enemys.push_back(new Red(4, temp2));
+			enemys.push_back(new Red(5, temp2));
+			currentAmmountOfSpecialEnemy += 5;
+
+			currentReds = 5;
+			return;
+		}
+	}
+	else if (enemyToSpawn == 2)
+	{
+		startTime3 = clock();
+		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
+		if (currentAmmountOfSpecialEnemy < 1)
+		{
+			enemys.push_back(new Red2(1));
+			enemys.push_back(new Red2(2));
+			enemys.push_back(new Red2(3));
+			enemys.push_back(new Red2(4));
+			enemys.push_back(new Red2(5));
+			currentAmmountOfSpecialEnemy += 5;
+
+			currentReds = 5;
+			return;
+		}
+	}
+	else if (enemyToSpawn == 3)
+	{
+		startTime3 = clock();
+		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
+		if (currentAmmountOfSpecialEnemy < 1)
+		{
+			enemys.push_back(new Red3(1));
+			enemys.push_back(new Red3(2));
+			enemys.push_back(new Red3(3));
+			enemys.push_back(new Red3(4));
+			enemys.push_back(new Red3(5));
+			currentAmmountOfSpecialEnemy += 5;
+
+			currentReds = 5;
+			return;
+		}
+	}
+	else if (enemyToSpawn == 4)
+	{
+		startTime3 = clock();
+		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
+		if (currentAmmountOfSpecialEnemy < 1)
+		{
+			int temp1 = rand() % (bonusMaxX + 1 - bonusMinX) + bonusMinX;
+			int temp2 = rand() % (bonusMaxY + 1 - bonusMinY) + bonusMinY;
+			enemys.push_back(new BounsFighter(rand() % 2 == 0, temp1, temp2));
+			currentAmmountOfSpecialEnemy++;
+			return;
+		}
+	}
+	else if (enemyToSpawn == 5)
+	{
+		startTime2 = clock();
+		// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
+		if (currentAmmountOfMediumEnemy < mediumMinToSpawnMore)
+		{
+			int temp1 = rand() % (bvdMaxX + 1 - bvdMinX) + bvdMinX;
+			int temp2 = rand() % (bvdMaxY + 1 - bvdMinY) + bvdMinY;
+			enemys.push_back(new BVD(rand() % 2 == 0, temp1, temp2));
+			currentAmmountOfMediumEnemy++;
+			return;
+		}
+	}
+	else if (enemyToSpawn == 6)
+	{
+		startTime2 = clock();
+		// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
+		if (currentAmmountOfMediumEnemy < mediumMinToSpawnMore)
+		{
+			int temp1 = rand() % (shoryuMaxX + 1 - shoryuMinX) + shoryuMinX;
+			int temp2 = rand() % (shoryuMaxY + 1 - shoryuMinY) + shoryuMinY;
+			enemys.push_back(new Shoryu(true, temp1, temp2));
+			currentAmmountOfMediumEnemy++;
+			temp1 = rand() % (shoryuMaxX + 1 - shoryuMinX) + shoryuMinX;
+			temp2 = rand() % (shoryuMaxY + 1 - shoryuMinY) + shoryuMinY;
+			enemys.push_back(new Shoryu(false, temp1, temp2));
+			currentAmmountOfMediumEnemy++;
+			return;
+		}
+	}
+	else if (enemyToSpawn == 7)
+	{
+		startTime2 = clock();
+		// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
+		if (currentAmmountOfMediumEnemy < mediumMinToSpawnMore)
+		{
+			for (int i = 0; i < qingMaxAmmount; i++)
+			{
+				if (i < qingMinAmmount)
+				{
+					int temp1 = rand() % (qingMaxX + 1 - qingMinX) + qingMinX;
+					int temp2 = rand() % (qingMaxY + 1 - qingMinY) + qingMinY;
+					enemys.push_back(new Qing(temp1, temp2));
+					currentAmmountOfMediumEnemy++;
+				}
+				else
+				{
+					int ran2 = rand() % (100 + 1 - 0) + 0;
+					if (ran2 < qingSpawnChance * 100)
+					{
+						int temp1 = rand() % (qingMaxX + 1 - qingMinX) + qingMinX;
+						int temp2 = rand() % (qingMaxY + 1 - qingMinY) + qingMinY;
+						enemys.push_back(new Qing(temp1, temp2));
+						currentAmmountOfMediumEnemy++;
+					}
+				}
+			}
+			return;
+		}
+	}
+	else if (enemyToSpawn == 8)
+	{
+		startTime = clock();
+		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
+		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
+		{
+			for (int i = 0; i < zeroMaxAmmount; i++)
+			{
+				if (i < zeroMinAmmount)
+				{
+					int temp1 = rand() % (zeroMaxX + 1 - zeroMinX) + zeroMinX;
+					int temp2 = rand() % (zeroMaxY + 1 - zeroMinY) + zeroMinY;
+					enemys.push_back(new Zero(temp1, temp2));
+					curreentAmmountOfSmallEnemy++;
+				}
+				else
+				{
+					int ran2 = rand() % (100 + 1 - 0) + 0;
+					if (ran2 < zeroSpawnChance * 100)
+					{
+						int temp1 = rand() % (zeroMaxX + 1 - zeroMinX) + zeroMinX;
+						int temp2 = rand() % (zeroMaxY + 1 - zeroMinY) + zeroMinY;
+						enemys.push_back(new Zero(temp1, temp2));
+						curreentAmmountOfSmallEnemy++;
+					}
+				}
+			}
+			return;
+		}
+	}
+	else if (enemyToSpawn == 9)
+	{
+		startTime = clock();
+		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
+		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
+		{
+			for (int i = 0; i < akamizuMaxAmmount; i++)
+			{
+				if (i < akamizuMinAmmount)
+				{
+					int temp1 = rand() % (akamizuMaxX + 1 - akamizuMinX) + akamizuMinX;
+					int temp2 = rand() % (akamizuMaxY + 1 - akamizuMinY) + akamizuMinY;
+					enemys.push_back(new Akamizu(rand() % 2 == 0, temp1, temp2));
+					curreentAmmountOfSmallEnemy++;
+				}
+				else
+				{
+					int ran2 = rand() % (100 + 1 - 0) + 0;
+					if (ran2 < akamizuSpawnChance * 100)
+					{
+						int temp1 = rand() % (akamizuMaxX + 1 - akamizuMinX) + akamizuMinX;
+						int temp2 = rand() % (akamizuMaxY + 1 - akamizuMinY) + akamizuMinY;
+						enemys.push_back(new Akamizu(rand() % 2 == 0, temp1, temp2));
+						curreentAmmountOfSmallEnemy++;
+					}
+				}
+			}
+			return;
+		}
+	}
+	else if (enemyToSpawn == 10)
+	{
+		startTime = clock();
+		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
+		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
+		{
+			for (int i = 0; i < raizanMaxAmmount; i++)
+			{
+				if (i < raizanMinAmmount)
+				{
+					int temp1 = rand() % (raizanMaxX + 1 - raizanMinX) + raizanMinX;
+					int temp2 = rand() % (raizanMaxY + 1 - raizanMinY) + raizanMinY;
+					enemys.push_back(new Raizan(temp1, temp2));
+					curreentAmmountOfSmallEnemy++;
+				}
+				else
+				{
+					int ran2 = rand() % (100 + 1 - 0) + 0;
+					if (ran2 < raizanSpawnChance * 100)
+					{
+						int temp1 = rand() % (raizanMaxX + 1 - raizanMinX) + raizanMinX;
+						int temp2 = rand() % (raizanMaxY + 1 - raizanMinY) + raizanMinY;
+						enemys.push_back(new Raizan(temp1, temp2));
+						curreentAmmountOfSmallEnemy++;
+					}
+				}
+			}
+			return;
+		}
+	}
+	else if (enemyToSpawn == 11)
+	{
+		startTime = clock();
+		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
+		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
+		{
+			for (int i = 0; i < fukusukeMaxAmmount; i++)
+			{
+				if (i < fukusukeMinAmmount)
+				{
+					int temp1 = rand() % (fukusukeMaxX + 1 - fukusukeMinX) + fukusukeMinX;
+					int temp2 = rand() % (fukusukeMaxY + 1 - fukusukeMinY) + fukusukeMinY;
+					enemys.push_back(new Fukusuke(rand() % 2 == 0, temp1, temp2));
+					curreentAmmountOfSmallEnemy++;
+				}
+				else
+				{
+					int ran2 = rand() % (100 + 1 - 0) + 0;
+					if (ran2 < fukusukeSpawnChance * 100)
+					{
+						int temp1 = rand() % (fukusukeMaxX + 1 - fukusukeMinX) + fukusukeMinX;
+						int temp2 = rand() % (fukusukeMaxY + 1 - fukusukeMinY) + fukusukeMinY;
+						enemys.push_back(new Fukusuke(rand() % 2 == 0, temp1, temp2));
+						curreentAmmountOfSmallEnemy++;
+					}
+				}
+			}
+			return;
+		}
+	}
+	else if (enemyToSpawn == 12)
+	{
+		if (rand() % 25 == 0 && !bossSpawned)
+		{
+			enemys.push_back(new Ayako());
+			bossSpawned = true;
+		}
+	}
+}
 void EnemySpawner::spawnEnemy()
 {
+	int i = currentLevel;
+	if (insaneMode)
+		currentLevel += 32;
 	if (miniBossSpawned)
 	{
 		//std::cout << clock() - startTime4 << " " << timeToWaitMiniBoss << "\n";
@@ -374,7 +713,7 @@ void EnemySpawner::spawnEnemy()
 		}
 	}
 	// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
-	if (currentAmmountOfSpecialEnemy < 1)
+	if (currentAmmountOfSpecialEnemy < 1 && !noPowerUpsMode)
 	{
 		if (float(clock() - startTime3) / CLOCKS_PER_SEC * 1000 >= timeToWaitSpecialEnemy)
 		{
@@ -650,6 +989,7 @@ void EnemySpawner::spawnEnemy()
 			}
 		}
 	}
+	currentLevel = i;
 }
 void EnemySpawner::render(sf::RenderTarget *target)
 {

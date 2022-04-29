@@ -16,6 +16,10 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 {
 	if (doOnce)
 	{
+		endless = false;
+		normal = true;
+
+
 		play = false;
 		doOnce = false;
 		startTime = clock();

@@ -74,6 +74,22 @@ SaveData::PlayerInfo* SaveData::getLeaderboard()
 {
 	return savedata.leaderboard;
 }
+SaveData::PlayerInfo* SaveData::getLeaderboardEndless()
+{
+	return savedata.leaderboardEndless;
+}
+SaveData::PlayerInfo* SaveData::getLeaderboardNoPowerUps()
+{
+	return savedata.leaderboardNoPowerUps;
+}
+SaveData::PlayerInfo* SaveData::getLeaderboardInsane()
+{
+	return savedata.leaderboardInsane;
+}
+SaveData::PlayerInfo* SaveData::getLeaderboardRandom()
+{
+	return savedata.leaderboardRandom;
+}
 
 
 /*
@@ -95,3 +111,36 @@ void SaveData::setLeaderbaord(PlayerInfo info[5])
 	savedata.leaderboard[3] = info[3];
 	savedata.leaderboard[4] = info[4];
 }
+void SaveData::setLeaderboardEndless(PlayerInfo info[5])
+{
+	savedata.leaderboardEndless[0] = info[0];
+	savedata.leaderboardEndless[1] = info[1];
+	savedata.leaderboardEndless[2] = info[2];
+	savedata.leaderboardEndless[3] = info[3];
+	savedata.leaderboardEndless[4] = info[4];
+}
+void SaveData::setLeaderboardNoPowerUps(PlayerInfo info[5])
+{
+	savedata.leaderboardNoPowerUps[0] = info[0];
+	savedata.leaderboardNoPowerUps[1] = info[1];
+	savedata.leaderboardNoPowerUps[2] = info[2];
+	savedata.leaderboardNoPowerUps[3] = info[3];
+	savedata.leaderboardNoPowerUps[4] = info[4];
+}
+void SaveData::setLeaderboardInsane(PlayerInfo info[5])
+{
+	savedata.leaderboardInsane[0] = info[0];
+	savedata.leaderboardInsane[1] = info[1];
+	savedata.leaderboardInsane[2] = info[2];
+	savedata.leaderboardInsane[3] = info[3];
+	savedata.leaderboardInsane[4] = info[4];
+}
+void SaveData::setLeaderboardRandom(PlayerInfo info[5])
+{
+	savedata.leaderboardRandom[0] = info[0];
+	savedata.leaderboardRandom[1] = info[1];
+	savedata.leaderboardRandom[2] = info[2];
+	savedata.leaderboardRandom[3] = info[3];
+	savedata.leaderboardRandom[4] = info[4];
+}
+

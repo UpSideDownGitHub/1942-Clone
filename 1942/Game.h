@@ -147,10 +147,12 @@ public:
 
 	bool runStart = true;
 
-	// GAME MODES
+	//			GAME MODES
+	// ENDLESS
+	sf::Text endlessMode;
 
 	// PAUSE MENU
-	bool paused = true;
+	bool paused = false;
 	sf::RectangleShape box;
 	bool doOnce2 = true;
 	time_t startTime6, startTime7;

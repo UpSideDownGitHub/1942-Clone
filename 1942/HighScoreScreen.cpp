@@ -8,12 +8,21 @@ HighScoreScreen::HighScoreScreen()
 	// CALL "initGUI()"
 	initGUI();
 }
-
 void HighScoreScreen::initilise(int score, int lives)
 {
 	close = false;
 	saveData.loadFile();
-	SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+	SaveData::PlayerInfo* leaderboard;
+	if (endless)
+		leaderboard = saveData.getLeaderboardEndless();
+	else if (noPowerUps)
+		leaderboard = saveData.getLeaderboardNoPowerUps();
+	else if (insane)
+		leaderboard = saveData.getLeaderboardInsane();
+	else if (random)
+		leaderboard = saveData.getLeaderboardRandom();
+	else
+		leaderboard = saveData.getLeaderboard();
 	
 	for (int i = 0; i < 5; i++)
 	{
@@ -30,6 +39,8 @@ void HighScoreScreen::initilise(int score, int lives)
 			break;
 		}
 	}
+
+	currentCharacters = 0;
 
 	ssTopName.str("");
 	ssTopName << leaderboard[0].Name;
@@ -256,7 +267,32 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 	if (input.spacePressed)
 	{
 		saveData.loadFile();
-		SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+		SaveData::PlayerInfo* leaderboard;
+		if (endless)
+		{
+			std::cout << "ENDLESS MODE\n";
+			leaderboard = saveData.getLeaderboardEndless();
+		}
+		else if (noPowerUps)
+		{
+			std::cout << "NO POWER UPS MODE\n";
+			leaderboard = saveData.getLeaderboardNoPowerUps();
+		}
+		else if (insane)
+		{
+			std::cout << "INSANE MODE\n";
+			leaderboard = saveData.getLeaderboardInsane();
+		}
+		else if (random)
+		{
+			std::cout << "RANDOM MODE\n";
+			leaderboard = saveData.getLeaderboardRandom();
+		}
+		else
+		{
+			std::cout << "NORMAL MODE\n";
+			leaderboard = saveData.getLeaderboard();
+		}
 		std::string temp;
 		if (currentSelectScoreToChange == 0)
 			temp = topName.getString();
@@ -295,26 +331,31 @@ void HighScoreScreen::render(sf::RenderTarget* target)
 	target->draw(top);
 	target->draw(topScore);
 	target->draw(topName);
-	target->draw(topLives);
+	if (!endless)
+	{
+		target->draw(topLives);
+		target->draw(secondLives);
+		target->draw(thirdLives);
+		target->draw(forthLives);
+		target->draw(fithLives);
+	}
+
 	target->draw(second);
 	target->draw(secondScore);
 	target->draw(secondName);
-	target->draw(secondLives);
+	
 
 	target->draw(third);
 	target->draw(thirdScore);
 	target->draw(thirdName);
-	target->draw(thirdLives);
 
 	target->draw(forth);
 	target->draw(forthScore);
 	target->draw(forthName);
-	target->draw(forthLives);
 
 	target->draw(fith);
 	target->draw(fithScore);
 	target->draw(fithName);
-	target->draw(fithLives);
 }
 
 /*

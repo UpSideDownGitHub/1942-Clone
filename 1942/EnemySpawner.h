@@ -169,6 +169,19 @@ public:
 	time_t startLevelTime;
 	int levelLength = 120; // 120
 
+	//				GAME MODES
+	// ENDLESS
+	bool endlessMode = false;
+	
+	// NO POWERUPS
+	bool noPowerUpsMode = false;
+
+	// INSANE
+	bool insaneMode = false;
+
+	// RANDOM
+	bool randomMode = false;
+
 	// CONSTRUCTOR
 	EnemySpawner();
 
@@ -180,6 +193,13 @@ public:
 	void spawnPowerUp(sf::Vector2f pos);
 
 	void startLevel(int level);
+	void startEndlessMode();
+	void startNoPowerUpMode(int level);
+	void startInsaneMode(int level);
+	void startRandomMode(int level);
+
+	void randomSpawnEnemy();
+	void Spawn();
 
 private:
 };

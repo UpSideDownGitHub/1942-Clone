@@ -17,6 +17,20 @@ public:
 	void initilise(int score, int lives);
 	void update(sf::RenderWindow* win);
 	void render(sf::RenderTarget* target);
+
+	//				GAME MODES
+	// ENDLESS
+	bool endless = false;
+	
+	// NO POWER UPS
+	bool noPowerUps = false;
+
+	// INSANE
+	bool insane = false;
+
+	// RANDOM
+	bool random = false;
+
 	//		VARIABLES
 	Input input;
 	SaveData saveData;

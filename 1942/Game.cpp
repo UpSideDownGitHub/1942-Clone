@@ -17,6 +17,7 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 #include "Game.h"
 
 //#define TESTING
+#define TESTING2
 
 /*
 	CONSTRUCTOR FOR THE GAME CLASS
@@ -33,7 +34,11 @@ Game::Game()
 */
 void Game::start()
 {
-	std::cout << "NEW GAME\n";
+	spawner.endlessMode = false;
+	spawner.noPowerUpsMode = false;
+	spawner.insaneMode = false;
+	spawner.randomMode = false;
+	
 
 	runStart = false;
 	showingLevelEndInfo = false;
@@ -45,6 +50,17 @@ void Game::start()
 	showingLevelInfo = true;
 	livesUsed = 0;
 	player = Player();
+	if (startScreens.endless)
+	{
+		player.lives = 0;
+		livesnum.str("");
+		for (int k = 0; k < player.lives; k++)
+		{
+			livesnum << "O ";
+		}
+		lives.setString(livesnum.str());
+	}
+
 	spawner = EnemySpawner();
 	startTime = time(0);
 	level = 0; // 0
@@ -101,7 +117,6 @@ void Game::render()
 		
 		if (showingLevelInfo)
 			renderLevelInfoScreen();
-
 		window->draw(lives);
 		window->draw(dodges);
 
@@ -148,8 +163,15 @@ void Game::renderScoreInfomation()
 }
 void Game::renderLevelInfoScreen()
 {
-	window->draw(levelName);
-	window->draw(levelNumber);
+	if (startScreens.endless)
+	{
+		window->draw(endlessMode);
+	}
+	else
+	{
+		window->draw(levelName);
+		window->draw(levelNumber);
+	}
 	window->draw(readyText);
 	window->draw(player1Text);
 }
@@ -163,9 +185,12 @@ void Game::renderLevelEndScreenND()
 
 void Game::renderLevelEndScreenD()
 {
+	if (!startScreens.endless)
+	{
+		window->draw(percentageComplete);
+		window->draw(todaysTopPercentage);
+	}
 	window->draw(shootDownPercentage);
-	window->draw(percentageComplete);
-	window->draw(todaysTopPercentage);
 	window->draw(gameOver);
 }
 
@@ -212,7 +237,10 @@ void Game::update()
 		startScreens.checkButtonPress(window);
 		inMainMenus = !startScreens.play;
 		if (!inMainMenus)
+		{
 			audio.audio[1]->play();
+			runStart = true;
+		}
 	}
 	else if (paused)
 	{
@@ -283,8 +311,18 @@ void Game::update()
 		{
 			if (time(0) - startTime > secondsToShow)
 			{
+				// START THE LEVEL
 				showingLevelInfo = false;
-				spawner.startLevel(level);
+				if (startScreens.endless)
+					spawner.startEndlessMode();
+				else if (startScreens.noPowerUp)
+					spawner.startNoPowerUpMode(level);
+				else if (startScreens.insane)
+					spawner.startInsaneMode(level);
+				else if (startScreens.random)
+					spawner.startRandomMode(level);
+				else
+					spawner.startLevel(level);
 			}
 		}
 		// NEXT LEVEL
@@ -379,6 +417,19 @@ void Game::update()
 					{
 						if (spawner.currentPoints > leaderboard[i].Score)
 						{
+							highScoreScreen.endless = false;
+							highScoreScreen.noPowerUps = false;
+							highScoreScreen.insane = false;
+							highScoreScreen.random = false;
+
+							if (startScreens.endless)
+								highScoreScreen.endless = true;
+							else if (startScreens.noPowerUp)
+								highScoreScreen.noPowerUps = true;
+							else if (startScreens.insane)
+								highScoreScreen.insane = true;
+							else if (startScreens.random)
+								highScoreScreen.random = true;
 							highScoreScreen.initilise(spawner.currentPoints, livesUsed);
 							inHighScoreScreen = true;
 							break;
@@ -452,6 +503,19 @@ void Game::update()
 				{
 					if (spawner.currentPoints > leaderboard[i].Score)
 					{
+						highScoreScreen.endless = false;
+						highScoreScreen.noPowerUps = false;
+						highScoreScreen.insane = false;
+						highScoreScreen.random = false;
+
+						if (startScreens.endless)
+							highScoreScreen.endless = true;
+						else if (startScreens.noPowerUp)
+							highScoreScreen.noPowerUps = true;
+						else if (startScreens.insane)
+							highScoreScreen.insane = true;
+						else if (startScreens.random)
+							highScoreScreen.random = true;
 						highScoreScreen.initilise(spawner.currentPoints, livesUsed);
 						inHighScoreScreen = true;
 						break;
@@ -466,9 +530,15 @@ void Game::update()
 		// PLAY LEVEL
 		else
 		{
-			
+			// add the diffrent game modes here
 			if (spawner.playLevel)
 			{
+				input.pollEvents(window);
+				if (input.escapePressed)
+					paused = true;
+
+
+				// DISABLE ENEMY SHOOTING FOR THE ORANGE POWER UP
 				if (float(clock() - startTimeOrangePowerUp) / CLOCKS_PER_SEC * 1000 >= timeToWaitOrangePowerUp)
 				{
 					for (Enemy *enemys : spawner.enemys)
@@ -476,22 +546,25 @@ void Game::update()
 						enemys->canShoot = true;
 					}
 				}
+
 				// PLAYER MOVEMENT AND SHOOTING
 				player.update(this->window, &audio);
 
 #if defined(TESTING)
-					spawner.test_update(&player);
+				spawner.test_update(&player);
 #else
-					// SPANWER SPAWNING AND ENEMY DEATH COLLECTION
-					spawner.update(&player, &audio);
+				// SPANWER SPAWNING AND ENEMY DEATH COLLECTION
+				spawner.update(&player, &audio);
 #endif
 				//		COLLISION DETECTION	
-				// PLAYER BULLETS OF ENEMYS
+				// PLAYER BULLETS HITTING ENEMYS
 				checkCollisions.checkPlayerBulletCollisions(player.bullets, spawner.enemys);
+				// IF ANY ENEMYS WHERE HIT
 				if (checkCollisions.copyBullets)
 				{
 					for (Bullet *bullet : player.bullets)
 					{
+						// MAKE EXPLOSION EFFECTS
 						if (bullet->makeExplosion)
 						{
 #if defined(TESTING)
@@ -506,18 +579,19 @@ void Game::update()
 					checkCollisions.bulletsToCopy.clear();
 					checkCollisions.copyBullets = false;
 				}
+
 				// ENEMYS HITTING PLAYER
-				
 				if (player.takeDamage)
 				{
 					updateDodgesText = true;
-#if defined(TESTING)
+#if defined(TESTING2)
 
 #else
 					checkCollisions.checkEnemyHitPlayer(&player, spawner.enemys);					
 					checkCollisions.checkEnemyBulletCollisions(player.enemyBullets, &player);
 #endif
 				}
+				// PLAYER USED A DODGE
 				else if (updateDodgesText)
 				{
 					updateDodgesText = false;
@@ -529,6 +603,8 @@ void Game::update()
 					dodges.setString(dodgesNum.str());
 					dodges.setOrigin(dodges.getLocalBounds().width, dodges.getLocalBounds().height);
 				}
+
+				// PLAYER LOST A LIFE 
 				if (checkCollisions.changedLives)
 				{
 					if (player.shootingMethod == 4)
@@ -594,19 +670,21 @@ void Game::update()
 				}
 
 			}
+			// LEVEL BEATEN
 			else
 			{
+				// PLAY LEVEL WON SOUND
 				audio.audio[2]->play();
-
 				if (spawner.currentLevel == 31)
 				{
+					// PLAYER BEAT THE FINAL BOSS
 					startTime4 = time(0);
 					showingBeatFinalBossMessage = true;
 				}
 				else if (spawner.currentLevel == 32)
 				{
+					// PLAYER BEAT THE FINAL LEVEL
 					gameBeaten = true;
-					// NEXT LEVEL
 					showingLevelEndInfo = true;
 					startTime2 = time(0);
 				}
@@ -823,6 +901,14 @@ void Game::initGUI()
 	player1Text.setPosition({ 230, 400 });
 	player1Text.setFont(arial);
 	player1Text.setString("Player 1");
+
+	// ENDLESS MODE UI
+	endlessMode.setCharacterSize(50);
+	endlessMode.setPosition({ 290, 200 });
+	endlessMode.setFont(arial);
+	endlessMode.setFillColor(sf::Color::Red);
+	endlessMode.setString("Endless Mode");
+	endlessMode.setOrigin(levelName.getLocalBounds().width / 2, levelName.getLocalBounds().height / 2);
 
 	// LEVEL END SCREEN (NTO DEATH)
 	// SHOT DOWN %

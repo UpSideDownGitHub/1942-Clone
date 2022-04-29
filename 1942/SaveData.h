@@ -31,11 +31,19 @@ public:
 	int getHighScore();
 	int getDailyHighestPercent();
 	PlayerInfo* getLeaderboard();
+	PlayerInfo* getLeaderboardEndless();
+	PlayerInfo* getLeaderboardNoPowerUps();
+	PlayerInfo* getLeaderboardInsane();
+	PlayerInfo* getLeaderboardRandom();
 
 	// SET METHODS
 	void setHighScore(int score);
 	void setDailyHighestPercent(int percent);
 	void setLeaderbaord(PlayerInfo info[5]);
+	void setLeaderboardEndless(PlayerInfo info[5]);
+	void setLeaderboardNoPowerUps(PlayerInfo info[5]);
+	void setLeaderboardInsane(PlayerInfo info[5]);
+	void setLeaderboardRandom(PlayerInfo info[5]);
 
 private:
 	// VARIABLES
@@ -44,6 +52,10 @@ private:
 		int highScore;
 		int dailyHighestPercent;
 		PlayerInfo leaderboard[5];
+		PlayerInfo leaderboardEndless[5];
+		PlayerInfo leaderboardNoPowerUps[5];
+		PlayerInfo leaderboardInsane[5];
+		PlayerInfo leaderboardRandom[5];
 	};
 	gameSaveData savedata;
 };
