@@ -8,7 +8,6 @@ public:
 	// VARIABLES
 	bool buttonPresses[6];
 	bool spacePressed = false;
-	bool escapePressed = false;
 
 	// METHODS
 	void pollEvents(sf::RenderWindow *window);

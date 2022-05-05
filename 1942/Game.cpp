@@ -310,11 +310,13 @@ void Game::update()
 						}
 					}
 					muted = !muted;
+					paused = false;
 				}
 				else if (selected == 3)
 				{
 					window->close();
 				}
+				startTime7 = clock();
 			}
 		}
 	}
@@ -573,9 +575,10 @@ void Game::update()
 			if (spawner.playLevel)
 			{
 				input.pollEvents(window);
-				if (input.escapePressed)
+				if (input.spacePressed && float(clock() - startTime7) / CLOCKS_PER_SEC * 1000 >= 200)
+				{
 					paused = true;
-
+				}
 
 				// DISABLE ENEMY SHOOTING FOR THE ORANGE POWER UP
 				if (float(clock() - startTimeOrangePowerUp) / CLOCKS_PER_SEC * 1000 >= timeToWaitOrangePowerUp)

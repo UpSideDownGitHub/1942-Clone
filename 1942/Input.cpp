@@ -12,7 +12,6 @@ void Input::pollEvents(sf::RenderWindow *window)
 	buttonPresses[4] = false;
 	buttonPresses[5] = false;
 	spacePressed = false;
-	escapePressed = false;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		buttonPresses[0] = true;
@@ -28,6 +27,4 @@ void Input::pollEvents(sf::RenderWindow *window)
 		buttonPresses[5] = true;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		spacePressed = true;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-		escapePressed = true;
 }
