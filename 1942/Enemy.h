@@ -288,7 +288,6 @@ public:
 	float verMoveSpeed;
 	float rateOfChange;
 
-	float moveDownDistance;
 	float moveUpDistance;
 	float turnPos1;
 	float turnPos2;

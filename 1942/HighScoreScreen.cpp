@@ -5,6 +5,8 @@
 */
 HighScoreScreen::HighScoreScreen()
 {
+	startTime = clock();
+	startTime2 = clock();
 	// CALL "initGUI()"
 	initGUI();
 }

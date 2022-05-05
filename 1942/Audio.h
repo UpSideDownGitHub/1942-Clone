@@ -25,5 +25,5 @@ private:
 
 	// BACKGROUND MUSIC
 	sf::Music musicPlayer;
-	bool isMusic;
+	bool isMusic = false;
 };

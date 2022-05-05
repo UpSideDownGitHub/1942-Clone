@@ -1,4 +1,4 @@
-/**
+/*
 Program: 1942
 Filename: Game.cpp
 @author: © Reuben Miller
@@ -24,7 +24,27 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 */
 Game::Game()
 {
-	initWindow();
+	startTimeOrangePowerUp = clock();
+	startTime = clock();
+	startTime2 = clock();
+	startTime3 = clock();
+	startTime4 = clock();
+	startTime5 = clock();
+	startTime6 = clock();
+	startTime7 = clock();
+
+	// CREATE THE GAME WINDOW
+	float width = 560.f;
+	float height = 640.f;
+	this->window = new sf::RenderWindow(sf::VideoMode((int)width, (int)height), "1942", sf::Style::Titlebar | sf::Style::Close);
+	this->window->setFramerateLimit(60);
+	this->window->setVerticalSyncEnabled(true);
+
+	// MOVE THE WINDOW TO THE MIDDLE OF THE SCREEN
+	sf::Vector2i centerWindow((int)((sf::VideoMode::getDesktopMode().width / 2) - width / 2.f), (int)((sf::VideoMode::getDesktopMode().height / 2) - height / 1.75f));
+	this->window->setPosition(centerWindow);
+	this->window->setKeyRepeatEnabled(true);
+
 	initGUI();
 	initAudio();
 }
@@ -504,7 +524,7 @@ void Game::update()
 
 				if (saveData.getDailyHighestPercent() < percentage)
 				{
-					saveData.setDailyHighestPercent(percentage);
+					saveData.setDailyHighestPercent((int)percentage);
 					saveData.saveFile();
 				}
 				if (saveData.getHighScore() < spawner.currentPoints)
@@ -819,23 +839,7 @@ void Game::checkPowerUps(int num, int num2)
 	}
 
 }
-/*
-	INITILISE THE GAME WINODW
-*/
-void Game::initWindow()
-{
-	// CREATE THE GAME WINDOW
-	float width = 560;
-	float height = 640;
-	this->window = new sf::RenderWindow(sf::VideoMode(width, height), "1942", sf::Style::Titlebar | sf::Style::Close);
-	this->window->setFramerateLimit(60);
-	this->window->setVerticalSyncEnabled(true);
 
-	// MOVE THE WINDOW TO THE MIDDLE OF THE SCREEN
-	sf::Vector2i centerWindow((sf::VideoMode::getDesktopMode().width / 2) - width/2, (sf::VideoMode::getDesktopMode().height / 2) - height/1.75);
-	this->window->setPosition(centerWindow);
-	this->window->setKeyRepeatEnabled(true);
-}
 
 /*
 	INILISES THE GUI OF THE GAME
@@ -1082,7 +1086,7 @@ void Game::initGUI()
 	{
 		sf::Text temp;
 		temp.setCharacterSize(30);
-		temp.setPosition(xOffset, yOffset + i * yMulti);
+		temp.setPosition((float)xOffset, (float)yOffset + i * yMulti);
 		temp.setFont(arial);
 		temp.setString(pauseOptionTexts[i]);
 		temp.setOrigin(temp.getGlobalBounds().width / 2, temp.getGlobalBounds().height / 2);

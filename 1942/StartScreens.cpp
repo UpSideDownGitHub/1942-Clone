@@ -6,6 +6,8 @@
 StartScreens::StartScreens()
 {
 	// CALL "initGUI()"
+	startTime = clock();
+	startTime2 = clock();
 	initGUI();
 }
 
@@ -331,7 +333,7 @@ void StartScreens::initGUI()
 	//			MENU 1
 	// HIGHSCORE
 	highScoreLabel.setCharacterSize(30);
-	highScoreLabel.setPosition({ 220, 5 });
+	highScoreLabel.setPosition({ (float)220,(float)5 });
 	highScoreLabel.setFont(arial);
 	highScoreLabel.setString("High-Score");
 
@@ -342,22 +344,22 @@ void StartScreens::initGUI()
 	ssHighscore << highScore;
 
 	highScoreText.setCharacterSize(20);
-	highScoreText.setPosition({ 290, 55 });
+	highScoreText.setPosition({ (float)290, (float)55 });
 	highScoreText.setFont(arial);
 	highScoreText.setString(ssHighscore.str());
-	highScoreText.setOrigin(highScoreText.getLocalBounds().width / 2, highScoreText.getLocalBounds().height / 2);
+	highScoreText.setOrigin(highScoreText.getLocalBounds().width / 2.f, highScoreText.getLocalBounds().height / 2.f);
 
 
 	// GAME NAME
 	gameNameText.setCharacterSize(175);
-	gameNameText.setPosition({ 80,120 });
+	gameNameText.setPosition({ (float)80,(float)120 });
 	gameNameText.setFont(arial);
 	gameNameText.setString("1942");
 
 
 	// INSERT COIN
 	insertCoinText.setCharacterSize(50);
-	insertCoinText.setPosition({ 160,330 });
+	insertCoinText.setPosition({ (float)160,(float)330 });
 	insertCoinText.setFont(arial);
 	insertCoinText.setString("Insert Coin");
 
@@ -368,16 +370,16 @@ void StartScreens::initGUI()
 	{
 		sf::Text temp;
 		temp.setCharacterSize(30);
-		temp.setPosition( xOffset, yOffset + i * yMulti);
+		temp.setPosition((float)xOffset, (float)yOffset + i * yMulti);
 		temp.setFont(arial);
 		temp.setString(gameModes[i]);
-		temp.setOrigin(temp.getGlobalBounds().width / 2, temp.getGlobalBounds().height / 2);
+		temp.setOrigin(temp.getGlobalBounds().width / 2.f, temp.getGlobalBounds().height / 2.f);
 		options.push_back(temp);
 	}
 
 	// COPYRIGHT
 	copyrightText.setCharacterSize(20);
-	copyrightText.setPosition({ 190,600});
+	copyrightText.setPosition({ (float)190,(float)600});
 	copyrightText.setFont(arial);
 	copyrightText.setString("© 2022 Reuben Miller");
 	
@@ -393,163 +395,163 @@ void StartScreens::initGUI()
 	{
 		sf::Text temp;
 		temp.setCharacterSize(20);
-		temp.setPosition(xOffset2 + i * xMulti2, yOffset2 );
+		temp.setPosition((float)xOffset2 + i * xMulti2, (float)yOffset2 );
 		temp.setFont(arial);
 		temp.setString(gameModes[i]);
-		temp.setOrigin(temp.getGlobalBounds().width / 2, temp.getGlobalBounds().height / 2);
+		temp.setOrigin(temp.getGlobalBounds().width / 2.f, temp.getGlobalBounds().height / 2.f);
 		gamemodeNameOptions.push_back(temp);
 	}
 	// GAME MODE NAME
 	gameModeName.setCharacterSize(50);
-	gameModeName.setPosition( 270,100 );
+	gameModeName.setPosition((float)270, (float)100 );
 	gameModeName.setFont(arial);
 	gameModeName.setString(gameModes[selected2]);
-	gameModeName.setOrigin(gameModeName.getGlobalBounds().width / 2, gameModeName.getGlobalBounds().height / 2);
+	gameModeName.setOrigin(gameModeName.getGlobalBounds().width / 2.f, gameModeName.getGlobalBounds().height / 2.f);
 
 	gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
 
 	int i = 175;
 	// TOP 5 RANKING SCORE TEXT
 	topFiveMessage.setCharacterSize(40);
-	topFiveMessage.setPosition(80,30 + i);
+	topFiveMessage.setPosition((float)80, (float)30 + i);
 	topFiveMessage.setFont(arial);
 	topFiveMessage.setString("Top 5 Ranking Scores");
 
 	box.setFillColor(sf::Color::Blue);
-	box.setPosition(10, 10);
-	box.setSize({ 540, 620 });
+	box.setPosition((float)10, (float)10);
+	box.setSize({ (float)540, (float)620 });
 
 	// Top Score
 	top.setCharacterSize(30);
-	top.setPosition( 20,150 + i);
+	top.setPosition((float)20, (float)150 + i);
 	top.setFont(arial);
 	top.setString("Top");
 
 	ssTopScore.str("");
 	ssTopScore << 99999999;
 	topScore.setCharacterSize(30);
-	topScore.setPosition( 90, 150 + i );
+	topScore.setPosition((float)90, (float)150 + i );
 	topScore.setFont(arial);
 	topScore.setString(ssTopScore.str());
 
 	ssTopName.str("");
 	ssTopName << "";
 	topName.setCharacterSize(30);
-	topName.setPosition( 240, 150 + i );
+	topName.setPosition((float)240, (float)150 + i );
 	topName.setFont(arial);
 	topName.setString(ssTopName.str());
 
 	ssTopLives.str("");
 	ssTopLives << 100;
 	topLives.setCharacterSize(30);
-	topLives.setPosition( 480, 150 + i );
+	topLives.setPosition((float)480, (float)150 + i );
 	topLives.setFont(arial);
 	topLives.setString(ssTopLives.str());
 
 	// 2ND	
 	second.setCharacterSize(30);
-	second.setPosition( 20,200 + i );
+	second.setPosition((float)20, (float)200 + i );
 	second.setFont(arial);
 	second.setString("2ND");
 
 	ssSecondScore.str("");
 	ssSecondScore << 99999999;
 	secondScore.setCharacterSize(30);
-	secondScore.setPosition( 90, 200 + i );
+	secondScore.setPosition((float)90, (float)200 + i );
 	secondScore.setFont(arial);
 	secondScore.setString(ssSecondScore.str());
 
 	ssSecondName.str("");
 	ssSecondName << "WWWWWWWW";
 	secondName.setCharacterSize(30);
-	secondName.setPosition( 240, 200 + i );
+	secondName.setPosition((float)240, (float)200 + i );
 	secondName.setFont(arial);
 	secondName.setString(ssSecondName.str());
 
 	ssSecondLives.str("");
 	ssSecondLives << 100;
 	secondLives.setCharacterSize(30);
-	secondLives.setPosition( 480, 200 + i );
+	secondLives.setPosition((float)480, (float)200 + i );
 	secondLives.setFont(arial);
 	secondLives.setString(ssSecondLives.str());
 
 	// 3RD
 	third.setCharacterSize(30);
-	third.setPosition( 20,250 + i );
+	third.setPosition((float)20, (float)250 + i );
 	third.setFont(arial);
 	third.setString("3RD");
 
 	ssThirdScore.str("");
 	ssThirdScore << 99999999;
 	thirdScore.setCharacterSize(30);
-	thirdScore.setPosition( 90, 250 + i );
+	thirdScore.setPosition((float)90, (float)250 + i );
 	thirdScore.setFont(arial);
 	thirdScore.setString(ssThirdScore.str());
 
 	ssThirdName.str("");
 	ssThirdName << "WWWWWWWW";
 	thirdName.setCharacterSize(30);
-	thirdName.setPosition( 240, 250 + i );
+	thirdName.setPosition((float)240, (float)250 + i );
 	thirdName.setFont(arial);
 	thirdName.setString(ssThirdName.str());
 
 	ssThirdLives.str("");
 	ssThirdLives << 100;
 	thirdLives.setCharacterSize(30);
-	thirdLives.setPosition( 480, 250 + i );
+	thirdLives.setPosition((float)480, (float)250 + i );
 	thirdLives.setFont(arial);
 	thirdLives.setString(ssThirdLives.str());
 
 	// 4TH
 	forth.setCharacterSize(30);
-	forth.setPosition( 20,300 + i );
+	forth.setPosition((float)20, (float)300 + i );
 	forth.setFont(arial);
 	forth.setString("4TH");
 
 	ssForthScore.str("");
 	ssForthScore << 99999999;
 	forthScore.setCharacterSize(30);
-	forthScore.setPosition( 90, 300 + i );
+	forthScore.setPosition((float)90, (float)300 + i );
 	forthScore.setFont(arial);
 	forthScore.setString(ssForthScore.str());
 
 	ssForthName.str("");
 	ssForthName << "WWWWWWWW";
 	forthName.setCharacterSize(30);
-	forthName.setPosition( 240, 300 + i );
+	forthName.setPosition((float)240, (float)300 + i );
 	forthName.setFont(arial);
 	forthName.setString(ssForthName.str());
 
 	ssForthLives.str("");
 	ssForthLives << 100;
 	forthLives.setCharacterSize(30);
-	forthLives.setPosition( 480, 300 + i );
+	forthLives.setPosition((float)480, (float)300 + i );
 	forthLives.setFont(arial);
 	forthLives.setString(ssForthLives.str());
 	// 5TH
 	fith.setCharacterSize(30);
-	fith.setPosition( 20,350 + i );
+	fith.setPosition((float)20, (float)350 + i );
 	fith.setFont(arial);
 	fith.setString("5TH");
 
 	ssFithScore.str("");
 	ssFithScore << 99999999;
 	fithScore.setCharacterSize(30);
-	fithScore.setPosition( 90, 350 + i );
+	fithScore.setPosition((float)90, (float)350 + i );
 	fithScore.setFont(arial);
 	fithScore.setString(ssFithScore.str());
 
 	ssFithName.str("");
 	ssFithName << "WWWWWWWW";
 	fithName.setCharacterSize(30);
-	fithName.setPosition( 240, 350 + i );
+	fithName.setPosition((float)240, (float)350 + i );
 	fithName.setFont(arial);
 	fithName.setString(ssFithName.str());
 
 	ssFithLives.str("");
 	ssFithLives << 100;
 	fithLives.setCharacterSize(30);
-	fithLives.setPosition( 480, 350 + i );
+	fithLives.setPosition( (float)480, (float)350 + i );
 	fithLives.setFont(arial);
 	fithLives.setString(ssFithLives.str());
 }

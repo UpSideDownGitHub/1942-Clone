@@ -1,0 +1,20 @@
+﻿  2_Test.cpp
+  Audio.cpp
+  Bullet.cpp
+  CheckCollisions.cpp
+  Enemy.cpp
+  EnemySpawner.cpp
+  Game.cpp
+  HighScoreScreen.cpp
+  Input.cpp
+  Player.cpp
+  PopUp.cpp
+  PowerUp.cpp
+  SaveData.cpp
+  StartScreens.cpp
+  Generating code
+  0 of 1102 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  1942.vcxproj -> C:\Users\Reuben Miller\Desktop\Video Games Architecture and Optimisation\Assignment\1942-Clone\x64\Release\1942.exe

@@ -1,16 +1,1 @@
-﻿  Game.cpp
-c:\users\reuben miller\desktop\video games architecture and optimisation\assignment\1942-clone\1942\enemyspawner.h(96): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\reuben miller\desktop\video games architecture and optimisation\assignment\1942-clone\1942\game.cpp(507): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\reuben miller\desktop\video games architecture and optimisation\assignment\1942-clone\1942\game.cpp(830): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-c:\users\reuben miller\desktop\video games architecture and optimisation\assignment\1942-clone\1942\game.cpp(835): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=int
-          ]
-c:\users\reuben miller\desktop\video games architecture and optimisation\assignment\1942-clone\1942\game.cpp(835): warning C4244: 'argument': conversion from 'float' to 'T', possible loss of data
-          with
-          [
-              T=int
-          ]
-c:\users\reuben miller\desktop\video games architecture and optimisation\assignment\1942-clone\1942\game.cpp(1085): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-  1942.vcxproj -> C:\Users\Reuben Miller\Desktop\Video Games Architecture and Optimisation\Assignment\1942-Clone\x64\Debug\1942.exe
+﻿  1942.vcxproj -> C:\Users\Reuben Miller\Desktop\Video Games Architecture and Optimisation\Assignment\1942-Clone\x64\Debug\1942.exe

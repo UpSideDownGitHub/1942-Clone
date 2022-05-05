@@ -185,11 +185,7 @@ public:
 	const bool running() const;
 
 private:
-	// VARIABLES
-	sf::Event sfmlEvent;
-
 	// METHODS
-	void initWindow();
 	void initGUI();
 	void initAudio();
 };

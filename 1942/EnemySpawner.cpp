@@ -56,6 +56,7 @@ EnemySpawner::EnemySpawner()
 	startTime2 = clock();
 	startTime3 = clock();
 	startTime4 = clock();
+	startTime5 = clock();
 	startLevelTime = clock();
 }
 
@@ -565,7 +566,7 @@ void EnemySpawner::Spawn()
 				{
 					int temp1 = rand() % (zeroMaxX + 1 - zeroMinX) + zeroMinX;
 					int temp2 = rand() % (zeroMaxY + 1 - zeroMinY) + zeroMinY;
-					enemys.push_back(new Zero(temp1, temp2));
+					enemys.push_back(new Zero((float)temp1, (float)temp2));
 					curreentAmmountOfSmallEnemy++;
 				}
 				else
@@ -575,7 +576,7 @@ void EnemySpawner::Spawn()
 					{
 						int temp1 = rand() % (zeroMaxX + 1 - zeroMinX) + zeroMinX;
 						int temp2 = rand() % (zeroMaxY + 1 - zeroMinY) + zeroMinY;
-						enemys.push_back(new Zero(temp1, temp2));
+						enemys.push_back(new Zero((float)temp1, (float)temp2));
 						curreentAmmountOfSmallEnemy++;
 					}
 				}
@@ -684,7 +685,7 @@ void EnemySpawner::Spawn()
 }
 void EnemySpawner::spawnEnemy()
 {
-	int i = currentLevel;
+	int j = currentLevel;
 	if (insaneMode)
 		currentLevel += 32;
 	if (miniBossSpawned)
@@ -899,7 +900,7 @@ void EnemySpawner::spawnEnemy()
 					{
 						int temp1 = rand() % (zeroMaxX + 1 - zeroMinX) + zeroMinX;
 						int temp2 = rand() % (zeroMaxY + 1 - zeroMinY) + zeroMinY;
-						enemys.push_back(new Zero(temp1, temp2));
+						enemys.push_back(new Zero((float)temp1, (float)temp2));
 						curreentAmmountOfSmallEnemy++;
 					}
 					else
@@ -909,7 +910,7 @@ void EnemySpawner::spawnEnemy()
 						{
 							int temp1 = rand() % (zeroMaxX + 1 - zeroMinX) + zeroMinX;
 							int temp2 = rand() % (zeroMaxY + 1 - zeroMinY) + zeroMinY;
-							enemys.push_back(new Zero(temp1, temp2));
+							enemys.push_back(new Zero((float)temp1, (float)temp2));
 							curreentAmmountOfSmallEnemy++;
 						}
 					}
@@ -989,7 +990,7 @@ void EnemySpawner::spawnEnemy()
 			}
 		}
 	}
-	currentLevel = i;
+	currentLevel = j;
 }
 void EnemySpawner::render(sf::RenderTarget *target)
 {

@@ -5,6 +5,7 @@
 */
 Player::Player()
 {
+	startTimeForDodge = clock();
 	this->shape.setFillColor(sf::Color::Green);
 	this->shape.setSize({ 70,50 });
 	this->shape.setOrigin({ 70/2 , 50/2 });
@@ -15,6 +16,7 @@ Player::Player()
 	Ymin = 210;
 	start = time(0);
 	canShoot = true;
+	end = false;
 }
 
 /*
@@ -100,7 +102,6 @@ void Player::render(sf::RenderTarget *target)
 	target->draw(this->shape);
 	
 	// BULLETS
-	this->target = target;
 	for (Bullet *bullet : bullets)
 	{
 		bullet->render(target);

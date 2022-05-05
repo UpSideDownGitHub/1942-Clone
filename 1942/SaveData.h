@@ -18,9 +18,9 @@ public:
 	// VARIABLES
 	struct PlayerInfo
 	{
-		std::string Name;
-		int Score;
-		int LivesUsed;
+		std::string Name = "";
+		int Score = 0;
+		int LivesUsed = 0;
 	};
 
 	//			METHODS
@@ -49,8 +49,8 @@ private:
 	// VARIABLES
 	struct gameSaveData
 	{
-		int highScore;
-		int dailyHighestPercent;
+		int highScore = 0;
+		int dailyHighestPercent = 0;
 		PlayerInfo leaderboard[5];
 		PlayerInfo leaderboardEndless[5];
 		PlayerInfo leaderboardNoPowerUps[5];

@@ -93,10 +93,10 @@ public:
 
 	//		SMALL ENEMY TYPES
 	int currentSmallEnemy = 0;
-	float swapSmallChance = 0.1;
+	float swapSmallChance = 0.1f;
 
 	// ZERO
-	float zeroSpawnChance= 0.5;
+	float zeroSpawnChance= 0.5f;
 	int zeroMinAmmount = 3;
 	int zeroMaxAmmount = 5;
 	int zeroMinX = 10;
@@ -105,7 +105,7 @@ public:
 	int zeroMaxY = 0;
 	
 	// AKAMIZU
-	float akamizuSpawnChance = 0.5;
+	float akamizuSpawnChance = 0.5f;
 	int akamizuMinAmmount = 3;
 	int akamizuMaxAmmount = 5;
 	int akamizuMinX = -100;
@@ -114,7 +114,7 @@ public:
 	int akamizuMaxY = 300;
 
 	// RAIZAN
-	float raizanSpawnChance = 0.5;
+	float raizanSpawnChance = 0.5f;
 	int raizanMinAmmount = 3;
 	int raizanMaxAmmount = 5;
 	int raizanMinX = 10;
@@ -123,7 +123,7 @@ public:
 	int raizanMaxY = 0;
 
 	// FUKUSUKE
-	float fukusukeSpawnChance = 0.5;
+	float fukusukeSpawnChance = 0.5f;
 	int fukusukeMinAmmount = 2;
 	int fukusukeMaxAmmount = 5;
 	int fukusukeMinX = -100;
@@ -133,10 +133,10 @@ public:
 
 	//		MEDIUM ENEMY TYPES
 	int currentMediumeEnemy = 0;
-	float swapMediumChance = 0.5;
+	float swapMediumChance = 0.5f;
 
 	// BVD
-	float bvdSpawnChance = 0.5;
+	float bvdSpawnChance = 0.5f;
 	int bvdMinAmmount = 1;
 	int bvdMaxAmmount = 1;
 	int bvdMinX = 10;
@@ -145,7 +145,7 @@ public:
 	int bvdMaxY = 0;
 
 	// SHORyU
-	float shoryuSpawnChance = 0.5;
+	float shoryuSpawnChance = 0.5f;
 	int shoryuMinAmmount = 1;
 	int shoryuMaxAmmount = 1;
 	int shoryuMinX = 10;
@@ -154,7 +154,7 @@ public:
 	int shoryuMaxY = 0;
 
 	// QING
-	float qingSpawnChance = 0.5;
+	float qingSpawnChance = 0.5f;
 	int qingMinAmmount = 1;
 	int qingMaxAmmount = 5;
 	int qingMinX = 10;
