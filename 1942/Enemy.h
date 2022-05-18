@@ -1,11 +1,26 @@
+/**
+Program: 1942
+Filename: Enemy.h
+@author: © Reuben Miller
+Course: BSc (Hons)/HND Games Programming
+Module: CSY1044 Video Games Architecture and Optimisation
+Tutor: Dr. Anastasios G. Bakaoukas
+Date: 17/05/22
+*/
+/*
+File Enemy.h
+Disclaimer: The following source code is the sole work of the author unless otherwise stated.
+Copyright (C) Reuben Miller. All Rights Reserved.
+*/
+
+#pragma once
+// HEADER FILES
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
 
 #include "Player.h"
 
-
-#pragma once
 class Enemy
 {
 public:
@@ -17,10 +32,11 @@ public:
 	bool die = false;
 	bool canShoot = true;
 
-	// METHODS
+	//			METHODS
 	void removeHealth();
-	virtual void update(Player *player);
 	void render(sf::RenderTarget *target);
+	// VIRTUAL 
+	virtual void update(Player *player);
 	virtual int type();
 	virtual void shoot(Player *player, float randomDeviation);
 
@@ -32,10 +48,6 @@ protected:
 	// VARIABLES
 	sf::ConvexShape shape;
 	sf::RectangleShape center;
-
-	// METHODS
-
-
 };
 
 class Zero : public Enemy
@@ -53,8 +65,10 @@ public:
 	bool once = true;
 	float randomDeviation = 50;
 
-	//METHODS
+	// CONSTRUCTOR
 	Zero(float xOffset, float yOffset);
+	
+	//METHODS
 	virtual void update(Player *player);
 	virtual int type();
 protected:
@@ -81,12 +95,13 @@ public:
 	bool doneturn = false, end = false;
 	bool decDown = false, decUp = false, decLeft = false, decRight = false;
 
-	// METHODS
+	// CONSTRUCTOR
 	BVD(bool onLeft, int xOffset, int yOffset);
-	virtual void update(Player *player);
-	void nextMove(Player *player);
-	virtual int type();
 
+	// METHODS
+	virtual void update(Player *player);
+	virtual int type();
+	void nextMove(Player *player);
 private:
 };
 
@@ -113,13 +128,14 @@ public:
 	bool end = false;
 	bool decDown = false, decUp = false, decLeft = false, decRight = false;
 
+	// CONSTRUCTOR
+	Daihiryu(int xOffset, int yOffset);
 
 	// METHODS
-	Daihiryu(int xOffset, int yOffset);
 	virtual void update(Player *player);
 	virtual void shoot(Player *player, float randomDeviation);
-	void nextMove(Player *player);
 	virtual int type();
+	void nextMove(Player *player);
 private:
 
 };
@@ -146,11 +162,13 @@ public:
 
 	bool movingLeft;
 
-	// METHODS
+	// CONSTRUCTOR
 	Akamizu(bool shipMovingLeft, int xOffset, int yOffset);
+
+	// METHODS
 	virtual void update(Player *player);
-	void nextMove(Player *player);
 	virtual int type();
+	void nextMove(Player *player);
 private:
 };
 
@@ -204,11 +222,13 @@ public:
 
 	int currentLoop = 0;
 
-	// METHODS
+	// CONSTRUCTOR
 	Red(int num, int yOffset);
+
+	// METHODS
 	virtual void update(Player *player);
-	void nextMove();
 	virtual int type();
+	void nextMove();
 private:
 };
 
@@ -233,11 +253,13 @@ public:
 	bool doneturn = false, end = false;
 	bool decDown = false, decUp = false, decLeft = false, decRight = false;
 
-	// METHODS
+	// CONSTRUCTOR
 	Shoryu(bool onLeft, int xOffset, int yOffset);
+
+	// METHODS
 	virtual void update(Player *player);
-	void nextMove(Player *player);
 	virtual int type();
+	void nextMove(Player *player);
 
 private:
 };
@@ -255,10 +277,12 @@ public:
 	bool once = true;
 	float randomDeviation = 50;
 
-	//METHODS
+	// CONSTRUCTOR
 	BounsFighter(bool left, int xOffset, int yOffset);
-	void update(Player *player);
+
+	//METHODS
 	virtual int type();
+	void update(Player *player);
 
 private:
 };
@@ -266,12 +290,16 @@ private:
 class Qing : public Enemy
 {
 public:
+	// VARIABLES
 	float verMoveSpeed;
 
 	bool once = true;
 	float randomDeviation = 50;
 
+	// CONSTRUCTOR
 	Qing(int xOffset, int yOffset);
+	
+	// METHODS
 	virtual void update(Player *player);
 	virtual int type();
 
@@ -301,11 +329,13 @@ public:
 
 	bool movingLeft;
 
-	// METHODS
+	// CONSTRUCTOR
 	Fukusuke(bool shipMovingLeft, int xOffset, int yOffset);
+
+	// METHODS
 	virtual void update(Player *player);
-	void nextMove(Player *player);
 	virtual int type();
+	void nextMove(Player *player);
 
 private:
 };
@@ -319,10 +349,12 @@ public:
 	bool once = true;
 	float randomDeviation = 50;
 
-	// METHODS
+	// CONSTRUCTOR
 	Red2(int num);
-	void update(Player *player);
+
+	// METHODS
 	virtual int type();
+	void update(Player *player);
 private:
 };
 
@@ -335,8 +367,10 @@ public:
 	bool once = true;
 	float randomDeviation = 50;
 
-	// METHODS
+	// CONSTRUCTOR
 	Red3(int num);
+
+	// METHODS
 	virtual void update(Player *player);
 	virtual int type();
 private:
@@ -358,11 +392,13 @@ public:
 
 	float randomDeviation = 200;
 
-	// METHODS
+	// CONSTRUCTOR
 	Ayako();
+
+	// METHODS
 	virtual void update(Player *player);
-	void nextMove();
 	virtual int type();
 	virtual void shoot(Player *player, float randomDeviation, sf::Vector2f spawnPos);
+	void nextMove();
 private:
 };

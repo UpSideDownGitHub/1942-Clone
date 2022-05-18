@@ -5,7 +5,7 @@ Filename: 2_Test.cpp
 Course: BSc (Hons)/HND Games Programming
 Module: CSY1044 Video Games Architecture and Optimisation
 Tutor: Dr. Anastasios G. Bakaoukas
-Date: 28/01/22
+Date: 17/05/22
 */
 /*
 File: 2_Test.cpp
@@ -30,15 +30,11 @@ int main()
 	while (game.running())
 	{
 		// FOR THE GAMEPLAY
-
 		game.update();
 
 		// RENDERING THE UI
 		game.render();
-
-		
 	}
-
 	// END OF APPLICATION
 	return 0;
 }

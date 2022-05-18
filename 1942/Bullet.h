@@ -1,6 +1,22 @@
-#include <SFML/Graphics.hpp>
+/**
+Program: 1942
+Filename: bullet.h
+@author: © Reuben Miller
+Course: BSc (Hons)/HND Games Programming
+Module: CSY1044 Video Games Architecture and Optimisation
+Tutor: Dr. Anastasios G. Bakaoukas
+Date: 17/05/22
+*/
+/*
+File bullet.h
+Disclaimer: The following source code is the sole work of the author unless otherwise stated.
+Copyright (C) Reuben Miller. All Rights Reserved.
+*/
 
 #pragma once
+// HEADER FILES
+#include <SFML/Graphics.hpp>
+
 class Bullet
 {
 public:
@@ -11,8 +27,6 @@ public:
 	// VARIABLES
 	bool player;
 	bool makeExplosion = false;
-
-	
 
 	// ACCESSORS
 	const sf::FloatRect getBounds() const;

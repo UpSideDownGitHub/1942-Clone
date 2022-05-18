@@ -13,6 +13,7 @@ Disclaimer: The following source code is the sole work of the author unless othe
 Copyright (C) Reuben Miller. All Rights Reserved.
 */
 
+#pragma once
 // HEADER FILES
 #include <SFML/Graphics.hpp>
 #include <list>
@@ -34,11 +35,10 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 #include "HighScoreScreen.h"
 #include "Input.h"
 
-#pragma once
 class Game
 {
 public:
-	//			VARIABLES
+	//				VARIABLES
 	sf::RenderWindow* window;
 
 	// CLASSES

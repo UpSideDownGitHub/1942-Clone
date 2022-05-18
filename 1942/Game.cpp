@@ -5,7 +5,7 @@ Filename: Game.cpp
 Course: BSc (Hons)/HND Games Programming
 Module: CSY1044 Video Games Architecture and Optimisation
 Tutor: Dr. Anastasios G. Bakaoukas
-Date: 28/01/22
+Date: 18/05/22
 */
 /*
 File: Game.cpp
@@ -13,7 +13,7 @@ Disclaimer: The following source code is the sole work of the author unless othe
 Copyright (C) Reuben Miller. All Rights Reserved.
 */
 
-// HEADER FILE
+// HEADER FILES
 #include "Game.h"
 
 //#define TESTING
@@ -24,6 +24,7 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 */
 Game::Game()
 {
+	// INITALISE ALL OF THE CLOCKS
 	startTimeOrangePowerUp = clock();
 	startTime = clock();
 	startTime2 = clock();
@@ -45,6 +46,7 @@ Game::Game()
 	this->window->setPosition(centerWindow);
 	this->window->setKeyRepeatEnabled(true);
 
+	// CALL THE METHODS TO INITIAL THE GUI AND AUDIO
 	initGUI();
 	initAudio();
 }
@@ -54,12 +56,13 @@ Game::Game()
 */
 void Game::start()
 {
+	// RESET THE SPAWNER
 	spawner.endlessMode = false;
 	spawner.noPowerUpsMode = false;
 	spawner.insaneMode = false;
 	spawner.randomMode = false;
 	
-
+	// RESET ALL BOOLEAN VARIABLES
 	runStart = false;
 	showingLevelEndInfo = false;
 	showingLevelEndInfo2 = false;
@@ -68,8 +71,13 @@ void Game::start()
 	showingWeGiveUpScreen = false;
 	addedScore = false;
 	showingLevelInfo = true;
+
+	// RESET THE LIVES USED
 	livesUsed = 0;
+
+	// RESET THE PLAYER
 	player = Player();
+	// RESET THE LIVES
 	if (startScreens.endless)
 	{
 		player.lives = 0;
@@ -80,8 +88,9 @@ void Game::start()
 		}
 		lives.setString(livesnum.str());
 	}
-
+	// RESET THE SPAWNER
 	spawner = EnemySpawner();
+	// RESET UI ELEMENTS
 	startTime = time(0);
 	level = 0; // 0
 	P1score = 0;
@@ -106,67 +115,105 @@ void Game::render()
 	// CLEAR WHAT HAS BEEN PREVIOSLY DRAWN TO THE WINDOW
 	window->clear();
 
+	// IF SHOWING HIGHSCORE SCREEN
 	if (inHighScoreScreen)
 	{
+		// RENDER THE HIGH SCORE SCREEN AND ALL OF ITS INFO
 		highScoreScreen.render(window);
 		renderScoreInfomation();
 	}
+	// IN MAIN MENU
 	else if (inMainMenus)
 	{
+		// RENDER THE MAIN MENU
 		startScreens.render(window);
 	}
+	// PLAYING THE GAME
 	else
 	{
-		// PLAYER
-		player.render(this->window);	// USES LOTS OF CPU POWER
+		// RENDER PLAYER
+		player.render(this->window);	
 
-		// ENEMYS
+		// RENDER ENEMYS
 		spawner.render(this->window);
 
-		renderScoreInfomation();		// USES LOTS OF CPU POWER 
+		// RENDER UI (HUD)
+		renderScoreInfomation();		
 
+		// IF BEAT FINAL LEVEL SHOW EW GIVE UP SCREEN
 		if (showingWeGiveUpScreen)
+		{
 			renderWeGiveUpScreen();
+		}
 
+		// IF BEAT FINAL BOSS SHOW BEAT FINAL BOSS SCREEN
 		if (showingBeatFinalBossMessage)
+		{
 			renderFinalBossMessage();
+		}
 
+		// IF JUST BEATEN A LEVEL SHOW SECOND END SCREEN
 		if (showingLevelEndInfo2)
+		{
 			renderLevelEndScreenD();
+		}
 
+		// IF JUST BEATEN A LEVEL SHOW END SCREEN
 		if (showingLevelEndInfo)
+		{
 			renderLevelEndScreenND();
+		}
 		
+		// IF JUST STARTED A LEVEL SHOW LEVEL INFO SCREEN
 		if (showingLevelInfo)
+		{
 			renderLevelInfoScreen();
+		}
+
+		// DRAW LIVES AND DODGES TO THE SCREEN
 		window->draw(lives);
 		window->draw(dodges);
 
+		// IF THE GAME IS PAUSED RENDER THE PAUSE MENU
 		if (paused)
+		{
 			renderPauseMenu();
+		}
 	}
 	// DISPLAY WHAT HAS BEEN DRAWN TO THE WINDOW
-	window->display();					// USES LOTS OF CPU POWER BUT CAN DO NOTHING ABOUT THAT
+	window->display();
 }
 
+/*
+	DRAWNS THE PAUSE MENU TO THE WINDOW
+*/
 void Game::renderPauseMenu()
 {
+	// DRAW THE MAIN BOX
 	window->draw(box);
+	// DRAW ALL OF THE DIFFRENT TEXT OPTIONS
 	for (sf::Text text : options)
 	{
 		window->draw(text);
 	}
 }
+
+/*
+	DRAWS THE SCORE INFO TO THE WINDPW
+*/
 void Game::renderScoreInfomation()
 {
+	// IF THE SCORE HAS CHANGED 
 	if (spawner.scoreChanged)
 	{
+		// UPDATE THE UI TO SHOW THE NEW VALUE
 		spawner.scoreChanged = false;
 		P1score = spawner.currentPoints;
 		ssScoreP1.str("");
 		ssScoreP1 << P1score;
 		scoreP1Num.setString(ssScoreP1.str());
 		scoreP1Num.setOrigin(round(scoreP1Num.getLocalBounds().width / 2), round(scoreP1Num.getLocalBounds().height / 2));
+		// IF THE SCORE IS NOW HIGHER THAN THE HIGHSCORE THEN UPDATE THE HIGHSCORE TEXT AS WELL
 		if (P1score > highScore)
 		{
 			ssHighscore.str("");
@@ -176,6 +223,7 @@ void Game::renderScoreInfomation()
 		}
 	}
 
+	// DRWA ALL OF THE SCORE UI ELEMENTS TO THE SCREEN
 	window->draw(scoreP1);
 	window->draw(scoreP1Num);
 	window->draw(highScoreLabel);
@@ -183,49 +231,77 @@ void Game::renderScoreInfomation()
 	window->draw(scoreP2); 
 	window->draw(scoreP2Num);
 }
+
+/*
+	DRAWS THE LEVEL INFO TO THE WINDOW
+*/
 void Game::renderLevelInfoScreen()
 {
+	// IF PLAYING ENDLESS MODE
 	if (startScreens.endless)
 	{
+		// DRAW ENDLESS MODE UI
 		window->draw(endlessMode);
 	}
+	// ALL OTHER GAME MODES
 	else
 	{
+		// DRAW LEVEL NAME AND NUMBER TO THE WINDOWS
 		window->draw(levelName);
 		window->draw(levelNumber);
 	}
+	// DRAW OTHER LEVEL START INFO TO THE WINDOW
 	window->draw(readyText);
 	window->draw(player1Text);
 }
+
+/*
+	DRAWNS THE LEVEL END INFO TO THE WINDOW
+*/
 void Game::renderLevelEndScreenND()
 {
+	// DRAWS ALL OF THE END OF LEVEL INFO TO THE WINDOW
 	window->draw(downPercentage);
 	window->draw(bonusText);
 	window->draw(bonusPointsText);
 	window->draw(rollBonusText);
 }
 
+/*
+	DRAWS THE LEVEL END 2 INFO THE THE WINDOW
+*/
 void Game::renderLevelEndScreenD()
 {
+	// IF NOT PLAYING ENDLESS MODE
 	if (!startScreens.endless)
 	{
+		// DRAW PERCENTAGES COMPLETE TO THE WINDOW 
 		window->draw(percentageComplete);
 		window->draw(todaysTopPercentage);
 	}
+	// DRAW OTHER END SCREEN UI TO THE WINDOW
 	window->draw(shootDownPercentage);
 	window->draw(gameOver);
 }
 
+/*
+	DRAWS THE FINAL BOSS MESSAGE SCREEN TO THE WINDOW
+*/
 void Game::renderFinalBossMessage()
 {
+	// DRAW ALL FINAL BOSS MESSAGE UI TO THE WINDOW
 	window->draw(congratulationsText);
 	window->draw(bestPlayerText1);
 	window->draw(bestPlayerText2);
 	window->draw(finalMessageText);
 }
 
+/*
+	DRAWS THE WE GIVE UP MESSAGE SCREEN TO THE WINDOW	
+*/
 void Game::renderWeGiveUpScreen() 
 {
+	// DRAW ALL WE GIVE UP SCREEN UI TO THE WINDOW
 	window->draw(wegiveupText);
 	window->draw(specialBonusText);
 	window->draw(bonusNumText);
@@ -239,47 +315,66 @@ void Game::renderWeGiveUpScreen()
 */
 void Game::update()
 {
+	// THIS IS TO MAKE THE WINDOW RESPOND
 	sf::Event event;
-	while (window->pollEvent(event))
-	{
-		// THIS IS TO MAKE THE WINDOW RESPOND
+	while (window->pollEvent(event)) 
+	{ 
+		// NO CODE HERE AS MY INPUT IS HANDLED IN ANOTHER CLASS 
 	}
+
+	// IN HIGH SCORE SCREEN
 	if (inHighScoreScreen)
 	{
+		// CALL THE UPDATE FUNCTION FOR THE HIGH SCORE SCREEN
 		highScoreScreen.update(window);
+		// OF THE WINDOW IS TRYING TO BE CLOSED
 		if (highScoreScreen.close)
 		{
+			// RETURN TO THE MAIN MENU AND CLOSE THE WINDOW
 			inMainMenus = true;
 			inHighScoreScreen = false;
 			highScoreScreen.close = false;
 		}
 	}
+	// IN MAIN MENUS
 	else if (inMainMenus)
 	{
+		// CALL THE CHECK BUTTON PRESS FUNCTION FOR THE MAIN MENU
 		startScreens.checkButtonPress(window);
 		inMainMenus = !startScreens.play;
+		// IF TRY TO CLOSE THE MAIN MENU (START PLAYING THE GAME)
 		if (!inMainMenus)
 		{
+			// PLAY START ROUND SOUND EFFECT AND START THE GAME
 			audio.audio[1]->play();
 			runStart = true;
 		}
 	}
+	// IF THE GAME IS PAUSED
 	else if (paused)
 	{
+		// IF FIRST TIME IN PAUSE MENU
 		if (doOnce2)
 		{
+			// RESET CLOCKS
 			doOnce2 = false;
 			startTime6 = clock();
 			startTime7 = clock();
 		}
+		// GET ALL INPUTS FROM THE INPUT CLASS
 		input.pollEvents(window);
+		// IF ENOUGH TIME HAS PASSED TO PRESS ANOTHER INPUT
 		if (float(clock() - startTime7) / CLOCKS_PER_SEC * 1000 >= timeToWait2)
 		{
-			if (input.buttonPresses[1]) // DOWN
+			// DOWN
+			if (input.buttonPresses[1]) 
 			{
+				// IF ENOUGH TIME HAS PASSED TO PRESS THE BUTTON
 				if (float(clock() - startTime6) / CLOCKS_PER_SEC * 1000 >= timeToWait1)
 				{
+					// RESET BUTTON PRESS TIME
 					startTime6 = clock();
+					// IF NOT AT BOTTOM OF LIST MOVE TO THE NEXT OPTION DOWN IN THE LIST
 					if (selected < 3)
 					{
 						options[selected].setFillColor(sf::Color::White);
@@ -288,11 +383,15 @@ void Game::update()
 					}
 				}
 			}
-			else if (input.buttonPresses[2]) // UP
+			// UP
+			else if (input.buttonPresses[2]) 
 			{
+				// IF ENOUGH TIME HAS PASSED TO PRESS THE BUTTON
 				if (float(clock() - startTime6) / CLOCKS_PER_SEC * 1000 >= timeToWait1)
 				{
+					// RESET BUTTON PRESS TIME
 					startTime6 = clock();
+					// IF NOT AT TOP OF LIST MOVE TO THE NEXT OPTION UP IN THE LIST
 					if (selected > 0)
 					{
 						options[selected].setFillColor(sf::Color::White);
@@ -301,29 +400,39 @@ void Game::update()
 					}
 				}
 			}
+			// SPACE
 			if (input.spacePressed)
 			{
 				doOnce2 = true;
+				// RESUME BUTTON
 				if (selected == 0)
 				{
+					// UN PAUSE THE GAME
 					paused = false;
 				}
+				// MAIN MENU BUTTON
 				else if (selected == 1)
 				{
+					// GO TO THE MAIN MENU
 					paused = false;
 					inMainMenus = true;
 				}
+				// MUTE / UNMUTE BUTTON
 				else if (selected == 2)
 				{
+					// IF THE GAME IS ALLREADY MUTED
 					if (muted)
 					{
+						// MUTE THE GAME
 						for (int i = 0; i < 9; i++)
 						{
 							audio.audio[i]->setVolume(0);
 						}
 					}
+					// NOT MUTED
 					else
 					{
+						// UNMUTE THE GAME
 						for (int i = 0; i < 9; i++)
 						{
 							audio.audio[i]->setVolume(100);
@@ -332,24 +441,32 @@ void Game::update()
 					muted = !muted;
 					paused = false;
 				}
+				// QUIT BUTTON
 				else if (selected == 3)
 				{
+					// CLOSE THE GAME
 					window->close();
 				}
+				// RESET TIME
 				startTime7 = clock();
 			}
 		}
 	}
+	// PLATING THE GAME WITH NO MENUS OPEN
 	else
 	{
+		// IF FIRST TIME RUNNING THIS INSTANCE OF THE GAME
 		if (runStart)
+		{
 			start();
-		// SHOW LEVEL
+		}
+		// SHOW LEVEL INFO
 		if (showingLevelInfo)
 		{
+			// IF CAN STOP SHOWING SCREEN
 			if (time(0) - startTime > secondsToShow)
 			{
-				// START THE LEVEL
+				// START THE LEVEL (DEPENDENT OF THE LEVEL THAT HAS BEEN SELECTED)
 				showingLevelInfo = false;
 				if (startScreens.endless)
 					spawner.startEndlessMode();
@@ -366,26 +483,36 @@ void Game::update()
 		// NEXT LEVEL
 		else if (showingLevelEndInfo)
 		{
+			// IF CAN STOP SHOWING SCREEN
 			if (time(0) - startTime2 > secondsToShow2)
 			{
+				// CLOSE THE MENU
 				calculateInfomationOnce = true;
 				showingLevelEndInfo = false;
+				// IF THE GAME WAS BEATEN
 				if (gameBeaten)
 				{
+					// SHOW GAME ENDED SCREEN
 					showingLevelEndInfo2 = true;
 					startTime3 = time(0);
 				}
+				// JUST BEATEN LEVEL
 				else
 				{
+					// INCREASE LEVEL
 					level++;
+					// RESET DODGES
 					if (player.dodges > 3)
+					{
 						player.dodges = 3;
+					}
+					// UPDATE UI
 					ssLevel.str("");
 					ssLevel << 32 - level << " Stage";
 					levelNumber.setString(ssLevel.str());
 					levelNumber.setOrigin(levelNumber.getLocalBounds().width / 2, levelNumber.getLocalBounds().height / 2);
 
-
+					// SET THE NEXT LEVEL NAME BASED UPON THE LEVEL NUMBER
 					std::string nameOfLevel;
 					int curLevel = 32 - level;
 					if (curLevel <= 32 && curLevel >= 29)
@@ -405,24 +532,32 @@ void Game::update()
 					else if (curLevel <= 4 && curLevel >= 1)
 						nameOfLevel = "Okinawa";
 
+					// SET LEVEL NAME UI
 					levelName.setString(nameOfLevel);
 					levelName.setOrigin(levelName.getLocalBounds().width / 2, levelName.getLocalBounds().height / 2);
 
+					// TURN OFF SCREEN AND SHOW LEVEL INFO SCREEN FOR THE START OF THE NEXT LEVEL
 					showingLevelInfo = true;
 					startTime = time(0);
 				}
 			}
+			// CALCUALTE INFO FOR POSSIBLE NEXT LEVEL SCREEN
 			else if (calculateInfomationOnce)
 			{
+				// RESET VARIABLES
 				spawner.scoreChanged = true;
-				audio.audio[2]->play();
 				calculateInfomationOnce = false;
-				// SHOT DOWN %
+
+				// PLAY END OF ROUND SOUND EFFECT
+				audio.audio[2]->play();
+				
+				// SHOT DOWN % UI
 				float percent = ((float)spawner.currentEnemyDestroyed / (float)spawner.currentEnemySpawned) * 100.00f;
 				ssPercent.str("");
 				ssPercent << "Shooting Down " << percent << "%";
 				downPercentage.setString(ssPercent.str());
-				// BONUS
+				
+				// CALCULATE BONUS BASED UPON THE PERCENTAGE OF ENEMY PLANES DESTROYED
 				int bonus = 0;
 				if (percent == 100)
 					bonus = 50000;
@@ -442,11 +577,12 @@ void Game::update()
 					bonus = 1000;
 				else if (percent < 50)
 					bonus = 0;
+				// UPDATE THE BONUS UI
 				spawner.currentPoints += bonus;
 				ssBonusPoints.str("");
 				ssBonusPoints << bonus << " pts";
 				bonusPointsText.setString(ssBonusPoints.str());
-				// ROLL BONUS 
+				// ROLL BONUS UI
 				int rollBonus = 1000 * player.dodges;
 				spawner.currentPoints += rollBonus;
 				ssRollBonusPoints.str("");
@@ -454,35 +590,46 @@ void Game::update()
 				rollBonusText.setString(ssRollBonusPoints.str());
 			}
 		}
-		// END GAME
+		// END OF THE GAME
 		else if (showingLevelEndInfo2)
 		{
+			// IF CAN STOP SHOWING SCREEN
 			if (time(0) - startTime3 > secondsToShow3)
 			{
+				// CLOSE THE MENU
 				calculateInfomationOnce = true;
 				showingLevelEndInfo2 = false;
+
+				// IF THE GAME WAS BEATEN
 				if (gameBeaten)
 				{
+					// SHOW FINAL SCREEN
 					showingWeGiveUpScreen = true;
 					startTime5 = time(0);
 				}
+				// GAME WAS LOST
 				else
 				{
+					// RESET THE GAME
 					level = 0;
 					runStart = true;
 
-					// MAKE THIS SHOW THE NEW HIGHSCORE SCREEN IF THE PLAYER ACHIVED A NEW HIGHSCORE
+					// LOAD SAVE DATA
 					saveData.loadFile();
 					SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+					// FOR EACH OF THE POSTION IN THE LEADERBOARD
 					for (int i = 0; i < 5; i++)
 					{
+						// IF THE CURRENT POINTS IS GREATER THAN THE SCORE IN THE LEADERBOARD
 						if (spawner.currentPoints > leaderboard[i].Score)
 						{
+							// RESET ALL GAME MODES
 							highScoreScreen.endless = false;
 							highScoreScreen.noPowerUps = false;
 							highScoreScreen.insane = false;
 							highScoreScreen.random = false;
 
+							// SET HIGHSCORE SCREEN TO SHOW CORRECT WINDOW FOR GAME MODES
 							if (startScreens.endless)
 								highScoreScreen.endless = true;
 							else if (startScreens.noPowerUp)
@@ -491,21 +638,27 @@ void Game::update()
 								highScoreScreen.insane = true;
 							else if (startScreens.random)
 								highScoreScreen.random = true;
+							// INITIALSE AN INSTANCE OF THE HIGHSCORE SCREEN TO SHOW THIS NEW HIGHSCORE
 							highScoreScreen.initilise(spawner.currentPoints, livesUsed);
 							inHighScoreScreen = true;
 							break;
 						}
 					}
+					// IF NOT IN THE HIGH SCORE SCREEN THEN RETURN TO THE MAIN MENU
 					if (!inHighScoreScreen)
+					{
 						inMainMenus = true;
+					}
 				}
 			}
+			// CALCUALTE INFO FOR END SCREEN
 			else if (calculateInfomationOnce)
 			{
-				std::cout << "HELLO" << "\n";
+				// INITIAL VARIABLES
 				spawner.scoreChanged = true;
-				audio.audio[2]->play();
 				calculateInfomationOnce = false;
+				// PLAY NEXT LEVEL SOUND
+				audio.audio[2]->play();
 				// SHOOT DOWN PERCENTAGE
 				ssDownPercent.str("");
 				ssDownPercent << "Shot Down " << spawner.totalEnemyDestroyed;
@@ -522,11 +675,13 @@ void Game::update()
 				ssTopPercentage << "Todays Top " << saveData.getDailyHighestPercent() << "%"; // WILL HAVE TO TAKE THIS FROM THE SAVE DATA WHEN THAT IS ADDED
 				todaysTopPercentage.setString(ssTopPercentage.str());
 
+				// IF NEW HIGHEST PERCENTAGE EACHIVED UPDATE NEW HIGHEST
 				if (saveData.getDailyHighestPercent() < percentage)
 				{
 					saveData.setDailyHighestPercent((int)percentage);
 					saveData.saveFile();
 				}
+				// IF NEW HIGHSCORE ACHIVED UPDATED NEW HIGHEST
 				if (saveData.getHighScore() < spawner.currentPoints)
 				{
 					saveData.setHighScore(spawner.currentPoints);
@@ -534,41 +689,54 @@ void Game::update()
 				}
 			}
 		}
+		// JUST BEATEN THE FINAL BOSS
 		else if (showingBeatFinalBossMessage)
 		{
+			// IF CAN STOP SHOWING SCREEN
 			if (time(0) - startTime4 > secondsToShow4)
 			{
+				// STOP SHOWING SCREEN
 				showingBeatFinalBossMessage = false;
 				// NEXT LEVEL
 				showingLevelEndInfo = true;
 				startTime2 = time(0);
 			}
 		}
+		// GAME BEATEN 
 		else if (showingWeGiveUpScreen)
 		{
+			// IF NOT ALLREADY ADDED GAME BEATEN BONUS
 			if (!addedScore)
 			{
+				// ADD GAME BEATEN BONUS
 				spawner.scoreChanged = true;
 				spawner.currentPoints += 10000000;
 				addedScore = true;
 			}
+			// IF CAN STOP SHOWING SCREEN
 			if (time(0) - startTime5 > secondsToShow5)
 			{
+				// STOP SHOWING SCREEN
 				showingWeGiveUpScreen = false;
 				gameBeaten = false;
 				addedScore = false;
-				// WILL NEED TO MAKE THIS TAKE THE PLAYER TO THE ENTER USERNAME SCREEN THAT WILL LET THEM SAVE THERE HIGHSCORE
+
+				// LOAD SAVE DATA
 				saveData.loadFile();
 				SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
+				// FOR EACH OF THE POSTION IN THE LEADERBOARD
 				for (int i = 0; i < 5; i++)
 				{
+					// IF THE CURRENT POINTS IS GREATER THAN THE SCORE IN THE LEADERBOARD
 					if (spawner.currentPoints > leaderboard[i].Score)
 					{
+						// RESET ALL GAME MODES
 						highScoreScreen.endless = false;
 						highScoreScreen.noPowerUps = false;
 						highScoreScreen.insane = false;
 						highScoreScreen.random = false;
 
+						// SET HIGHSCORE SCREEN TO SHOW CORRECT WINDOW FOR GAME MODES
 						if (startScreens.endless)
 							highScoreScreen.endless = true;
 						else if (startScreens.noPowerUp)
@@ -577,13 +745,19 @@ void Game::update()
 							highScoreScreen.insane = true;
 						else if (startScreens.random)
 							highScoreScreen.random = true;
+
+						// INITIALSE AN INSTANCE OF THE HIGHSCORE SCREEN TO SHOW THIS NEW HIGHSCORE
 						highScoreScreen.initilise(spawner.currentPoints, livesUsed);
 						inHighScoreScreen = true;
 						break;
 					}
 				}
+				// IF NOT IN THE HIGH SCORE SCREEN THEN RETURN TO THE MAIN MENU
 				if (!inHighScoreScreen)
+				{
 					inMainMenus = true;
+				}
+				// RESTART THE GAME
 				level = 0;
 				runStart = true;
 			}
@@ -591,18 +765,22 @@ void Game::update()
 		// PLAY LEVEL
 		else
 		{
-			// add the diffrent game modes here
+			// IF THE GAME IS CURRENTLY BEING PLAYED
 			if (spawner.playLevel)
 			{
+				// CHECK FOR INPUT
 				input.pollEvents(window);
+				// IF ENOUGH TIME HAS PASSED TO PAUSE THE GAME AGAIN
 				if (input.spacePressed && float(clock() - startTime7) / CLOCKS_PER_SEC * 1000 >= 200)
 				{
+					// PAUSE THE GAME
 					paused = true;
 				}
 
 				// DISABLE ENEMY SHOOTING FOR THE ORANGE POWER UP
 				if (float(clock() - startTimeOrangePowerUp) / CLOCKS_PER_SEC * 1000 >= timeToWaitOrangePowerUp)
 				{
+					// FOR EACH OF THE ENEMIES STOP THEM FROM SHOOTING
 					for (Enemy *enemys : spawner.enemys)
 					{
 						enemys->canShoot = true;
@@ -624,6 +802,7 @@ void Game::update()
 				// IF ANY ENEMYS WHERE HIT
 				if (checkCollisions.copyBullets)
 				{
+					// FOR ALL OF THE BULLETS
 					for (Bullet *bullet : player.bullets)
 					{
 						// MAKE EXPLOSION EFFECTS
@@ -632,11 +811,13 @@ void Game::update()
 #if defined(TESTING)
 
 #else
+							// ADD AN EXPLOSION EFFECT AND PLAY EXPLOSION SOUNDS EFFECT
 							spawner.popUps.push_back(new PopUp(bullet->getPosition(), clock(), 200, true));
 							audio.audio[5]->play();
 #endif
 						}
 					}
+					// COPY OVER THE PLAYER BULLETS
 					player.bullets = checkCollisions.bulletsToCopy;
 					checkCollisions.bulletsToCopy.clear();
 					checkCollisions.copyBullets = false;
@@ -649,6 +830,7 @@ void Game::update()
 #if defined(TESTING2)
 
 #else
+					// CHECK IF THE PLAYER HAS COLLIDED WITH AND ENEMY OR BEEN SHOT BY ONE
 					checkCollisions.checkEnemyHitPlayer(&player, spawner.enemys);					
 					checkCollisions.checkEnemyBulletCollisions(player.enemyBullets, &player);
 #endif
@@ -656,6 +838,7 @@ void Game::update()
 				// PLAYER USED A DODGE
 				else if (updateDodgesText)
 				{
+					// UPDATE DODGES UI
 					updateDodgesText = false;
 					dodgesNum.str("");
 					for (int k = 0; k < player.dodges; k++)
@@ -669,16 +852,20 @@ void Game::update()
 				// PLAYER LOST A LIFE 
 				if (checkCollisions.changedLives)
 				{
+					// IF HAS BOTH FIGHTERS
 					if (player.shootingMethod == 4)
 					{
+						// DESTROY ONE OF THE FIGHTERS
 						livesUsed++;
 						player.shootingMethod--;
 						player.lives++;
 						checkCollisions.changedLives = false;
 						player.enemyBullets.clear();
 					}
+					// HAS ONE FIGHTER
 					else if (player.shootingMethod == 3)
 					{
+						// DESTROY THE OTHER FIGHTER
 						livesUsed++;
 						player.shootingMethod--;
 						player.leftFighter = true;
@@ -686,19 +873,25 @@ void Game::update()
 						checkCollisions.changedLives = false;
 						player.enemyBullets.clear();
 					}
+					// NO OTHER FIGHTERS
 					else if (player.shootingMethod <= 2)
 					{
+						// KILL THE PLAYER
 						livesUsed++;
 						player.shootingMethod = 1;
 						spawner.hasQuadShot = false;
 
+						// IF THE PLAYER IS NOT OF LIVES
 						if (player.lives >= 0)
 						{
+							// PLAY DEATH SOUND EFFECT
 							audio.audio[3]->play();
 							checkCollisions.changedLives = false;
 							showingLevelInfo = true;
 							spawner.enemys.clear();
 							player.enemyBullets.clear();
+
+							// UPDATE LIVES UI
 							livesnum.str("");
 							for (int k = 0; k < player.lives; k++)
 							{
@@ -707,8 +900,10 @@ void Game::update()
 							lives.setString(livesnum.str());
 							startTime = time(0);
 						}
+						// NO MORE LIVES
 						else if (player.lives < 0)
 						{
+							// KILL THE PLAYER
 							audio.audio[4]->play();
 							showingLevelEndInfo2 = true;
 							startTime3 = time(0);
@@ -721,7 +916,9 @@ void Game::update()
 				std::vector<int> powerUpNum = checkCollisions.checkPlayerPowerUpCollisions(spawner.powerups, &player);
 				if (powerUpNum.size() > 0)
 				{
+					// ACTIVATE THE POWERUPS THE PLAYER COLLIDED WITH
 					checkPowerUps(powerUpNum[0], powerUpNum[1]);
+					// REMOVE THE COLLIDED WITH POWER UP FROM THE BOARD
 					if (checkCollisions.copyPowerUps)
 					{
 						spawner.powerups = checkCollisions.powerUpsCopy;
@@ -761,44 +958,54 @@ void Game::update()
 	}
 }
 
+/*
+	CHECKS WHICH POWER UP THE PLAYER HAS COLLIDED WITH AND WILL TAKE THE APPROPRIATE ACTIONS
+*/
 void Game::checkPowerUps(int num, int num2)
 {
+	// PLAY PICKED UP POWERUP SOUND EFFECT
 	audio.audio[6]->play();
 	spawner.scoreChanged = true;
+	// GREEN - 4 SHOT
 	if (num == 0)
 	{
 		spawner.currentPoints += 1000;
 		// ENABLE QUAD SHOOTING
 		player.shootingMethod = 2;
 	}
+	// WHITE - DESTROY ALL ENEMIES
 	else if (num == 1)
 	{
 		spawner.currentPoints += 1000;
-		// DESTROY ALL ENEMYS
+		// DESTROY ALL ENEMIES
 		for (Enemy *enemys : spawner.enemys)
 		{
 			enemys->die = true;
 		}
 	}
+	// GREY - 6 SHOTS
 	else if (num == 2)
 	{
 		spawner.currentPoints += 1000;
 		// ENABLE SEXT SHOOTING
 		player.shootingMethod = 4;
 	}
+	// ORANGE - NO ENEMY SHOOTING
 	else if (num == 3)
 	{
 		spawner.currentPoints += 1000;
-		// NO ENEMY SHOOTING
+		// DISALBE ALL THE ENEMIES FROM SHOOTING
 		for (Enemy *enemys : spawner.enemys)
 		{
 			enemys->canShoot = false;
 		}
 		startTimeOrangePowerUp = clock();
 	}
+	// YELLOW - +1 LOOP
 	else if (num == 4)
 	{
 		spawner.currentPoints += 1000;
+		// INCREASE THE AMMOUNT OF DODGES BY 1 AND UPDATE THE UI
 		player.dodges++;
 		dodgesNum.str("");
 		for (int k = 0; k < player.dodges; k++)
@@ -808,10 +1015,11 @@ void Game::checkPowerUps(int num, int num2)
 		dodges.setString(dodgesNum.str());
 		dodges.setOrigin(dodges.getLocalBounds().width, dodges.getLocalBounds().height);
 	}
+	// BLACK - +1 LIFE
 	else if (num == 5)
 	{
 		spawner.currentPoints += 1000;
-		// +1 LIFE (FOREVER)
+		// INCREASE THE AMMOUNT OF LIVES BY 1 AND UPDATE THE UI
 		player.lives++;
 		livesnum.str("");
 		for (int k = 0; k < player.lives; k++)
@@ -820,26 +1028,28 @@ void Game::checkPowerUps(int num, int num2)
 		}
 		lives.setString(livesnum.str());
 	}
+	// RED - +1000 POINTS
 	else if (num == 6)
 	{
 		spawner.currentPoints += 1000;
 	}
+	// YASHCHI - +5000 POINTS
 	else if (num == 7)
 	{
 		spawner.currentPoints += 5000;
 	}
 
+	// CREATE A 5000 POINT POPUP
 	if (num == 7)
 	{
 		spawner.popUps.push_back(new PopUp("5000", spawner.powerups[num2]->getPosition(), clock(), 1000));
 	}
+	// CREATE A 1000 POINT POPUP
 	else
 	{
 		spawner.popUps.push_back(new PopUp("1000", spawner.powerups[num2]->getPosition(), clock(), 1000));
 	}
-
 }
-
 
 /*
 	INILISES THE GUI OF THE GAME
@@ -874,12 +1084,10 @@ void Game::initGUI()
 
 	//		SCORE
 	// PLAYER 1 SCORE
-	
 	scoreP1.setCharacterSize(20);
 	scoreP1.setPosition({ 100, 5 });
 	scoreP1.setFont(arial);
 	scoreP1.setString("1UP");
-	
 	ssScoreP1.str("");
 	ssScoreP1 << P1score;
 	scoreP1Num.setCharacterSize(15);
@@ -893,7 +1101,6 @@ void Game::initGUI()
 	scoreP2.setPosition({ 430, 5 });
 	scoreP2.setFont(arial);
 	scoreP2.setString("2UP");
-	
 	ssP2Num.str("");
 	ssP2Num << P1score;
 	scoreP2Num.setCharacterSize(15);
@@ -1082,6 +1289,7 @@ void Game::initGUI()
 	int xOffset = 280;
 	int yOffset = 200;
 	int yMulti = 60;
+	// CREAT ALL PAUSE MENU BUTTONS
 	for (int i = 0; i < 4; i++)
 	{
 		sf::Text temp;
@@ -1092,11 +1300,12 @@ void Game::initGUI()
 		temp.setOrigin(temp.getGlobalBounds().width / 2, temp.getGlobalBounds().height / 2);
 		options.push_back(temp);
 	}
-
+	// PAUSE MENU BACKGROUND
 	box.setFillColor(sf::Color::Blue);
 	box.setPosition(100, 150);
 	box.setSize({ 350, 300});
 
+	// SET CURRENT SELECT OPTION TO BE DIFFERENT COLOUR
 	options[selected].setFillColor(sf::Color::Yellow);
 }
 

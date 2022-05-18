@@ -1,3 +1,20 @@
+/**
+Program: 1942
+Filename: EnemySpawner.h
+@author: © Reuben Miller
+Course: BSc (Hons)/HND Games Programming
+Module: CSY1044 Video Games Architecture and Optimisation
+Tutor: Dr. Anastasios G. Bakaoukas
+Date: 17/05/22
+*/
+/*
+File EnemySpawner.h
+Disclaimer: The following source code is the sole work of the author unless otherwise stated.
+Copyright (C) Reuben Miller. All Rights Reserved.
+*/
+
+#pragma once
+// HEADER FILES
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <ctime>
@@ -7,14 +24,15 @@
 #include "PopUp.h"
 #include "Audio.h"
 
-#pragma once
 class EnemySpawner
 {
 public:
-	// TESTING
+	//			TESTING
+	// METHODS
 	void test_update(Player *player);
 	void test_spawnEnemy();
 	void test_moveEnemy(Player *player);
+	// VARIABLES
 	int maxTestSpawns = 1;
 	int currentTestSpawns = 0;
 	time_t startTime5;
@@ -22,7 +40,7 @@ public:
 	int minAmmountTest = 1;
 	int maxAmmountTest = 1;
 
-	//									VARIABLES
+	//					VARIABLES
 	// ENEMY TYPES
 	std::vector<Enemy*> enemys;
 	
@@ -45,7 +63,7 @@ public:
 	int daihiryuPointsMultiplier = 0;
 	bool scoreChanged = false;
 
-	//					SPAWN CHANCE
+	//		SPAWN CHANCE
 	// TIMING
 	time_t startTime, startTime2, startTime3, startTime4;									//10000
 	float timeToWaitSmallEnemy = 1000, timeToWaitMediumEnemy = 5000, timeToWaitSpecialEnemy = 10000, timeToWaitMiniBoss = 20000; // Milliseconds
@@ -55,7 +73,6 @@ public:
 	int currentAmmountOfSpecialEnemy = 0;
 	bool miniBossSpawned = false;
 	bool bossSpawned = false;
-
 
 	int smallMinToSpawnMore = 2;
 	int mediumMinToSpawnMore = 1;
@@ -188,15 +205,15 @@ public:
 	// METHODS
 	void update(Player *player, Audio *audio);
 	void moveEnemy(Player *player, Audio *audio);
-	void spawnEnemy();
 	void render(sf::RenderTarget *target);
 	void spawnPowerUp(sf::Vector2f pos);
+	void spawnEnemy();
 
 	void startLevel(int level);
-	void startEndlessMode();
 	void startNoPowerUpMode(int level);
 	void startInsaneMode(int level);
 	void startRandomMode(int level);
+	void startEndlessMode();
 
 	void randomSpawnEnemy();
 	void Spawn();

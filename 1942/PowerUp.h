@@ -1,10 +1,24 @@
+/**
+Program: 1842
+Filename: PopUp.h
+@author: © Reuben Miller
+Course: BSc (Hons)/HND Games Programming
+Module: CSY1044 Video Games Architecture and Optimisation
+Tutor: Dr. Anastasios G. Bakaoukas
+Date: 28/01/22
+*/
+/*
+File: PopUp.h
+Disclaimer: The following source code is the sole work of the author unless otherwise stated.
+Copyright (C) Reuben Miller. All Rights Reserved.
+*/
+
+#pragma once
+// HEADER FILES
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
 
-
-
-#pragma once
 class PowerUp
 {
 public:
@@ -20,6 +34,7 @@ public:
 	const sf::Vector2f getPosition() const;
 	const sf::FloatRect getGlobalBounds() const;
 protected:
+	// VARIABLES
 	sf::CircleShape shape;
 };
 
