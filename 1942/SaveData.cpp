@@ -1,3 +1,19 @@
+/*
+Program: 1942
+Filename: SaveData.cpp
+@author: © Reuben Miller
+Course: BSc (Hons)/HND Games Programming
+Module: CSY1044 Video Games Architecture and Optimisation
+Tutor: Dr. Anastasios G. Bakaoukas
+Date: 18/05/22
+*/
+/*
+File: SaveData.cpp
+Disclaimer: The following source code is the sole work of the author unless otherwise stated.
+Copyright (C) Reuben Miller. All Rights Reserved.
+*/
+
+// HEADER FILES
 #include "SaveData.h"
 
 /*

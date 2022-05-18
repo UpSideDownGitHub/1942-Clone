@@ -1,3 +1,18 @@
+/*
+Program: 1942
+Filename: StartScreens.cpp
+@author: © Reuben Miller
+Course: BSc (Hons)/HND Games Programming
+Module: CSY1044 Video Games Architecture and Optimisation
+Tutor: Dr. Anastasios G. Bakaoukas
+Date: 18/05/22
+*/
+/*
+File: StartScreens.cpp
+Disclaimer: The following source code is the sole work of the author unless otherwise stated.
+Copyright (C) Reuben Miller. All Rights Reserved.
+*/
+
 #include "StartScreens.h"
 
 /*
@@ -5,9 +20,11 @@
 */
 StartScreens::StartScreens()
 {
-	// CALL "initGUI()"
+	// INITIALISE CLOCKS
 	startTime = clock();
 	startTime2 = clock();
+
+	// CALL "initGUI()" METHOD
 	initGUI();
 }
 
@@ -16,20 +33,24 @@ StartScreens::StartScreens()
 */
 void StartScreens::checkButtonPress(sf::RenderWindow* win)
 {
+	// IF FIRST FRAME IN THE MENU
 	if (doOnce)
 	{
+		// RESET GAME MODES
 		endless = false;
 		normal = true;
 
-
+		// INITI MAIN MENU VARIABLES AND CLOCKS
 		play = false;
 		doOnce = false;
 		startTime = clock();
 		startTime2 = clock();
 
+		// LOAD THE SAVE DATA
 		saveData.loadFile();
 		SaveData::PlayerInfo* leaderboard = saveData.getLeaderboard();
 
+		// LEADERBOARD POS 1
 		ssTopName.str("");
 		ssTopName << leaderboard[0].Name;
 		topName.setString(ssTopName.str());
@@ -39,7 +60,7 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 		ssTopLives.str("");
 		ssTopLives << leaderboard[0].LivesUsed;
 		topLives.setString(ssTopLives.str());
-
+		// LEADERBOARD POS 2
 		ssSecondName.str("");
 		ssSecondName << leaderboard[1].Name;
 		secondName.setString(ssSecondName.str());
@@ -49,7 +70,7 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 		ssSecondLives.str("");
 		ssSecondLives << leaderboard[1].LivesUsed;
 		secondLives.setString(ssSecondLives.str());
-
+		// LEADERBOARD POS 3
 		ssThirdName.str("");
 		ssThirdName << leaderboard[2].Name;
 		thirdName.setString(ssThirdName.str());
@@ -59,7 +80,7 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 		ssThirdLives.str("");
 		ssThirdLives << leaderboard[2].LivesUsed;
 		thirdLives.setString(ssThirdLives.str());
-
+		// LEADERBOARD POS 4
 		ssForthName.str("");
 		ssForthName << leaderboard[3].Name;
 		forthName.setString(ssForthName.str());
@@ -69,7 +90,7 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 		ssForthLives.str("");
 		ssForthLives << leaderboard[3].LivesUsed;
 		forthLives.setString(ssForthLives.str());
-
+		// LEADERBOARD POS 5
 		ssFithName.str("");
 		ssFithName << leaderboard[4].Name;
 		fithName.setString(ssFithName.str());
@@ -80,31 +101,41 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 		ssFithLives << leaderboard[4].LivesUsed;
 		fithLives.setString(ssFithLives.str());
 	}
+	// IF ENOUGH TIME HAS PASSED FOR BUTTON INPUT
 	if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 	{
+		// CHECK FOR INPUT USING THE INPUT CLASS
 		input.pollEvents(win);
+		// IF NOT SHOWING THE LEADERBOARD
 		if (!leaderboard)
 		{
-			if (input.buttonPresses[1]) // DOWN
+			// IF ENOUGH TIME HAS PASSED TO PRESS A BUTTON
+			if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 			{
-				if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+				// DOWN
+				if (input.buttonPresses[1])
 				{
+					// RESET CLOCK
 					startTime2 = clock();
+					// IF CAN MOVE DOWN 
 					if (selected < 6)
 					{
+						// MOVE DOWN AND SELECT THE NEXT ITEM IN THE MENU
 						options[selected].setFillColor(sf::Color::White);
 						selected++;
 						options[selected].setFillColor(sf::Color::Yellow);
 					}
+
 				}
-			}
-			else if (input.buttonPresses[2]) // UP
-			{
-				if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait2)
+				// UP
+				else if (input.buttonPresses[2])
 				{
+					// RESET CLOCK
 					startTime2 = clock();
+					// IF CAN MOVE UP
 					if (selected > 0)
 					{
+						// MOVE UP AND SELECT THE PREVIOUS ITEM IN THE MENU
 						options[selected].setFillColor(sf::Color::White);
 						selected--;
 						options[selected].setFillColor(sf::Color::Yellow);
@@ -112,29 +143,36 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 				}
 			}
 		}
+		// IN LEADERBOARD
 		else
 		{
-			if (input.buttonPresses[0]) // LEFT
+			// IF ENOUGH TIME HAS PASSED TO PRESS A BUTTON
+			if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 			{
-				if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+				// LEFT
+				if (input.buttonPresses[0])
 				{
+					// RESET CLOCK
 					startTime2 = clock();
+					// IF CAN MOVE LEFT
 					if (selected2 > 0)
 					{
+						// MOVE LEFT AND SELECT THE PREVIOUS ITEM IN THE LEADERBOARD
 						gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
 						selected2--;
 						gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
 						loadLeaderboard();
 					}
 				}
-			}
-			else if (input.buttonPresses[3]) // RIGHT
-			{
-				if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+				// RIGHT
+				else if (input.buttonPresses[3])
 				{
+					// RESET CLOCK
 					startTime2 = clock();
+					// IF CAN MOVE RIGHT
 					if (selected2 < 4)
 					{
+						// MOVE RIGHT AND SELECT THE NEXT ITEM IN THE LEADERBOARD
 						gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
 						selected2++;
 						gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
@@ -143,15 +181,20 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 				}
 			}
 		}
+		// SPACE
 		if (input.spacePressed)
 		{
+			// IF THE LEADBOARD IS OPEN
 			if (leaderboard)
 			{
+				// CLOSE THE LEADERBOARD
 				doOnce = true;
 				leaderboard = false;
 			}
 			else
 			{
+				// CALL "selectMode()" METHOD SENDIG WIN TO COMPLETE THE CORRECT ACTION FOR WHICH BUTTON
+				// WAS SELECTED
 				doOnce = true;
 				selectMode(win);
 			}
@@ -159,24 +202,47 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 	}
 }
 
+/*
+	LOADS ALL THE DATA FROM THE SAVE DATA AND SETS ITS TO THE LEADERBOARD
+*/
 void StartScreens::loadLeaderboard()
 {
+	// SET THE GAME MODE UI
 	gameModeName.setString(gameModes[selected2]);
 	gameModeName.setOrigin(gameModeName.getGlobalBounds().width / 2, gameModeName.getGlobalBounds().height / 2);
 
+	// LOAD THE SAVEDATA
 	saveData.loadFile();
 	SaveData::PlayerInfo* leaderboard;
-	if (selected2 == 0)
-		leaderboard = saveData.getLeaderboard();
-	else if (selected2 == 1)
-		leaderboard = saveData.getLeaderboardEndless();
-	else if (selected2 == 2)
-		leaderboard = saveData.getLeaderboardNoPowerUps();
-	else if (selected2 == 3)
-		leaderboard = saveData.getLeaderboardInsane();
-	else
-		leaderboard = saveData.getLeaderboardRandom();
 
+	// GET THE INFORMATION FROM THE CORRECT LEADERBOARD DEPENDING ON WHAT GAME MODE IS BEING PLAYED
+	// REGULAR
+	if (selected2 == 0)
+	{
+		leaderboard = saveData.getLeaderboard();
+	}
+	// ENDLESS
+	else if (selected2 == 1)
+	{
+		leaderboard = saveData.getLeaderboardEndless();
+	}
+	// NO POWER UPS
+	else if (selected2 == 2)
+	{
+		leaderboard = saveData.getLeaderboardNoPowerUps();
+	}
+	// INSANE
+	else if (selected2 == 3)
+	{
+		leaderboard = saveData.getLeaderboardInsane();
+	}
+	// RANDOM
+	else
+	{
+		leaderboard = saveData.getLeaderboardRandom();
+	}
+
+	// LEADERBOARD POS 1
 	ssTopName.str("");
 	ssTopName << leaderboard[0].Name;
 	topName.setString(ssTopName.str());
@@ -186,7 +252,7 @@ void StartScreens::loadLeaderboard()
 	ssTopLives.str("");
 	ssTopLives << leaderboard[0].LivesUsed;
 	topLives.setString(ssTopLives.str());
-
+	// LEADERBOARD POS 2
 	ssSecondName.str("");
 	ssSecondName << leaderboard[1].Name;
 	secondName.setString(ssSecondName.str());
@@ -196,7 +262,7 @@ void StartScreens::loadLeaderboard()
 	ssSecondLives.str("");
 	ssSecondLives << leaderboard[1].LivesUsed;
 	secondLives.setString(ssSecondLives.str());
-
+	// LEADERBOARD POS 3
 	ssThirdName.str("");
 	ssThirdName << leaderboard[2].Name;
 	thirdName.setString(ssThirdName.str());
@@ -206,7 +272,7 @@ void StartScreens::loadLeaderboard()
 	ssThirdLives.str("");
 	ssThirdLives << leaderboard[2].LivesUsed;
 	thirdLives.setString(ssThirdLives.str());
-
+	// LEADERBOARD POS 4
 	ssForthName.str("");
 	ssForthName << leaderboard[3].Name;
 	forthName.setString(ssForthName.str());
@@ -216,7 +282,7 @@ void StartScreens::loadLeaderboard()
 	ssForthLives.str("");
 	ssForthLives << leaderboard[3].LivesUsed;
 	forthLives.setString(ssForthLives.str());
-
+	// LEADERBOARD POS 5
 	ssFithName.str("");
 	ssFithName << leaderboard[4].Name;
 	fithName.setString(ssFithName.str());
@@ -228,37 +294,47 @@ void StartScreens::loadLeaderboard()
 	fithLives.setString(ssFithLives.str());
 }
 
+/*
+	SELECTS WHICH GAME MODE THE PLAYER HAS PRESSED THE BUTTON TO PLAY
+*/
 void StartScreens::selectMode(sf::RenderWindow* win)
 {
+	// REGULAR
 	if (selected == 0)
 	{
 		play = true;
 		normal = true;
 	}
+	// ENDLESS
 	else if (selected == 1)
 	{
 		play = true;
 		endless = true;
 	}
+	// NO POWER UPS
 	else if (selected == 2)
 	{
 		play = true;
 		noPowerUp = true;
 	}
+	// INSANE
 	else if (selected == 3)
 	{
 		play = true;
 		insane = true;
 	}
+	// RANDOM
 	else if (selected == 4)
 	{
 		play = true;
 		random = true;
 	}
+	// VIEW LEADERBOARD
 	else if (selected == 5)
 	{
 		leaderboard = true;
 	}
+	// CLOSE GAME
 	else if (selected == 6)
 	{
 
@@ -271,20 +347,25 @@ void StartScreens::selectMode(sf::RenderWindow* win)
 */
 void StartScreens::render(sf::RenderTarget* target)
 {
+	// DRAW BASIC UI ELEMENTS
 	target->draw(highScoreLabel);
 	target->draw(highScoreText);
 	target->draw(gameNameText);
 	target->draw(insertCoinText);
 	target->draw(copyrightText);
+	// DRAW ALL STATIC TEXT TO THE SCREEN
 	for (sf::Text text : options)
 	{
 		target->draw(text);
 	}
 	
+	// IF THE LEADERBOARD IS OPEN
 	if (leaderboard)
 	{
+		// DRAW BOUNDING BOX
 		target->draw(box);
 
+		// DRAW GAME MODES
 		target->draw(gameModeName);
 		for (sf::Text text : gamemodeNameOptions)
 		{
@@ -293,29 +374,33 @@ void StartScreens::render(sf::RenderTarget* target)
 
 		target->draw(topFiveMessage);
 
+		// SCORE 1
 		target->draw(top);
 		target->draw(topScore);
 		target->draw(topName);
+		// IF NOT ENDLESS LEADER BOARD
 		if (selected2 != 1)
 		{
+			// DRAW LIVES
 			target->draw(topLives);
 			target->draw(secondLives);
 			target->draw(thirdLives);
 			target->draw(forthLives);
 			target->draw(fithLives);
 		}
+		// SCORE 2
 		target->draw(second);
 		target->draw(secondScore);
 		target->draw(secondName);
-
+		// SCORE 3
 		target->draw(third);
 		target->draw(thirdScore);
 		target->draw(thirdName);
-
+		// SCORE 4
 		target->draw(forth);
 		target->draw(forthScore);
 		target->draw(forthName);
-
+		// SCORE 5
 		target->draw(fith);
 		target->draw(fithScore);
 		target->draw(fithName);
@@ -337,9 +422,11 @@ void StartScreens::initGUI()
 	highScoreLabel.setFont(arial);
 	highScoreLabel.setString("High-Score");
 
+	// LOAD SAVEDATA
 	saveData.loadFile();
 	int highScore = saveData.getHighScore();
 
+	// SET HIGHSCORE TEXT
 	ssHighscore.str("");
 	ssHighscore << highScore;
 
@@ -366,6 +453,7 @@ void StartScreens::initGUI()
 	int xOffset = 280;
 	int yOffset = 400;
 	int yMulti = 30;
+	// INITALISE MENU OPTIONS
 	for (int i = 0; i < 7; i++)
 	{
 		sf::Text temp;
@@ -383,7 +471,7 @@ void StartScreens::initGUI()
 	copyrightText.setFont(arial);
 	copyrightText.setString("© 2022 Reuben Miller");
 	
-
+	// SET SELECTED OPTION IN MAIN MENU TO A DIFFRENT COLOUR
 	options[selected].setFillColor(sf::Color::Yellow);
 
 	//					LEADERBOARD
@@ -391,6 +479,7 @@ void StartScreens::initGUI()
 	int xOffset2 = 50;
 	int yOffset2 = 50;
 	int xMulti2 = 110;
+	// INTILISE ALL LEADERBOARD OPTIONS
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Text temp;
