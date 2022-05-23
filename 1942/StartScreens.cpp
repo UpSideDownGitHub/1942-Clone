@@ -38,6 +38,9 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 	{
 		// RESET GAME MODES
 		endless = false;
+		noPowerUp = false;
+		insane = false;
+		random = false;
 		normal = true;
 
 		// INITI MAIN MENU VARIABLES AND CLOCKS

@@ -106,6 +106,10 @@ EnemySpawner::EnemySpawner()
 	startTime4 = clock();
 	startTime5 = clock();
 	startLevelTime = time(0);
+	insaneMode = false;
+	noPowerUpsMode = false;
+	endlessMode = false;
+	randomMode = false;
 }
 
 /*
@@ -136,6 +140,7 @@ void EnemySpawner::startLevel(int level)
 	currentEnemySpawned = 0;
 	daihiryuPointsMultiplier = 0;
 
+	//std::cout << "Endless Mode: " << endlessMode << "\nInane Mode: " << insaneMode << "\nNo Power Ups Mode: " << noPowerUpsMode << "\nRandom Mode: " << randomMode << "\n";
 	//		GAME MODES
 	// IF NOT PLAYING INSANE MODE
 	if (!insaneMode)
@@ -954,8 +959,9 @@ void EnemySpawner::spawnEnemy()
 	// FOR INCREASEING THE DEFAULT LEVEL TO 32 WHEN PLAIYING INSANE MODE
 	int j = currentLevel;
 	if (insaneMode)
+	{
 		currentLevel += 32;
-
+	}
 	// IF THERE IS A MINI BOSS
 	if (miniBossSpawned)
 	{

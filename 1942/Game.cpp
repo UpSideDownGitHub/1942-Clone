@@ -89,8 +89,10 @@ void Game::start()
 		livesnum << "O ";
 	}
 	lives.setString(livesnum.str());
+	
 	// RESET THE SPAWNER
 	spawner = EnemySpawner();
+	
 	// RESET UI ELEMENTS
 	startTime = time(0);
 	level = 0; // 0
@@ -415,6 +417,8 @@ void Game::update()
 				else if (selected == 1)
 				{
 					// GO TO THE MAIN MENU
+					level = 0;
+					runStart = true;
 					paused = false;
 					inMainMenus = true;
 				}
@@ -422,7 +426,7 @@ void Game::update()
 				else if (selected == 2)
 				{
 					// IF THE GAME IS ALLREADY MUTED
-					if (muted)
+					if (!muted)
 					{
 						// MUTE THE GAME
 						for (int i = 0; i < 9; i++)
@@ -459,6 +463,7 @@ void Game::update()
 		// IF FIRST TIME RUNNING THIS INSTANCE OF THE GAME
 		if (runStart)
 		{
+			std::cout << "RESETTING THE GAME\n";
 			start();
 		}
 		// SHOW LEVEL INFO
@@ -468,6 +473,7 @@ void Game::update()
 			if (time(0) - startTime > secondsToShow)
 			{
 				// START THE LEVEL (DEPENDENT OF THE LEVEL THAT HAS BEEN SELECTED)
+				std::cout << "Setting The Game Mode To Play In The Spawner\n";
 				showingLevelInfo = false;
 				if (startScreens.endless)
 					spawner.startEndlessMode();
