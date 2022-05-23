@@ -243,6 +243,14 @@ const sf::Vector2f Player::getPosition() const
 }
 
 /*
+	USED TO SET THE POSITION OF THE PLAYER TO THE ORIGNAL POSITIONS
+*/
+void Player::setPosition(sf::Vector2f pos)
+{
+	shape.setPosition(pos);
+}
+
+/*
 	USED TO GET THE BOUNDS OF THE CANNON
 */
 const sf::FloatRect Player::getGlobalBounds() const

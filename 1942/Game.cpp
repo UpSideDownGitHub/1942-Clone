@@ -77,17 +77,18 @@ void Game::start()
 
 	// RESET THE PLAYER
 	player = Player();
+
 	// RESET THE LIVES
 	if (startScreens.endless)
 	{
 		player.lives = 0;
-		livesnum.str("");
-		for (int k = 0; k < player.lives; k++)
-		{
-			livesnum << "O ";
-		}
-		lives.setString(livesnum.str());
 	}
+	livesnum.str("");
+	for (int k = 0; k < player.lives; k++)
+	{
+		livesnum << "O ";
+	}
+	lives.setString(livesnum.str());
 	// RESET THE SPAWNER
 	spawner = EnemySpawner();
 	// RESET UI ELEMENTS
@@ -880,7 +881,6 @@ void Game::update()
 						livesUsed++;
 						player.shootingMethod = 1;
 						spawner.hasQuadShot = false;
-
 						// IF THE PLAYER IS NOT OF LIVES
 						if (player.lives >= 0)
 						{
@@ -890,6 +890,10 @@ void Game::update()
 							showingLevelInfo = true;
 							spawner.enemys.clear();
 							player.enemyBullets.clear();
+							player.bullets.clear();
+							player.setPosition(sf::Vector2f(280, 320));
+							spawner.powerups.clear();
+							spawner.popUps.clear();
 
 							// UPDATE LIVES UI
 							livesnum.str("");

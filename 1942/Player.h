@@ -59,6 +59,7 @@ public:
 
 	// ACCESSORS
 	const sf::Vector2f getPosition() const;
+	void setPosition(sf::Vector2f pos);
 	const sf::FloatRect getGlobalBounds() const;
 
 private:
