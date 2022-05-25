@@ -340,8 +340,8 @@ void StartScreens::selectMode(sf::RenderWindow* win)
 	// CLOSE GAME
 	else if (selected == 6)
 	{
-
 		win->close();
+		exit(0);
 	}
 }
 

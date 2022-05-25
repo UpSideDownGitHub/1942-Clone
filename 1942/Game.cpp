@@ -451,6 +451,7 @@ void Game::update()
 				{
 					// CLOSE THE GAME
 					window->close();
+					exit(0);
 				}
 				// RESET TIME
 				startTime7 = clock();
