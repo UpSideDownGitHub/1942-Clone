@@ -370,38 +370,31 @@ void Game::update()
 		if (float(clock() - startTime7) / CLOCKS_PER_SEC * 1000 >= timeToWait2)
 		{
 			// DOWN
-			if (input.buttonPresses[1]) 
+			if (input.buttonPresses[1])
 			{
-				// IF ENOUGH TIME HAS PASSED TO PRESS THE BUTTON
-				if (float(clock() - startTime6) / CLOCKS_PER_SEC * 1000 >= timeToWait1)
+				// RESET BUTTON PRESS TIME
+				startTime7 = clock();
+				// IF NOT AT BOTTOM OF LIST MOVE TO THE NEXT OPTION DOWN IN THE LIST
+				if (selected < 3)
 				{
-					// RESET BUTTON PRESS TIME
-					startTime6 = clock();
-					// IF NOT AT BOTTOM OF LIST MOVE TO THE NEXT OPTION DOWN IN THE LIST
-					if (selected < 3)
-					{
-						options[selected].setFillColor(sf::Color::White);
-						selected++;
-						options[selected].setFillColor(sf::Color::Yellow);
-					}
+					options[selected].setFillColor(sf::Color::White);
+					selected++;
+					options[selected].setFillColor(sf::Color::Yellow);
 				}
 			}
 			// UP
-			else if (input.buttonPresses[2]) 
+			else if (input.buttonPresses[2])
 			{
-				// IF ENOUGH TIME HAS PASSED TO PRESS THE BUTTON
-				if (float(clock() - startTime6) / CLOCKS_PER_SEC * 1000 >= timeToWait1)
+				// RESET BUTTON PRESS TIME
+				startTime7 = clock();
+				// IF NOT AT TOP OF LIST MOVE TO THE NEXT OPTION UP IN THE LIST
+				if (selected > 0)
 				{
-					// RESET BUTTON PRESS TIME
-					startTime6 = clock();
-					// IF NOT AT TOP OF LIST MOVE TO THE NEXT OPTION UP IN THE LIST
-					if (selected > 0)
-					{
-						options[selected].setFillColor(sf::Color::White);
-						selected--;
-						options[selected].setFillColor(sf::Color::Yellow);
-					}
+					options[selected].setFillColor(sf::Color::White);
+					selected--;
+					options[selected].setFillColor(sf::Color::Yellow);
 				}
+
 			}
 			// SPACE
 			if (input.spacePressed)
@@ -429,18 +422,22 @@ void Game::update()
 					if (!muted)
 					{
 						// MUTE THE GAME
-						for (int i = 0; i < 9; i++)
+						for (int i = 0; i < 9; i += 3)
 						{
 							audio.audio[i]->setVolume(0);
+							audio.audio[i + 1]->setVolume(0);
+							audio.audio[i + 2]->setVolume(0);
 						}
 					}
 					// NOT MUTED
 					else
 					{
-						// UNMUTE THE GAME
-						for (int i = 0; i < 9; i++)
+						// MUTE THE GAME
+						for (int i = 0; i < 9; i += 3)
 						{
 							audio.audio[i]->setVolume(100);
+							audio.audio[i + 1]->setVolume(100);
+							audio.audio[i + 2]->setVolume(100);
 						}
 					}
 					muted = !muted;
@@ -477,15 +474,25 @@ void Game::update()
 				std::cout << "Setting The Game Mode To Play In The Spawner\n";
 				showingLevelInfo = false;
 				if (startScreens.endless)
+				{
 					spawner.startEndlessMode();
+				}
 				else if (startScreens.noPowerUp)
+				{
 					spawner.startNoPowerUpMode(level);
+				}
 				else if (startScreens.insane)
+				{
 					spawner.startInsaneMode(level);
+				}
 				else if (startScreens.random)
+				{
 					spawner.startRandomMode(level);
+				}
 				else
+				{
 					spawner.startLevel(level);
+				}
 			}
 		}
 		// NEXT LEVEL
@@ -524,21 +531,37 @@ void Game::update()
 					std::string nameOfLevel;
 					int curLevel = 32 - level;
 					if (curLevel <= 32 && curLevel >= 29)
+					{
 						nameOfLevel = "Midway";
+					}
 					else if (curLevel <= 28 && curLevel >= 25)
+					{
 						nameOfLevel = "Marshall";
+					}
 					else if (curLevel <= 24 && curLevel >= 21)
+					{
 						nameOfLevel = "Attu";
+					}
 					else if (curLevel <= 20 && curLevel >= 17)
+					{
 						nameOfLevel = "Rabaul";
+					}
 					else if (curLevel <= 16 && curLevel >= 13)
+					{
 						nameOfLevel = "Leyte";
+					}
 					else if (curLevel <= 12 && curLevel >= 9)
+					{
 						nameOfLevel = "Saipan";
+					}
 					else if (curLevel <= 8 && curLevel >= 5)
+					{
 						nameOfLevel = "Iwojima";
+					}
 					else if (curLevel <= 4 && curLevel >= 1)
+					{
 						nameOfLevel = "Okinawa";
+					}
 
 					// SET LEVEL NAME UI
 					levelName.setString(nameOfLevel);
@@ -568,23 +591,41 @@ void Game::update()
 				// CALCULATE BONUS BASED UPON THE PERCENTAGE OF ENEMY PLANES DESTROYED
 				int bonus = 0;
 				if (percent == 100)
+				{
 					bonus = 50000;
+				}
 				else if (percent >= 95 && percent < 100)
+				{
 					bonus = 20000;
+				}
 				else if (percent >= 90 && percent < 95)
+				{
 					bonus = 10000;
+				}
 				else if (percent >= 85 && percent < 90)
+				{
 					bonus = 5000;
+				}
 				else if (percent >= 80 && percent < 85)
+				{
 					bonus = 4000;
+				}
 				else if (percent >= 70 && percent < 80)
+				{
 					bonus = 3000;
+				}
 				else if (percent >= 60 && percent < 70)
+				{
 					bonus = 2000;
+				}
 				else if (percent >= 50 && percent < 60)
+				{
 					bonus = 1000;
+				}
 				else if (percent < 50)
+				{
 					bonus = 0;
+				}
 				// UPDATE THE BONUS UI
 				spawner.currentPoints += bonus;
 				ssBonusPoints.str("");
@@ -639,13 +680,21 @@ void Game::update()
 
 							// SET HIGHSCORE SCREEN TO SHOW CORRECT WINDOW FOR GAME MODES
 							if (startScreens.endless)
+							{
 								highScoreScreen.endless = true;
+							}
 							else if (startScreens.noPowerUp)
+							{
 								highScoreScreen.noPowerUps = true;
+							}
 							else if (startScreens.insane)
+							{
 								highScoreScreen.insane = true;
+							}
 							else if (startScreens.random)
+							{
 								highScoreScreen.random = true;
+							}
 							// INITIALSE AN INSTANCE OF THE HIGHSCORE SCREEN TO SHOW THIS NEW HIGHSCORE
 							highScoreScreen.initilise(spawner.currentPoints, livesUsed);
 							inHighScoreScreen = true;
@@ -746,13 +795,21 @@ void Game::update()
 
 						// SET HIGHSCORE SCREEN TO SHOW CORRECT WINDOW FOR GAME MODES
 						if (startScreens.endless)
+						{
 							highScoreScreen.endless = true;
+						}
 						else if (startScreens.noPowerUp)
+						{
 							highScoreScreen.noPowerUps = true;
+						}
 						else if (startScreens.insane)
+						{
 							highScoreScreen.insane = true;
+						}
 						else if (startScreens.random)
+						{
 							highScoreScreen.random = true;
+						}
 
 						// INITIALSE AN INSTANCE OF THE HIGHSCORE SCREEN TO SHOW THIS NEW HIGHSCORE
 						highScoreScreen.initilise(spawner.currentPoints, livesUsed);
@@ -778,15 +835,17 @@ void Game::update()
 			{
 				// CHECK FOR INPUT
 				input.pollEvents(window);
+				float val = float(clock() - startTime7) / CLOCKS_PER_SEC * 1000;
 				// IF ENOUGH TIME HAS PASSED TO PAUSE THE GAME AGAIN
-				if (input.spacePressed && float(clock() - startTime7) / CLOCKS_PER_SEC * 1000 >= 200)
+				if (input.spacePressed && val >= 200)
 				{
 					// PAUSE THE GAME
 					paused = true;
 				}
 
+				float val2 = float(clock() - startTimeOrangePowerUp) / CLOCKS_PER_SEC * 1000;
 				// DISABLE ENEMY SHOOTING FOR THE ORANGE POWER UP
-				if (float(clock() - startTimeOrangePowerUp) / CLOCKS_PER_SEC * 1000 >= timeToWaitOrangePowerUp)
+				if (val2 >= timeToWaitOrangePowerUp)
 				{
 					// FOR EACH OF THE ENEMIES STOP THEM FROM SHOOTING
 					for (Enemy *enemys : spawner.enemys)
@@ -977,33 +1036,32 @@ void Game::checkPowerUps(int num, int num2)
 	// PLAY PICKED UP POWERUP SOUND EFFECT
 	audio.audio[6]->play();
 	spawner.scoreChanged = true;
-	// GREEN - 4 SHOT
-	if (num == 0)
+
+	switch (num)
 	{
+	// GREEN - 4 SHOT
+	case 0:
 		spawner.currentPoints += 1000;
 		// ENABLE QUAD SHOOTING
 		player.shootingMethod = 2;
-	}
+		break;
 	// WHITE - DESTROY ALL ENEMIES
-	else if (num == 1)
-	{
+	case 1:
 		spawner.currentPoints += 1000;
 		// DESTROY ALL ENEMIES
 		for (Enemy *enemys : spawner.enemys)
 		{
 			enemys->die = true;
 		}
-	}
+		break;
 	// GREY - 6 SHOTS
-	else if (num == 2)
-	{
+	case 2:
 		spawner.currentPoints += 1000;
 		// ENABLE SEXT SHOOTING
 		player.shootingMethod = 4;
-	}
+		break;
 	// ORANGE - NO ENEMY SHOOTING
-	else if (num == 3)
-	{
+	case 3:
 		spawner.currentPoints += 1000;
 		// DISALBE ALL THE ENEMIES FROM SHOOTING
 		for (Enemy *enemys : spawner.enemys)
@@ -1011,10 +1069,9 @@ void Game::checkPowerUps(int num, int num2)
 			enemys->canShoot = false;
 		}
 		startTimeOrangePowerUp = clock();
-	}
+		break;
 	// YELLOW - +1 LOOP
-	else if (num == 4)
-	{
+	case 4:
 		spawner.currentPoints += 1000;
 		// INCREASE THE AMMOUNT OF DODGES BY 1 AND UPDATE THE UI
 		player.dodges++;
@@ -1025,10 +1082,9 @@ void Game::checkPowerUps(int num, int num2)
 		}
 		dodges.setString(dodgesNum.str());
 		dodges.setOrigin(dodges.getLocalBounds().width, dodges.getLocalBounds().height);
-	}
+		break;
 	// BLACK - +1 LIFE
-	else if (num == 5)
-	{
+	case 5:
 		spawner.currentPoints += 1000;
 		// INCREASE THE AMMOUNT OF LIVES BY 1 AND UPDATE THE UI
 		player.lives++;
@@ -1038,18 +1094,20 @@ void Game::checkPowerUps(int num, int num2)
 			livesnum << "O ";
 		}
 		lives.setString(livesnum.str());
-	}
+		break;
 	// RED - +1000 POINTS
-	else if (num == 6)
-	{
+	case 6:
 		spawner.currentPoints += 1000;
-	}
+		break;
 	// YASHCHI - +5000 POINTS
-	else if (num == 7)
-	{
+	case 7:
 		spawner.currentPoints += 5000;
+		break;
+	default:
+		std::cout << "ERROR: Not a valid power up to apply the effect of!!\n";
+		break;
 	}
-
+	
 	// CREATE A 5000 POINT POPUP
 	if (num == 7)
 	{

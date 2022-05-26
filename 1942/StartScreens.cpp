@@ -104,6 +104,7 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 		ssFithLives << leaderboard[4].LivesUsed;
 		fithLives.setString(ssFithLives.str());
 	}
+
 	// IF ENOUGH TIME HAS PASSED FOR BUTTON INPUT
 	if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWait)
 	{
@@ -112,75 +113,67 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 		// IF NOT SHOWING THE LEADERBOARD
 		if (!leaderboard)
 		{
-			// IF ENOUGH TIME HAS PASSED TO PRESS A BUTTON
-			if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+			// DOWN
+			if (input.buttonPresses[1])
 			{
-				// DOWN
-				if (input.buttonPresses[1])
+				// RESET CLOCK
+				startTime = clock();
+				// IF CAN MOVE DOWN 
+				if (selected < 6)
 				{
-					// RESET CLOCK
-					startTime2 = clock();
-					// IF CAN MOVE DOWN 
-					if (selected < 6)
-					{
-						// MOVE DOWN AND SELECT THE NEXT ITEM IN THE MENU
-						options[selected].setFillColor(sf::Color::White);
-						selected++;
-						options[selected].setFillColor(sf::Color::Yellow);
-					}
-
+					// MOVE DOWN AND SELECT THE NEXT ITEM IN THE MENU
+					options[selected].setFillColor(sf::Color::White);
+					selected++;
+					options[selected].setFillColor(sf::Color::Yellow);
 				}
-				// UP
-				else if (input.buttonPresses[2])
+
+			}
+			// UP
+			else if (input.buttonPresses[2])
+			{
+				// RESET CLOCK
+				startTime = clock();
+				// IF CAN MOVE UP
+				if (selected > 0)
 				{
-					// RESET CLOCK
-					startTime2 = clock();
-					// IF CAN MOVE UP
-					if (selected > 0)
-					{
-						// MOVE UP AND SELECT THE PREVIOUS ITEM IN THE MENU
-						options[selected].setFillColor(sf::Color::White);
-						selected--;
-						options[selected].setFillColor(sf::Color::Yellow);
-					}
+					// MOVE UP AND SELECT THE PREVIOUS ITEM IN THE MENU
+					options[selected].setFillColor(sf::Color::White);
+					selected--;
+					options[selected].setFillColor(sf::Color::Yellow);
 				}
 			}
 		}
 		// IN LEADERBOARD
 		else
 		{
-			// IF ENOUGH TIME HAS PASSED TO PRESS A BUTTON
-			if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait)
+			// LEFT
+			if (input.buttonPresses[0])
 			{
-				// LEFT
-				if (input.buttonPresses[0])
+				// RESET CLOCK
+				startTime = clock();
+				// IF CAN MOVE LEFT
+				if (selected2 > 0)
 				{
-					// RESET CLOCK
-					startTime2 = clock();
-					// IF CAN MOVE LEFT
-					if (selected2 > 0)
-					{
-						// MOVE LEFT AND SELECT THE PREVIOUS ITEM IN THE LEADERBOARD
-						gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
-						selected2--;
-						gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
-						loadLeaderboard();
-					}
+					// MOVE LEFT AND SELECT THE PREVIOUS ITEM IN THE LEADERBOARD
+					gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
+					selected2--;
+					gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
+					loadLeaderboard();
 				}
-				// RIGHT
-				else if (input.buttonPresses[3])
+			}
+			// RIGHT
+			else if (input.buttonPresses[3])
+			{
+				// RESET CLOCK
+				startTime = clock();
+				// IF CAN MOVE RIGHT
+				if (selected2 < 4)
 				{
-					// RESET CLOCK
-					startTime2 = clock();
-					// IF CAN MOVE RIGHT
-					if (selected2 < 4)
-					{
-						// MOVE RIGHT AND SELECT THE NEXT ITEM IN THE LEADERBOARD
-						gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
-						selected2++;
-						gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
-						loadLeaderboard();
-					}
+					// MOVE RIGHT AND SELECT THE NEXT ITEM IN THE LEADERBOARD
+					gamemodeNameOptions[selected2].setFillColor(sf::Color::White);
+					selected2++;
+					gamemodeNameOptions[selected2].setFillColor(sf::Color::Yellow);
+					loadLeaderboard();
 				}
 			}
 		}
@@ -193,14 +186,12 @@ void StartScreens::checkButtonPress(sf::RenderWindow* win)
 				// CLOSE THE LEADERBOARD
 				doOnce = true;
 				leaderboard = false;
+				return;
 			}
-			else
-			{
-				// CALL "selectMode()" METHOD SENDIG WIN TO COMPLETE THE CORRECT ACTION FOR WHICH BUTTON
-				// WAS SELECTED
-				doOnce = true;
-				selectMode(win);
-			}
+			// CALL "selectMode()" METHOD SENDIG WIN TO COMPLETE THE CORRECT ACTION FOR WHICH BUTTON
+			// WAS SELECTED
+			doOnce = true;
+			selectMode(win);
 		}
 	}
 }
@@ -302,46 +293,38 @@ void StartScreens::loadLeaderboard()
 */
 void StartScreens::selectMode(sf::RenderWindow* win)
 {
-	// REGULAR
-	if (selected == 0)
+	switch (selected)
 	{
+	case 0:
 		play = true;
 		normal = true;
-	}
-	// ENDLESS
-	else if (selected == 1)
-	{
+		break;
+	case 1:
 		play = true;
 		endless = true;
-	}
-	// NO POWER UPS
-	else if (selected == 2)
-	{
+		break;
+	case 2:
 		play = true;
 		noPowerUp = true;
-	}
-	// INSANE
-	else if (selected == 3)
-	{
+		break;
+	case 3:
 		play = true;
 		insane = true;
-	}
-	// RANDOM
-	else if (selected == 4)
-	{
+		break;
+	case 4:
 		play = true;
 		random = true;
-	}
-	// VIEW LEADERBOARD
-	else if (selected == 5)
-	{
+		break;
+	case 5:
 		leaderboard = true;
-	}
-	// CLOSE GAME
-	else if (selected == 6)
-	{
+		break;
+	case 6:
 		win->close();
 		exit(0);
+		break;
+	default:
+		std::cout << "ERROR: Invalid game mode selected!!";
+		break;
 	}
 }
 

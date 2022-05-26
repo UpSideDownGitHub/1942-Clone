@@ -210,8 +210,9 @@ void Zero::update(Player *player)
 			{
 				// SET ONCE TO FALSE SO THE PLANE DOES NOT SHOOT AGAIN
 				once = false;
+				int num = rand() % 3;
 				// 1 IN 3 CHANCE TO SHOOT A BULLET
-				if (rand() % 3 == 0)
+				if (num == 0)
 				{
 					// SHOOT A BULLET WITH player AS THE TARGET AND RANDOM DEVIATION OF randomDeviation
 					shoot(player, randomDeviation);
@@ -285,7 +286,9 @@ BVD::BVD(bool onLeft, int xOffset, int yOffset)
 	// SET ALL OF THE DEFAULT MOVEMENT VARIABLES TO THERE VALUES
 	leftSide = onLeft;
 	if (leftSide)
+	{
 		shape.setPosition((float)xOffset, (float)yOffset);
+	}
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -306,55 +309,51 @@ BVD::BVD(bool onLeft, int xOffset, int yOffset)
 */
 void BVD::update(Player *player)
 {
-	// IF THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
-	if (decDown || decUp)
+	// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0 & 
+	// THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
+	if (verMoveSpeed >= 0 && (decDown || decUp))
 	{
-		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0
-		if (verMoveSpeed >= 0)
-		{
-			// DECREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed -= rateOfChange;
-		}
-		// IF DECREASEING DOWN THEN STOP MOVING DOWN
-		else if (decDown)
-		{
-			decDown = false;
-			down = false;
-		}
-		// IF DECREASING UP STOP MOVING UP
-		else if (decUp)
-		{
-			decUp = false;
-			up = false;
-		}
+		// DECREASE THE VERTICAL MOVEMENT SPEED
+		verMoveSpeed -= rateOfChange;
 	}
-	// IF THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
-	if (decLeft || decRight)
+	// IF DECREASEING DOWN THEN STOP MOVING DOWN
+	else if (decDown)
 	{
-		// IF THE HORIZONTAL SPEED IS GREATER THAN 0
-		if (horMoveSpeed >= 0)
-		{
-			// DECREASE THE HORIZONTAL SPEED
-			horMoveSpeed -= rateOfChange;
-		}
-		// IF DECREASING LEFT THEN STOP MOVING LEFT
-		else if (decLeft)
-		{
-			decLeft = false;
-			left = false;
-		}
-		// IF DECREASING RIGHT THEN STOP MOVING RIGHT
-		else if (decRight)
-		{
-			decRight = false;
-			right = false;
-		}
+		decDown = false;
+		down = false;
 	}
+	// IF DECREASING UP STOP MOVING UP
+	else if (decUp)
+	{
+		decUp = false;
+		up = false;
+	}
+
+	// IF THE HORIZONTAL SPEED IS GREATER THAN 0 &
+	// THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
+	if (horMoveSpeed >= 0 && (decLeft || decRight))
+	{
+		// DECREASE THE HORIZONTAL SPEED
+		horMoveSpeed -= rateOfChange;
+	}
+	// IF DECREASING LEFT THEN STOP MOVING LEFT
+	else if (decLeft)
+	{
+		decLeft = false;
+		left = false;
+	}
+	// IF DECREASING RIGHT THEN STOP MOVING RIGHT
+	else if (decRight)
+	{
+		decRight = false;
+		right = false;
+	}
+
 
 	// VALUES TO CALCULATE THE ROTATION OF THE SHIP
 	float dx = 0;
 	float dy = 0;
-	
+
 	// IF THE PLANE IS MOVING DOWN CURRENTLY
 	if (down)
 	{
@@ -368,6 +367,20 @@ void BVD::update(Player *player)
 		shape.move({ 0, verMoveSpeed });
 		// SET THE Y COMPONENT OF THE ROTATION TO THE VERTICAL MOVEMENT SPEED
 		dy = verMoveSpeed;
+	}
+	// IF THE PLANE IS MOVING UP CURRENTLY
+	else if (up)
+	{
+		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
+		if (verMoveSpeed <= maxVerMoveSpeed && !decUp)
+		{
+			// INCREASE THE VERTICAL MOVEMENT SPEED
+			verMoveSpeed += rateOfChange;
+		}
+		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
+		shape.move({ 0, -verMoveSpeed });
+		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
+		dy = -verMoveSpeed;
 	}
 	// IF THE PLANE IS MOVING LEFT CURRENTLY
 	if (left)
@@ -384,7 +397,7 @@ void BVD::update(Player *player)
 		dx = -horMoveSpeed;
 	}
 	// IF THE PLANE IS MOVING RIGHT CURRENTLY
-	if (right)
+	else if (right)
 	{
 		// IF THE HORIZONTAL SPEED IS LESS THAN THE MAX AND NOT DECREASING RIGHT
 		if (horMoveSpeed <= maxHorMoveSpeed && !decRight)
@@ -396,20 +409,6 @@ void BVD::update(Player *player)
 		shape.move({ horMoveSpeed, 0 });
 		// SET THE X COMPONENT OF THE ROTATION TO THE HORIZONTAL MOVEMENT SPEED
 		dx = horMoveSpeed;
-	}
-	// IF THE PLANE IS MOVING UP CURRENTLY
-	if (up)
-	{
-		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
-		if (verMoveSpeed <= maxVerMoveSpeed && !decUp)
-		{
-			// INCREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed += rateOfChange;
-		}
-		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
-		shape.move({ 0, -verMoveSpeed });
-		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
-		dy = -verMoveSpeed;
 	}
 
 #ifdef TESTING
@@ -425,7 +424,6 @@ void BVD::update(Player *player)
 
 	// CALL THE NEXT MOVE METHOD TO CALCUALTE OF THE PLAYER SHOULD TURN LEFT/RIGHT/UP/DOWN OR DO NOTHING
 	nextMove(player);
-
 }
 
 /*
@@ -452,12 +450,10 @@ void BVD::nextMove(Player *player)
 		{
 			// SET LEFT TO TRUE
 			left = true;
+			return;
 		}
-		else
-		{
-			// SET RIGHT TO TRUE
-			right = true;
-		}
+		// SET RIGHT TO TRUE
+		right = true;
 		// RETURN
 		return;
 	}
@@ -472,12 +468,10 @@ void BVD::nextMove(Player *player)
 		{
 			// SET DOWN TO TRUE
 			down = true;
+			return;
 		}
-		else
-		{
-			// SET UP TO TRUE
-			up = true;
-		}
+		// SET UP TO TRUE
+		up = true;
 		// RETURN
 		return;
 	}
@@ -492,12 +486,10 @@ void BVD::nextMove(Player *player)
 		{
 			// SET DOWN TO TRUE
 			down = true;
+			return;
 		}
-		else
-		{
-			// SET UP TO TRUE
-			up = true;
-		}
+		// SET UP TO TRUE
+		up = true;
 		// RETURN
 		return;
 	}
@@ -520,12 +512,10 @@ void BVD::nextMove(Player *player)
 		{
 			// SET RIGHT TO TRUE
 			right = true;
+			return;
 		}
-		else
-		{
-			// SET LEFT TO TRUE
-			left = true;
-		}
+		// SET LEFT TO TRUE
+		left = true;
 		// RETURN
 		return;
 	}
@@ -663,11 +653,9 @@ void Daihiryu::shoot(Player *player, float randomDeviation)
 */
 void Daihiryu::update(Player *player)
 {
-	// IF THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
-	if (decDown || decUp)
-	{
-		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0
-		if (verMoveSpeed >= 0)
+		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0 &
+	    // THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
+		if (verMoveSpeed >= 0 && (decDown || decUp))
 		{
 			// DECREASE THE VERTICAL MOVEMENT SPEED
 			verMoveSpeed -= rateOfChange;
@@ -696,12 +684,10 @@ void Daihiryu::update(Player *player)
 			decUp = false;
 			up = false;
 		}
-	}
-	// IF THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
-	if (decLeft || decRight)
-	{
-		// IF THE HORIZONTAL SPEED IS GREATER THAN 0
-		if (horMoveSpeed >= 0)
+	
+		// IF THE HORIZONTAL SPEED IS GREATER THAN 0 &
+		// THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
+		if (horMoveSpeed >= 0 && decLeft || decRight)
 		{
 			// DECREASE THE HORIZONTAL SPEED
 			horMoveSpeed -= rateOfChange;
@@ -734,7 +720,7 @@ void Daihiryu::update(Player *player)
 			decRight = false;
 			right = false;
 		}
-	}
+	
 	
 	// VALUES TO CALCULATE THE ROTATION OF THE SHIP
 	float dx = 0;
@@ -754,6 +740,20 @@ void Daihiryu::update(Player *player)
 		// SET THE Y COMPONENT OF THE ROTATION TO THE VERTICAL MOVEMENT SPEED
 		dy = verMoveSpeed;
 	}
+	// IF THE PLANE IS MOVING UP CURRENTLY
+	else if (up)
+	{
+		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
+		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
+		{
+			// INCREASE THE VERTICAL MOVEMENT SPEED
+			verMoveSpeed += rateOfChange;
+		}
+		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
+		shape.move({ 0, -verMoveSpeed });
+		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
+		dy = -verMoveSpeed;
+	}
 	// IF THE PLANE IS MOVING LEFT CURRENTLY
 	if (left)
 	{
@@ -769,7 +769,7 @@ void Daihiryu::update(Player *player)
 		dx = -horMoveSpeed;
 	}
 	// IF THE PLANE IS MOVING RIGHT CURRENTLY
-	if (right)
+	else if (right)
 	{
 		// IF THE HORIZONTAL SPEED IS LESS THAN THE MAX AND NOT DECREASING RIGHT
 		if (horMoveSpeed <= maxHorMoveSpeed && !decRight)
@@ -781,20 +781,6 @@ void Daihiryu::update(Player *player)
 		shape.move({ horMoveSpeed, 0 });
 		// SET THE X COMPONENT OF THE ROTATION TO THE HORIZONTAL MOVEMENT SPEED
 		dx = horMoveSpeed;
-	}
-	// IF THE PLANE IS MOVING UP CURRENTLY
-	if (up)
-	{
-		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
-		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
-		{
-			// INCREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed += rateOfChange;
-		}
-		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
-		shape.move({ 0, -verMoveSpeed });
-		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
-		dy = -verMoveSpeed;
 	}
 
 #ifdef TESTING
@@ -842,30 +828,24 @@ void Daihiryu::nextMove(Player *player)
 		right = true;
 		return;
 	}
-	// CHECK IF THE FINAL AND STOP EALIER IF IT IS
-	if (currentLoop >= maxLoops)
+	// CHECK IF THE FINAL AND STOP EALIER IF IT IS &
+	// THE ENEMYS X POSITION IS GREATER THAN 350 AND MOVING RIGHT
+	if (currentLoop >= maxLoops && shape.getPosition().x >= 250 && right)
 	{
-		// IF THE ENEMYS X POSITION IS GREATER THAN 350 AND MOVING RIGHT
-		if (shape.getPosition().x >= 250 && right)
-		{
-			// SET DEREASE RIGHT, UP, END TO TRUE AND RETURN
-			decRight = true;
-			up = true;
-			end = true;
-			return;
-		}
+		// SET DEREASE RIGHT, UP, END TO TRUE AND RETURN
+		decRight = true;
+		up = true;
+		end = true;
+		return;
 	}
-	// ELSE IF THERE ARE MORE LOOPS TO DO
-	else
+
+	// IF THE ENEMYS X POSITION IS GREATER THAN MAXDISTANCE AND MOVING RIGHT
+	if (shape.getPosition().x >= 560 - distaneFromEdge && right)
 	{
-		// IF THE ENEMYS X POSITION IS GREATER THAN MAXDISTANCE AND MOVING RIGHT
-		if (shape.getPosition().x >= 560 - distaneFromEdge && right)
-		{
-			// SET DEACREASING RIGHT AND UP TO TRUE AND RETURN
-			decRight = true;
-			up = true;
-			return;
-		}
+		// SET DEACREASING RIGHT AND UP TO TRUE AND RETURN
+		decRight = true;
+		up = true;
+		return;
 	}
 }
 
@@ -916,9 +896,13 @@ Akamizu::Akamizu(bool shipMovingLeft, int xOffset, int yOffset)
 
 	// SET ALL OF THE DEFAULT MOVEMENT VARIABLES TO THERE VALUES
 	if (!shipMovingLeft)
+	{
 		shape.setPosition((float)560 - xOffset, (float)yOffset);
+	}
 	else
+	{
 		shape.setPosition((float)xOffset, (float)yOffset);
+	}
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -927,9 +911,13 @@ Akamizu::Akamizu(bool shipMovingLeft, int xOffset, int yOffset)
 	rateOfChange = 0.03f;
 	movingLeft = shipMovingLeft;
 	if (!movingLeft)
+	{
 		left = true;
+	}
 	else
+	{
 		right = true;
+	}
 
 	moveDownDistance = 250;
 	moveUpDistance = 300;
@@ -945,49 +933,44 @@ Akamizu::Akamizu(bool shipMovingLeft, int xOffset, int yOffset)
 */
 void Akamizu::update(Player *player)
 {
-	// IF THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
-	if (decDown || decUp)
+	// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0 &
+	// THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
+	if (verMoveSpeed >= 0 && (decDown || decUp))
 	{
-		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0
-		if (verMoveSpeed >= 0)
-		{
-			// DECREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed -= rateOfChange;
-		}
-		// IF DECREASEING DOWN THEN STOP MOVING DOWN
-		else if (decDown)
-		{
-			decDown = false;
-			down = false;
-		}
-		// IF DECREASING UP STOP MOVING UP
-		else if (decUp)
-		{
-			decUp = false;
-			up = false;
-		}
+		// DECREASE THE VERTICAL MOVEMENT SPEED
+		verMoveSpeed -= rateOfChange;
 	}
-	// IF THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
-	if (decLeft || decRight)
+	// IF DECREASEING DOWN THEN STOP MOVING DOWN
+	else if (decDown)
 	{
-		// IF THE HORIZONTAL SPEED IS GREATER THAN 0
-		if (horMoveSpeed >= 0)
-		{
-			// DECREASE THE HORIZONTAL SPEED
-			horMoveSpeed -= rateOfChange;
-		}
-		// IF DECREASING LEFT THEN STOP MOVING LEFT
-		else if (decLeft)
-		{
-			decLeft = false;
-			left = false;
-		}
-		// IF DECREASING RIGHT THEN STOP MOVING RIGHT
-		else if (decRight)
-		{
-			decRight = false;
-			right = false;
-		}
+		decDown = false;
+		down = false;
+	}
+	// IF DECREASING UP STOP MOVING UP
+	else if (decUp)
+	{
+		decUp = false;
+		up = false;
+	}
+
+	// IF THE HORIZONTAL SPEED IS GREATER THAN 0 &
+	// THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
+	if (horMoveSpeed >= 0 && (decLeft || decRight))
+	{
+		// DECREASE THE HORIZONTAL SPEED
+		horMoveSpeed -= rateOfChange;
+	}
+	// IF DECREASING LEFT THEN STOP MOVING LEFT
+	else if (decLeft)
+	{
+		decLeft = false;
+		left = false;
+	}
+	// IF DECREASING RIGHT THEN STOP MOVING RIGHT
+	else if (decRight)
+	{
+		decRight = false;
+		right = false;
 	}
 
 	// VALUES TO CALCULATE THE ROTATION OF THE SHIP
@@ -1008,6 +991,20 @@ void Akamizu::update(Player *player)
 		// SET THE Y COMPONENT OF THE ROTATION TO THE VERTICAL MOVEMENT SPEED
 		dy = verMoveSpeed;
 	}
+	// IF THE PLANE IS MOVING UP CURRENTLY
+	else if (up)
+	{
+		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
+		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
+		{
+			// INCREASE THE VERTICAL MOVEMENT SPEED
+			verMoveSpeed += rateOfChange;
+		}
+		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
+		shape.move({ 0, -verMoveSpeed });
+		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
+		dy = -verMoveSpeed;
+	}
 	// IF THE PLANE IS MOVING LEFT CURRENTLY
 	if (left)
 	{
@@ -1023,7 +1020,7 @@ void Akamizu::update(Player *player)
 		dx = -horMoveSpeed;
 	}
 	// IF THE PLANE IS MOVING RIGHT CURRENTLY
-	if (right)
+	else if (right)
 	{
 		// IF THE HORIZONTAL SPEED IS LESS THAN THE MAX AND NOT DECREASING RIGHT
 		if (horMoveSpeed <= maxHorMoveSpeed && !decRight)
@@ -1036,25 +1033,12 @@ void Akamizu::update(Player *player)
 		// SET THE X COMPONENT OF THE ROTATION TO THE HORIZONTAL MOVEMENT SPEED
 		dx = horMoveSpeed;
 	}
-	// IF THE PLANE IS MOVING UP CURRENTLY
-	if (up)
-	{
-		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
-		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
-		{
-			// INCREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed += rateOfChange;
-		}
-		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
-		shape.move({ 0, -verMoveSpeed });
-		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
-		dy = -verMoveSpeed;
-	}
+
 
 #ifdef TESTING
 	center.move({ dx, dy });
 #endif
-	
+
 	// CALCULATE THE ANGLE TO FACE TO BE ROTATING THE IN THE DIRECTION THAT ARE CURRENTLY MOVING IN
 	const float PI = 3.14159265f;
 	float rotation = ((atan2(dy, dx)) * 180 / PI) - 90;
@@ -1075,7 +1059,7 @@ void Akamizu::nextMove(Player *player)
 	/*
 	RIGHT/LEFT
 	LOOP
-		DOWN,LEFT,UP,RIGHT / DOWN,RIGHT,UP,LEFT 
+		DOWN,LEFT,UP,RIGHT / DOWN,RIGHT,UP,LEFT
 	*/
 	// IF THE PLANE IS MOVING LEFT
 	if (movingLeft)
@@ -1097,16 +1081,8 @@ void Akamizu::nextMove(Player *player)
 			down = true;
 			return;
 		}
-		// IF THE PLANES Y POSITION IS GREATER THAN THE MAX AND MOVING DOWN
-		if (shape.getPosition().y >= moveDownDistance && down)
-		{
-			// SET DECREASE DOWN AND LEFT TO TRUE THEN RETURN
-			decDown = true;
-			left = true;
-			return;
-		}
 		// IF THE PLANES X IS LESS THAN THE MIN AND MOVIGN LEFT 
-		if (shape.getPosition().x <= distaneFromEdge && left)
+		else if (shape.getPosition().x <= distaneFromEdge && left)
 		{
 			// SET DECREASE LEFT AND UP TO TRUE THEN RETURN
 			decLeft = true;
@@ -1122,51 +1098,58 @@ void Akamizu::nextMove(Player *player)
 			end = true;
 			return;
 		}
+		// IF THE PLANES Y POSITION IS GREATER THAN THE MAX AND MOVING DOWN
+		else if (shape.getPosition().y >= moveDownDistance && down)
+		{
+			// SET DECREASE DOWN AND LEFT TO TRUE THEN RETURN
+			decDown = true;
+			left = true;
+			return;
+		}
+
+		return;
 	}
 	// THE PLANE IS MOVING RIGHT
-	else
+	// IF THE PLANES X POSITION IS LESS THAN THE MIN AND MOVING LEFT AND NOT THE END
+	if (shape.getPosition().x <= distaneFromEdge && left && !end)
 	{
-		// IF THE PLANES X POSITION IS LESS THAN THE MIN AND MOVING LEFT AND NOT THE END
-		if (shape.getPosition().x <= distaneFromEdge && left && !end)
+		// IF FIRST TIME AND 1 IN 3 CHANCE AND CAN SHOOT
+		if (once && rand() % 3 == 0 && canShoot)
 		{
-			// IF FIRST TIME AND 1 IN 3 CHANCE AND CAN SHOOT
-			if (once && rand() % 3 == 0 && canShoot)
-			{
-				// SHOOT A BULLET TOWARDS THE PLAYER
-				shoot(player, randomDeviation);
-			}
-			// SET ONCE TO FALSE
-			once = false;
-			// SET DECREASE LEFT AND DOWN TO TRUE THEN RETURN
-			decLeft = true;
-			down = true;
-			return;
+			// SHOOT A BULLET TOWARDS THE PLAYER
+			shoot(player, randomDeviation);
 		}
-		// IF THE PLANES Y POSITION IS GREATER THAN THE MAX AND MOVING DOWN
-		if (shape.getPosition().y >= moveDownDistance && down)
-		{
-			// SET DECREASEING DOWN AND RIGHT TO TRUE THEN RETURN
-			decDown = true;
-			right = true;
-			return;
-		}
-		// IF THE PLANES X POSITION IS GREATER THAN THE MAX AND MOVING RIGHT
-		if (shape.getPosition().x >= 560 - distaneFromEdge && right)
-		{
-			// SET DECREASE RIGHT AND UP TO TRUE AND RETURN
-			decRight = true;
-			up = true;
-			return;
-		}
-		// IF THE PLANES Y POSITION IS LESS THAN THE MIN AND MOVING UP
-		if (shape.getPosition().y <= moveUpDistance && up)
-		{
-			// SET DECREAS UP AND LEFT AND END TO TRUE THEN RETURN
-			decUp = true;
-			left = true;
-			end = true;
-			return;
-		}
+		// SET ONCE TO FALSE
+		once = false;
+		// SET DECREASE LEFT AND DOWN TO TRUE THEN RETURN
+		decLeft = true;
+		down = true;
+		return;
+	}
+	// IF THE PLANES X POSITION IS GREATER THAN THE MAX AND MOVING RIGHT
+	else if (shape.getPosition().x >= 560 - distaneFromEdge && right)
+	{
+		// SET DECREASE RIGHT AND UP TO TRUE AND RETURN
+		decRight = true;
+		up = true;
+		return;
+	}
+	// IF THE PLANES Y POSITION IS GREATER THAN THE MAX AND MOVING DOWN
+	if (shape.getPosition().y >= moveDownDistance && down)
+	{
+		// SET DECREASEING DOWN AND RIGHT TO TRUE THEN RETURN
+		decDown = true;
+		right = true;
+		return;
+	}
+	// IF THE PLANES Y POSITION IS LESS THAN THE MIN AND MOVING UP
+	else if (shape.getPosition().y <= moveUpDistance && up)
+	{
+		// SET DECREAS UP AND LEFT AND END TO TRUE THEN RETURN
+		decUp = true;
+		left = true;
+		end = true;
+		return;
 	}
 }
 
@@ -1344,15 +1327,25 @@ Red::Red(int num, int yOffset)
 
 	// SET THE POSITION OF THE PLANE DEPENDENT ON THE NUMBER IN THE LIST
 	if (num == 1)
+	{
 		shape.setPosition((float)0, (float)yOffset);
-	if (num == 2)
+	}
+	else if (num == 2)
+	{
 		shape.setPosition((float)-50, (float)yOffset);
-	if (num == 3)
+	}
+	else if (num == 3)
+	{
 		shape.setPosition((float)-100, (float)yOffset);
-	if (num == 4)
+	}
+	else if (num == 4)
+	{
 		shape.setPosition((float)-150, (float)yOffset);
-	if (num == 5)
+	}
+	else if (num == 5)
+	{
 		shape.setPosition((float)-200, (float)yOffset);
+	}
 
 #if defined(TESTING)
 	center.setSize({ 10, 10 });
@@ -1385,50 +1378,45 @@ Red::Red(int num, int yOffset)
 */
 void Red::update(Player *player)
 {
-	// IF THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
-	if (decDown || decUp)
+	// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0 &
+	// THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
+	if (verMoveSpeed >= 0 && (decDown || decUp))
 	{
-		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0
-		if (verMoveSpeed >= 0)
-		{
-			// DECREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed -= rateOfChange;
-		}
-		// IF DECREASEING DOWN THEN STOP MOVING DOWN
-		else if (decDown)
-		{
-			decDown = false;
-			down = false;
-		}
-		// IF DECREASING UP STOP MOVING UP
-		else if (decUp)
-		{
-			currentLoop++;
-			decUp = false;
-			up = false;
-		}
+		// DECREASE THE VERTICAL MOVEMENT SPEED
+		verMoveSpeed -= rateOfChange;
 	}
-	// IF THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
-	if (decLeft || decRight)
+	// IF DECREASEING DOWN THEN STOP MOVING DOWN
+	else if (decDown)
 	{
-		// IF THE HORIZONTAL SPEED IS GREATER THAN 0
-		if (horMoveSpeed >= 0)
-		{
-			// DECREASE THE HORIZONTAL SPEED
-			horMoveSpeed -= rateOfChange;
-		}
-		// IF DECREASING LEFT THEN STOP MOVING LEFT
-		else if (decLeft)
-		{
-			decLeft = false;
-			left = false;
-		}
-		// IF DECREASING RIGHT THEN STOP MOVING RIGHT
-		else if (decRight)
-		{
-			decRight = false;
-			right = false;
-		}
+		decDown = false;
+		down = false;
+	}
+	// IF DECREASING UP STOP MOVING UP
+	else if (decUp)
+	{
+		currentLoop++;
+		decUp = false;
+		up = false;
+	}
+
+	// IF THE HORIZONTAL SPEED IS GREATER THAN 0
+	// THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
+	if (horMoveSpeed >= 0 && (decLeft || decRight))
+	{
+		// DECREASE THE HORIZONTAL SPEED
+		horMoveSpeed -= rateOfChange;
+	}
+	// IF DECREASING LEFT THEN STOP MOVING LEFT
+	else if (decLeft)
+	{
+		decLeft = false;
+		left = false;
+	}
+	// IF DECREASING RIGHT THEN STOP MOVING RIGHT
+	else if (decRight)
+	{
+		decRight = false;
+		right = false;
 	}
 
 	// VALUES TO CALCULATE THE ROTATION OF THE SHIP
@@ -1449,6 +1437,20 @@ void Red::update(Player *player)
 		// SET THE Y COMPONENT OF THE ROTATION TO THE VERTICAL MOVEMENT SPEED
 		dy = verMoveSpeed;
 	}
+	// IF THE PLANE IS MOVING UP CURRENTLY
+	else if (up)
+	{
+		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
+		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
+		{
+			// INCREASE THE VERTICAL MOVEMENT SPEED
+			verMoveSpeed += rateOfChange;
+		}
+		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
+		shape.move({ 0, -verMoveSpeed });
+		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
+		dy = -verMoveSpeed;
+	}
 	// IF THE PLANE IS MOVING LEFT CURRENTLY
 	if (left)
 	{
@@ -1464,7 +1466,7 @@ void Red::update(Player *player)
 		dx = -horMoveSpeed;
 	}
 	// IF THE PLANE IS MOVING RIGHT CURRENTLY
-	if (right)
+	else if (right)
 	{
 		// IF THE HORIZONTAL SPEED IS LESS THAN THE MAX AND NOT DECREASING RIGHT
 		if (horMoveSpeed <= maxHorMoveSpeed && !decRight)
@@ -1477,20 +1479,6 @@ void Red::update(Player *player)
 		// SET THE X COMPONENT OF THE ROTATION TO THE HORIZONTAL MOVEMENT SPEED
 		dx = horMoveSpeed;
 	}
-	// IF THE PLANE IS MOVING UP CURRENTLY
-	if (up)
-	{
-		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
-		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
-		{
-			// INCREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed += rateOfChange;
-		}
-		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
-		shape.move({ 0, -verMoveSpeed });
-		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
-		dy = -verMoveSpeed;
-	}
 
 #ifdef TESTING
 	center.move({ dx, dy });
@@ -1502,7 +1490,7 @@ void Red::update(Player *player)
 
 	// SET THE ROTATION OF THE PLANE TO BE THE CALCULATED ROTATION
 	shape.setRotation(rotation);
-	
+
 	// CALL THE NEXT MOVE METHOD TO CALCUALTE OF THE PLAYER SHOULD TURN LEFT/RIGHT/UP/DOWN OR DO NOTHING
 	nextMove();
 }
@@ -1524,6 +1512,14 @@ void Red::nextMove()
 			down = true;
 			return;
 		}
+		// IF PLANES X POSITION IS LESS THAN MIN AND MOVING LEFT 
+		if (shape.getPosition().x <= turnPos3 && left)
+		{
+			// SET DECREASE LEFT AND UP TO TRUE THEN RETURN
+			decLeft = true;
+			up = true;
+			return;
+		}
 	}
 	// MORE LOOPS
 	else
@@ -1536,30 +1532,6 @@ void Red::nextMove()
 			down = true;
 			return;
 		}
-	}
-	// IF THE PLANES Y POSITION IS GREATER THAN THE MAX AND MOVING DOWN
-	if (shape.getPosition().y >= moveDownDistance && down)
-	{
-		// SET DECREASING DOWN AND LEFT TO TRUE THEN RETURN
-		decDown = true;
-		left = true;
-		return;
-	}
-	// IF NO MORE LOOPS
-	if (!nextLoop)
-	{
-		// IF PLANES X POSITION IS LESS THAN MIN AND MOVING LEFT 
-		if (shape.getPosition().x <= turnPos3 && left)
-		{
-			// SET DECREASE LEFT AND UP TO TRUE THEN RETURN
-			decLeft = true;
-			up = true;
-			return;
-		}
-	}
-	// MORE LOOPS LEFT
-	else
-	{
 		// IF PLANES X POSITION IS LESS THAN MIN AND MOVING LEFT
 		if (shape.getPosition().x <= turnPos4 && left)
 		{
@@ -1568,6 +1540,14 @@ void Red::nextMove()
 			up = true;
 			return;
 		}
+	}
+	// IF THE PLANES Y POSITION IS GREATER THAN THE MAX AND MOVING DOWN
+	if (shape.getPosition().y >= moveDownDistance && down)
+	{
+		// SET DECREASING DOWN AND LEFT TO TRUE THEN RETURN
+		decDown = true;
+		left = true;
+		return;
 	}
 	// IF THE PLANES Y POSITION IS LESS THAN MIN AND MOVING UP
 	if (shape.getPosition().y <= moveUpDistance && up)
@@ -1636,7 +1616,9 @@ Shoryu::Shoryu(bool onLeft, int xOffset, int yOffset)
 	// SET ALL OF THE DEFAULT MOVEMENT VARIABLES TO THERE VALUES
 	leftSide = onLeft;
 	if (leftSide)
+	{
 		shape.setPosition((float)xOffset, (float)yOffset);
+	}
 
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
@@ -1658,11 +1640,9 @@ Shoryu::Shoryu(bool onLeft, int xOffset, int yOffset)
 */
 void Shoryu::update(Player *player)
 {
-	// IF THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
-	if (decDown || decUp)
-	{
-		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0
-		if (verMoveSpeed >= 0)
+		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0 &&
+	    // THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
+		if (verMoveSpeed >= 0 && (decDown || decUp))
 		{
 			// DECREASE THE VERTICAL MOVEMENT SPEED
 			verMoveSpeed -= rateOfChange;
@@ -1679,12 +1659,10 @@ void Shoryu::update(Player *player)
 			decUp = false;
 			up = false;
 		}
-	}
-	// IF THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
-	if (decLeft || decRight)
-	{
-		// IF THE HORIZONTAL SPEED IS GREATER THAN 0
-		if (horMoveSpeed >= 0)
+	
+		// IF THE HORIZONTAL SPEED IS GREATER THAN 0 &
+		// THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
+		if (horMoveSpeed >= 0 (decLeft || decRight))
 		{
 			// DECREASE THE HORIZONTAL SPEED
 			horMoveSpeed -= rateOfChange;
@@ -1701,7 +1679,6 @@ void Shoryu::update(Player *player)
 			decRight = false;
 			right = false;
 		}
-	}
 
 	// VALUES TO CALCULATE THE ROTATION OF THE SHIP
 	float dx = 0;
@@ -1721,6 +1698,20 @@ void Shoryu::update(Player *player)
 		// SET THE Y COMPONENT OF THE ROTATION TO THE VERTICAL MOVEMENT SPEED
 		dy = verMoveSpeed;
 	}
+	// IF THE PLANE IS MOVING UP CURRENTLY
+	else if (up)
+	{
+		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
+		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
+		{
+			// INCREASE THE VERTICAL MOVEMENT SPEED
+			verMoveSpeed += rateOfChange;
+		}
+		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
+		shape.move({ 0, -verMoveSpeed });
+		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
+		dy = -verMoveSpeed;
+	}
 	// IF THE PLANE IS MOVING LEFT CURRENTLY
 	if (left)
 	{
@@ -1736,7 +1727,7 @@ void Shoryu::update(Player *player)
 		dx = -horMoveSpeed;
 	}
 	// IF THE PLANE IS MOVING RIGHT CURRENTLY
-	if (right)
+	else if (right)
 	{
 		// IF THE HORIZONTAL SPEED IS LESS THAN THE MAX AND NOT DECREASING RIGHT
 		if (horMoveSpeed <= maxHorMoveSpeed && !decRight)
@@ -1749,20 +1740,7 @@ void Shoryu::update(Player *player)
 		// SET THE X COMPONENT OF THE ROTATION TO THE HORIZONTAL MOVEMENT SPEED
 		dx = horMoveSpeed;
 	}
-	// IF THE PLANE IS MOVING UP CURRENTLY
-	if (up)
-	{
-		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
-		if (verMoveSpeed <= maxHorMoveSpeed && !decUp)
-		{
-			// INCREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed += rateOfChange;
-		}
-		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
-		shape.move({ 0, -verMoveSpeed });
-		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
-		dy = -verMoveSpeed;
-	}
+
 
 #ifdef TESTING
 	center.move({ dx, dy });
@@ -1803,12 +1781,10 @@ void Shoryu::nextMove(Player *player)
 		{
 			// SET LEFT TO TRUE
 			left = true;
+			return;
 		}
-		else
-		{
-			// SET RIGHT TO TRUE
-			right = true;
-		}
+		// SET RIGHT TO TRUE
+		right = true;
 		// RETURN
 		return;
 	}
@@ -1823,12 +1799,10 @@ void Shoryu::nextMove(Player *player)
 		{
 			// SET DOWN TO TRUE
 			down = true;
+			return;
 		}
-		else
-		{
-			// SET UP TO TRUE
-			up = true;
-		}
+		// SET UP TO TRUE
+		up = true;
 		// RETURN
 		return;
 	}
@@ -1843,12 +1817,12 @@ void Shoryu::nextMove(Player *player)
 		{
 			// SET DOWN TO TRUE
 			down = true;
+			return;
 		}
-		else
-		{
+		
 			// SET UP TO TRUE
 			up = true;
-		}
+		
 		// RETURN
 		return;
 	}
@@ -1871,12 +1845,13 @@ void Shoryu::nextMove(Player *player)
 		{
 			// SET RIGHT TO TRUE
 			right = true;
+			return;
 		}
-		else
-		{
+		
+		
 			// SET LEFT TO TRUE
 			left = true;
-		}
+		
 		// RETURN
 		return;
 	}
@@ -1982,17 +1957,15 @@ void BounsFighter::update(Player *player)
 			// INCREASE THE HORIZONTAL MOVMENT SPEED
 			horMoveSpeed += rateOfChange;
 		}
+		return;
 	}
-	// MOVING RIGHT
-	else
-	{
 		// IF THE HORIZONTAL MOVE SPEED IS GREATER THAN 0
 		if (horMoveSpeed >= 0)
 		{
 			// DECREASE HORIZONTAL MOVEMENT SPEED
 			horMoveSpeed -= rateOfChange;
 		}
-	}
+	
 }
 
 /*
@@ -2116,9 +2089,13 @@ Fukusuke::Fukusuke(bool shipMovingLeft, int xOffset, int yOffset)
 
 	// SET ALL OF THE DEFAULT MOVEMENT VARIABLES TO THERE VALUES
 	if (!shipMovingLeft)
+	{
 		shape.setPosition((float)560 - xOffset, (float)yOffset);
+	}
 	else
+	{
 		shape.setPosition((float)xOffset, (float)yOffset);
+	}
 	maxHorMoveSpeed = 3;
 	maxVerMoveSpeed = 3;
 	horMoveSpeed = maxVerMoveSpeed;
@@ -2126,9 +2103,13 @@ Fukusuke::Fukusuke(bool shipMovingLeft, int xOffset, int yOffset)
 	rateOfChange = 0.07f;
 	movingLeft = shipMovingLeft;
 	if (!movingLeft)
+	{
 		left = true;
+	}
 	else
+	{
 		right = true;
+	}
 	moveUpDistance = 300;
 	turnPos1 = 150;
 	turnPos2 = 150;
@@ -2143,11 +2124,9 @@ Fukusuke::Fukusuke(bool shipMovingLeft, int xOffset, int yOffset)
 */
 void Fukusuke::update(Player *player)
 {
-	// IF THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
-	if (decDown || decUp)
-	{
 		// IF THE VERTICAL MOVEMENT SPEED IS GREATER THAN 0
-		if (verMoveSpeed >= 0)
+		// THE PLANE IS DECREASING DOWN OR UP (SLOWING DOWN VERTICALLY)
+		if (verMoveSpeed >= 0 && (decDown || decUp))
 		{
 			// DECREASE THE VERTICAL MOVEMENT SPEED
 			verMoveSpeed -= rateOfChange;
@@ -2164,12 +2143,10 @@ void Fukusuke::update(Player *player)
 			decUp = false;
 			up = false;
 		}
-	}
-	// IF THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
-	if (decLeft || decRight)
-	{
-		// IF THE HORIZONTAL SPEED IS GREATER THAN 0
-		if (horMoveSpeed >= 0)
+	
+		// IF THE HORIZONTAL SPEED IS GREATER THAN 0 &
+		// THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
+		if (horMoveSpeed >= 0 && (decLeft || decRight))
 		{
 			// DECREASE THE HORIZONTAL SPEED
 			horMoveSpeed -= rateOfChange;
@@ -2192,7 +2169,7 @@ void Fukusuke::update(Player *player)
 			left = true;
 			horMoveSpeed = 0.2f;
 		}
-	}
+	
 
 	// VALUES TO CALCULATE THE ROTATION OF THE SHIP
 	float dx = 0;
@@ -2212,6 +2189,20 @@ void Fukusuke::update(Player *player)
 		// SET THE Y COMPONENT OF THE ROTATION TO THE VERTICAL MOVEMENT SPEED
 		dy = verMoveSpeed;
 	}
+	// IF THE PLANE IS MOVING UP CURRENTLY
+	else if (up)
+	{
+		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
+		if (verMoveSpeed <= maxVerMoveSpeed && !decUp)
+		{
+			// INCREASE THE VERTICAL MOVEMENT SPEED
+			verMoveSpeed += rateOfChange;
+		}
+		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
+		shape.move({ 0, -verMoveSpeed });
+		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
+		dy = -verMoveSpeed;
+	}
 	// IF THE PLANE IS MOVING LEFT CURRENTLY
 	if (left)
 	{
@@ -2227,7 +2218,7 @@ void Fukusuke::update(Player *player)
 		dx = -horMoveSpeed;
 	}
 	// IF THE PLANE IS MOVING RIGHT CURRENTLY
-	if (right)
+	else if (right)
 	{
 		// IF THE HORIZONTAL SPEED IS LESS THAN THE MAX AND NOT DECREASING RIGHT
 		if (horMoveSpeed <= maxHorMoveSpeed && !decRight)
@@ -2240,20 +2231,7 @@ void Fukusuke::update(Player *player)
 		// SET THE X COMPONENT OF THE ROTATION TO THE HORIZONTAL MOVEMENT SPEED
 		dx = horMoveSpeed;
 	}
-	// IF THE PLANE IS MOVING UP CURRENTLY
-	if (up)
-	{
-		// IF THE VERTICAL SPEED IS LESS THAN THE MAX AND NOT DECREASING UP
-		if (verMoveSpeed <= maxVerMoveSpeed && !decUp)
-		{
-			// INCREASE THE VERTICAL MOVEMENT SPEED
-			verMoveSpeed += rateOfChange;
-		}
-		// MOVE THE SHAPE BY THE -VERTICAL MOVEMENT SPEED
-		shape.move({ 0, -verMoveSpeed });
-		// SET THE Y COMPONENT OF THE ROTATION TO THE -VERTICAL MOVEMENT SPEED
-		dy = -verMoveSpeed;
-	}
+
 
 #ifdef TESTING
 	center.move({ dx, dy });
@@ -2318,43 +2296,41 @@ void Fukusuke::nextMove(Player *player)
 			once = false;
 			return;
 		}
+		return;
 	}
-	// MOVING RIGHT
-	else
+
+	// IF THE PLANES X POSITION IS LESS THAN MIN AND MOVING LEFT AND NOT AT END
+	if (shape.getPosition().x <= 560 - turnPos1 && left && !end)
 	{
-		// IF THE PLANES X POSITION IS LESS THAN MIN AND MOVING LEFT AND NOT AT END
-		if (shape.getPosition().x <= 560 - turnPos1 && left && !end)
+		// SET DECREASE LEFT AND UP TO TRUE THEN RETURN
+		decLeft = true;
+		up = true;
+		return;
+	}
+	// IF THE PLANES Y POSITION IS LESS THAN MIN AND MOVING UP
+	if (shape.getPosition().y <= moveUpDistance && up)
+	{
+		// SET DECREASE UP AND RIGHT TO TRUE THEN RETURN 
+		decUp = true;
+		right = true;
+		return;
+	}
+	// IF THE PLAYERS X POSITION IS MORE THAN MAX AND MOVING RIGHT
+	if (shape.getPosition().x >= 560 - turnPos2 && right)
+	{
+		// SET DECREASE TIGHT AND DOWN AND END TO TRUE
+		decRight = true;
+		down = true;
+		end = true;
+		// IF FIRST TIME AND CAN SHOOT
+		if (once && canShoot)
 		{
-			// SET DECREASE LEFT AND UP TO TRUE THEN RETURN
-			decLeft = true;
-			up = true;
-			return;
+			// FIRE A BULLET TOWARDS THE PLAYER
+			shoot(player, randomDeviation);
 		}
-		// IF THE PLANES Y POSITION IS LESS THAN MIN AND MOVING UP
-		if (shape.getPosition().y <= moveUpDistance && up)
-		{
-			// SET DECREASE UP AND RIGHT TO TRUE THEN RETURN 
-			decUp = true;
-			right = true;
-			return;
-		}
-		// IF THE PLAYERS X POSITION IS MORE THAN MAX AND MOVING RIGHT
-		if (shape.getPosition().x >= 560 - turnPos2 && right)
-		{
-			// SET DECREASE TIGHT AND DOWN AND END TO TRUE
-			decRight = true;
-			down = true;
-			end = true;
-			// IF FIRST TIME AND CAN SHOOT
-			if (once && canShoot)
-			{
-				// FIRE A BULLET TOWARDS THE PLAYER
-				shoot(player, randomDeviation);
-			}
-			// SET ONCE TO FALSE AND RETURN
-			once = false;
-			return;
-		}
+		// SET ONCE TO FALSE AND RETURN
+		once = false;
+		return;
 	}
 }
 
@@ -2397,15 +2373,25 @@ Red2::Red2(int num)
 
 	// SET THE POSITION BASED ON THE ORDER OF SPAWN
 	if (num == 1)
+	{
 		shape.setPosition(-200, 100);
+	}
 	if (num == 2)
+	{
 		shape.setPosition(-100, 150);
+	}
 	if (num == 3)
+	{
 		shape.setPosition(0, 200);
+	}
 	if (num == 4)
+	{
 		shape.setPosition(-100, 250);
+	}
 	if (num == 5)
+	{
 		shape.setPosition(-200, 300);
+	}
 
 #if defined(TESTING)
 	center.setSize({ 10, 10 });
@@ -2482,15 +2468,25 @@ Red3::Red3(int num)
 
 	// SET THE POSITION BASED ON THE ORDER OF SPAWN
 	if (num == 1)
+	{
 		shape.setPosition(0, 50);
+	}
 	if (num == 2)
+	{
 		shape.setPosition(-50, 100);
+	}
 	if (num == 3)
+	{
 		shape.setPosition(-100, 150);
+	}
 	if (num == 4)
+	{
 		shape.setPosition(-150, 200);
+	}
 	if (num == 5)
+	{
 		shape.setPosition(-200, 250);
+	}
 
 #if defined(TESTING)
 	center.setSize({ 10, 10 });

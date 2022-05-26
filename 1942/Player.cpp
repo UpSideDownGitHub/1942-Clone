@@ -142,7 +142,6 @@ void Player::update(sf::RenderWindow *window, Audio *audio)
 	{
 		bullet->update();
 	}
-
 }
 
 /*

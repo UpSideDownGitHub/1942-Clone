@@ -26,7 +26,7 @@ void PowerUp::update()
 }
 
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int PowerUp::type()
 {
@@ -69,7 +69,7 @@ GreenPowerUp::GreenPowerUp(sf::Vector2f spawnPos)
 	shape.setFillColor(sf::Color::Green);
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int GreenPowerUp::type()
 {
@@ -88,7 +88,7 @@ WhitePowerUp::WhitePowerUp(sf::Vector2f spawnPos)
 	shape.setFillColor(sf::Color::White);
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int WhitePowerUp::type()
 {
@@ -107,7 +107,7 @@ GrayPowerUp::GrayPowerUp(sf::Vector2f spawnPos)
 	shape.setFillColor(sf::Color(0x5F5F5AFF)); // GRAY
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int GrayPowerUp::type()
 {
@@ -126,7 +126,7 @@ OrangePowerUp::OrangePowerUp(sf::Vector2f spawnPos)
 	shape.setFillColor(sf::Color(0xFF9200FF)); // ORANGE
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int OrangePowerUp::type()
 {
@@ -145,7 +145,7 @@ YellowPowerUp::YellowPowerUp(sf::Vector2f spawnPos)
 	shape.setFillColor(sf::Color::Yellow);
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int YellowPowerUp::type()
 {
@@ -166,7 +166,7 @@ BlackPowerUp::BlackPowerUp(sf::Vector2f spawnPos)
 	shape.setOutlineThickness(0.5);
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int BlackPowerUp::type()
 {
@@ -185,7 +185,7 @@ RedPowerUp::RedPowerUp(sf::Vector2f spawnPos)
 	shape.setFillColor(sf::Color::Red);
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int RedPowerUp::type()
 {
@@ -204,7 +204,7 @@ Yashichi::Yashichi(sf::Vector2f spawnPos)
 	shape.setFillColor(sf::Color::Blue);
 }
 /*
-	WILL RETURN THE TYPE THAT THE CURRENT POPUP IS
+	WILL RETURN THE TYPE THAT THE CURRENT POWER UP IS
 */
 int Yashichi::type()
 {

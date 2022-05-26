@@ -22,7 +22,8 @@ class Audio
 {
 public:
 	// METHODS
-	void init(std::string loc, bool music);
+	Audio();
+	Audio(std::string loc, bool music);
 	void setVolume(float volume);
 	void loadAudio(std::string loc, bool music);
 	void play();

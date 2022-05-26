@@ -145,24 +145,19 @@ void EnemySpawner::startLevel(int level)
 	// IF NOT PLAYING INSANE MODE
 	if (!insaneMode)
 	{
-		// FOR EACH OF THE CURRENT LEVELS PLAYED
-		for (int i = 0; i < currentLevel; i += 10)
-		{
-			// INCREASE THE AMMOUNT OF ENEMIES TO SPAWN
-			smallMinToSpawnMore += 2;
-			mediumMinToSpawnMore++;
-		}
+		// CALCULATE THE AMMOUNT OF ENEMIES TO SPAWN BASED ON THE CURRENT LEVEL
+		int value = abs(currentLevel / 10);
+		smallMinToSpawnMore += 2 * value;
+		mediumMinToSpawnMore += value;
+
 	}
 	// INSAME MODE
 	else
 	{
-		// FOR EACH OF THE CURRENT LEVELS + 32 (START AT MAX DIFFICULTY)
-		for (int i = 0; i < 32 + currentLevel; i += 10)
-		{
-			// INCREASE THE AMMOUNT OF ENEMIES TO SPAWN
-			smallMinToSpawnMore += 2;
-			mediumMinToSpawnMore++;
-		}
+		// CALCULATE THE AMMOUNT OF ENEMIES TO SPAWN BASED ON THE CURRENT LEVEL
+		int value = abs((currentLevel + 32) / 10);
+		smallMinToSpawnMore += 2 * value;
+		mediumMinToSpawnMore += value;
 	}
 }
 
@@ -230,52 +225,47 @@ void EnemySpawner::update(Player *player, Audio *audio)
 		// CALL THE MOVE ENEMY FUNCTION AND CALL THE SPAWN ENEMY FUNCTION
 		moveEnemy(player, audio);
 		spawnEnemy();
+		return;
 	}
-	// ALL OTHER GAME MODES
-	else
+	// IF THE LEVEL IS CURRENTLY BEING PLAYED
+	if (time(0) - startLevelTime > levelLength && playLevel)
 	{
-		// IF THE LEVEL IS CURRENTLY BEING PLAYED
-		if (time(0) - startLevelTime > levelLength && playLevel)
+		canSpawn = false;
+		// IF THE CURRENT LEVEL IS A BOSS LEVEL
+		if ((currentLevel == 32 - 25 || currentLevel == 32 - 15 || currentLevel == 32 - 10 || currentLevel == 32 - 5 || currentLevel == 32 - 1) && !bossSpawned && !bossKilled)
 		{
-			canSpawn = false;
-			// IF THE CURRENT LEVEL IS A BOSS LEVEL
-			if ((currentLevel == 32 - 25 || currentLevel == 32 - 15 || currentLevel == 32 - 10 || currentLevel == 32 - 5 || currentLevel == 32 - 1) && !bossSpawned && !bossKilled)
-			{
-				// SPAWN BOSS ENEMY
-				audio->audio[0]->play();
-				enemys.push_back(new Ayako());
-				bossSpawned = true;
-			}
-			// IF ALL ENEMIES HAVE BEEN KILLED THEN END THE LEVEL
-			if (curreentAmmountOfSmallEnemy <= 0 && currentAmmountOfMediumEnemy <= 0 && currentAmmountOfSpecialEnemy <= 0 && !bossSpawned && !miniBossSpawned)
-			{
-				playLevel = false;
-			}
+			// SPAWN BOSS ENEMY
+			audio->audio[0]->play();
+			enemys.push_back(new Ayako());
+			bossSpawned = true;
 		}
-		// IF PLAYING THE LEVEL
-		if (playLevel)
+		// IF ALL ENEMIES HAVE BEEN KILLED THEN END THE LEVEL
+		if (curreentAmmountOfSmallEnemy <= 0 && currentAmmountOfMediumEnemy <= 0 && currentAmmountOfSpecialEnemy <= 0 && !bossSpawned && !miniBossSpawned)
 		{
-			// CALL THE MOVEENEMY METHOD TO MOVE ALL OF THE ENEMIES
-			moveEnemy(player, audio);
-			// IF ENEMIES CAN SPAWN
-			if (canSpawn)
+			playLevel = false;
+		}
+	}
+	// IF PLAYING THE LEVEL
+	if (playLevel)
+	{
+		// CALL THE MOVEENEMY METHOD TO MOVE ALL OF THE ENEMIES
+		moveEnemy(player, audio);
+		// IF ENEMIES CAN SPAWN
+		if (canSpawn)
+		{
+			// RANDOM MODE
+			if (randomMode)
 			{
-				// RANDOM MODE
-				if (randomMode)
-				{
-					// SPAWN A RANDOM ENEMY
-					randomSpawnEnemy();
-				}
-				// ALL OTHER MODES
-				else
-				{
-					// SPAWN AN ENEMY
-					spawnEnemy();
-				}
+				// SPAWN A RANDOM ENEMY
+				randomSpawnEnemy();
+				return;
 			}
+			// SPAWN AN ENEMY
+			spawnEnemy();
 		}
 	}
 }
+
 
 /*
 	HANDLES MOVING THE ENEMIS AND ALSO CHECKING IF THEY SHOULD DIE
@@ -295,98 +285,125 @@ void EnemySpawner::moveEnemy(Player *player, Audio *audio)
 			totalEnemySpawned++;
 			currentEnemySpawned++;
 
-			// IF THE ENEMY HAS DIED
-			if (enemys[i]->die)
+			switch (enemys[i]->type())
 			{
-				// INCREASE THE SCORE
-				scoreChanged = true;
-
-				// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
-				totalEnemyDestroyed++;
-				currentEnemyDestroyed++;
-				
-				// IF THE ENEMY WAS A BOSS
-				if (enemys[i]->type() == 12)
-				{
-					// PLAY BOSS DEATH EFFECT
-					audio->audio[4]->play();
-				}
-				else
-				{
-					// PLAY REGUALR ENEMY DEATH EFFECT
-					audio->audio[3]->play();
-				}
-			}
-
-			// ZERO
-			if (enemys[i]->type() == 0)
-			{
+			case 0:
 				curreentAmmountOfSmallEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					currentPoints += 50;
-					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200,false));
+					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 				}
-			}
-			// BVD
-			else if (enemys[i]->type() == 1)
-			{
+				break;
+			case 1:
 				currentAmmountOfMediumEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT & POINTS POPUP
 					currentPoints += 1000;
 					popUps.push_back(new PopUp("1000", enemys[i]->getPosition(), clock(), 1000));
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 				}
-			}
-			// DAIHIRYU
-			else if (enemys[i]->type() == 2)
-			{
+				break;
+			case 2:
 				miniBossSpawned = false;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT & POINTS POPUP
 					currentPoints += 2000 + (500 * daihiryuPointsMultiplier);
 					popUps.push_back(new PopUp(std::to_string(2000 + (500 * daihiryuPointsMultiplier)), enemys[i]->getPosition(), clock(), 1000));
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 				}
-			}
-			//AKAMIZU
-			else if (enemys[i]->type() == 3)
-			{
+				break;
+			case 3:
 				curreentAmmountOfSmallEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					currentPoints += 30;
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 				}
-			}
-			// RAIZAN
-			else if (enemys[i]->type() == 4)
-			{
+				break;
+			case 4:
 				curreentAmmountOfSmallEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					currentPoints += 50;
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 				}
-			}
-			// RED 1
-			else if (enemys[i]->type() == 5)
-			{
+				break;
+			case 5:
 				currentAmmountOfSpecialEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					currentPoints += 100;
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
@@ -401,65 +418,105 @@ void EnemySpawner::moveEnemy(Player *player, Audio *audio)
 						spawnPowerUp(enemys[i]->getPosition());
 					}
 				}
-			}
-			// SHORYU
-			else if (enemys[i]->type() == 6)
-			{
+				break;
+			case 6:
 				currentAmmountOfMediumEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT & POINTS POPUP
 					popUps.push_back(new PopUp("1000", enemys[i]->getPosition(), clock(), 1000));
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 					currentPoints += 1000;
 				}
-			}
-			// BONUS FIGHTER
-			else if (enemys[i]->type() == 7)
-			{
+				break;
+			case 7:
 				currentAmmountOfSpecialEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 					powerups.push_back(new Yashichi(enemys[i]->getPosition()));
 					currentPoints += 50;
 				}
-			}
-			// QING
-			else if (enemys[i]->type() == 8)
-			{
+				break;
+			case 8:
 				currentAmmountOfMediumEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT & POINTS POPUP
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 					popUps.push_back(new PopUp("1500", enemys[i]->getPosition(), clock(), 1000));
 					currentPoints += 1500;
 				}
-			}
-			// FUKUSUKE
-			else if (enemys[i]->type() == 9)
-			{
+				break;
+			case 9:
 				curreentAmmountOfSmallEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					currentPoints += 50;
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 				}
-			}
-			// RED 2
-			else if (enemys[i]->type() == 10)
-			{
+				break;
+			case 10:
 				currentAmmountOfSpecialEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					currentPoints += 100;
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
@@ -474,14 +531,22 @@ void EnemySpawner::moveEnemy(Player *player, Audio *audio)
 						spawnPowerUp(enemys[i]->getPosition());
 					}
 				}
-			}
-			// RED 3
-			else if (enemys[i]->type() == 11)
-			{
+				break;
+			case 11:
 				currentAmmountOfSpecialEnemy--;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY REGUALR ENEMY DEATH EFFECT
+					audio->audio[3]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT
 					currentPoints += 100;
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
@@ -496,22 +561,35 @@ void EnemySpawner::moveEnemy(Player *player, Audio *audio)
 						spawnPowerUp(enemys[i]->getPosition());
 					}
 				}
-			}
-			// AYAKO
-			else if (enemys[i]->type() == 12)
-			{
+				break;
+			case 12:
 				// BOSS DEFEATED
 				bossSpawned = false;
 				bossKilled = true;
 				// ENEMY DIED
 				if (enemys[i]->die)
 				{
+					// INCREASE THE SCORE
+					scoreChanged = true;
+
+					// INCREASE THE TOTAL & CURRENT ENEMIES DESTROYED BY 1
+					totalEnemyDestroyed++;
+					currentEnemyDestroyed++;
+
+					// PLAY BOSS DEATH EFFECT
+					audio->audio[4]->play();
+
 					// INCREASE POINTS AND CREATE EXPLOSTION EFFECT & POINTS POPUP
 					popUps.push_back(new PopUp(enemys[i]->getPosition(), clock(), 200, false));
 					popUps.push_back(new PopUp("20000", enemys[i]->getPosition(), clock(), 1000));
 					currentPoints += 20000;
 				}
+				break;
+			default:
+				std::cout << "ERROR: Not valid enemy type!!\n";
+				break;
 			}
+
 			// REMOVE THE ENEMY FROM THE LIST OF ENEMIES
 			enemys.erase(enemys.begin() + i);
 		}
@@ -536,42 +614,36 @@ void EnemySpawner::spawnPowerUp(sf::Vector2f pos)
 	//GENERATE A RANDOM NUMBER BETWEEN 1-6
 	int ran = rand() % (6 + 1 - 1) + 1;
 	
-	// WHITE - DESTROY ALL ENEMIES
-	if (ran == 1)
+	switch (ran)
 	{
+	case 1:
 		// ADD A WHITE POWER UP TO THE VECTOR OF POWER UPS
 		powerups.push_back(new WhitePowerUp(pos));
-	}
-	// GRAY - 6 SHOTS
-	else if (ran == 2) 
-	{
+		break;
+	case 2:
 		// ADD A GRAY POWER UP TO THE VECTOR OF POWER UPS
 		powerups.push_back(new GrayPowerUp(pos));
 		hasSextShot = true;
-	}
-	// ORANGE - NO ENEMY SHOOTING
-	else if (ran == 3) 
-	{
+		break;
+	case 3:
 		// ADD A ORANGE POWER UP TO THE VECTOR OF POWER UPS
 		powerups.push_back(new OrangePowerUp(pos));
-	}
-	// YELLOW - +1 LOOP
-	else if (ran == 4) 
-	{
+		break;
+	case 4:
 		// ADD A YELLOW POWER UP TO THE VECTOR OF POWER UPS
 		powerups.push_back(new YellowPowerUp(pos));
-	}
-	// BLACK - +1 LIFE
-	else if (ran == 5) 
-	{
+		break;
+	case 5:
 		// ADD A BLACK POWER UP TO THE VECTOR OF POWER UPS
 		powerups.push_back(new BlackPowerUp(pos));
-	}
-	// RED - +1000 POINTS
-	else if (ran == 6) 
-	{
+		break;
+	case 6:
 		// ADD A RED POWER UP TO THE VECTOR OF POWER UPS
 		powerups.push_back(new RedPowerUp(pos));
+		break;
+	default:
+		std::cout << "ERROR: This is not a valid power up!!!\n";
+		break;
 	}
 }
 
@@ -614,9 +686,9 @@ void EnemySpawner::Spawn()
 	// GENERATE A RANDOM NUMBER BETWEEN 0-12
 	int enemyToSpawn = rand() % (12 + 1 - 0) + 0;
 
-	// DAIHIRYU
-	if (enemyToSpawn == 0)
+	switch (enemyToSpawn)
 	{
+	case 0:
 		startTime4 = clock();
 		// IF CAN SPAWN THIS ENEMY
 		if (!miniBossSpawned && rand() % 10 == 0)
@@ -629,10 +701,8 @@ void EnemySpawner::Spawn()
 			miniBossSpawned = true;
 			return;
 		}
-	}
-	// RED
-	else if (enemyToSpawn == 1)
-	{
+		break;
+	case 1:
 		startTime3 = clock();
 		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
 		if (currentAmmountOfSpecialEnemy < 1)
@@ -649,10 +719,8 @@ void EnemySpawner::Spawn()
 			currentReds = 5;
 			return;
 		}
-	}
-	// RED2
-	else if (enemyToSpawn == 2)
-	{
+		break;
+	case 2:
 		startTime3 = clock();
 		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
 		if (currentAmmountOfSpecialEnemy < 1)
@@ -668,10 +736,8 @@ void EnemySpawner::Spawn()
 			currentReds = 5;
 			return;
 		}
-	}
-	// RED3
-	else if (enemyToSpawn == 3)
-	{
+		break;
+	case 3:
 		startTime3 = clock();
 		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
 		if (currentAmmountOfSpecialEnemy < 1)
@@ -686,10 +752,8 @@ void EnemySpawner::Spawn()
 			currentReds = 5;
 			return;
 		}
-	}
-	// BONUS FIGHTER
-	else if (enemyToSpawn == 4)
-	{
+		break;
+	case 4:
 		startTime3 = clock();
 		// IF THERE IS ONLY 1 SPECIAL ENEMY LEFT ON THE BOARD
 		if (currentAmmountOfSpecialEnemy < 1)
@@ -702,10 +766,8 @@ void EnemySpawner::Spawn()
 			currentAmmountOfSpecialEnemy++;
 			return;
 		}
-	}
-	// BVD
-	else if (enemyToSpawn == 5)
-	{
+		break;
+	case 5:
 		startTime2 = clock();
 		// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
 		if (currentAmmountOfMediumEnemy < mediumMinToSpawnMore)
@@ -718,10 +780,8 @@ void EnemySpawner::Spawn()
 			currentAmmountOfMediumEnemy++;
 			return;
 		}
-	}
-	// SHORYU
-	else if (enemyToSpawn == 6)
-	{
+		break;
+	case 6:
 		startTime2 = clock();
 		// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
 		if (currentAmmountOfMediumEnemy < mediumMinToSpawnMore)
@@ -741,10 +801,8 @@ void EnemySpawner::Spawn()
 			currentAmmountOfMediumEnemy++;
 			return;
 		}
-	}
-	// QING
-	else if (enemyToSpawn == 7)
-	{
+		break;
+	case 7:
 		startTime2 = clock();
 		// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
 		if (currentAmmountOfMediumEnemy < mediumMinToSpawnMore)
@@ -780,10 +838,8 @@ void EnemySpawner::Spawn()
 			}
 			return;
 		}
-	}
-	// ZERO
-	else if (enemyToSpawn == 8)
-	{
+		break;
+	case 8:
 		startTime = clock();
 		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
 		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
@@ -819,10 +875,8 @@ void EnemySpawner::Spawn()
 			}
 			return;
 		}
-	}
-	// AKAMIZU
-	else if (enemyToSpawn == 9)
-	{
+		break;
+	case 9:
 		startTime = clock();
 		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
 		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
@@ -858,10 +912,8 @@ void EnemySpawner::Spawn()
 			}
 			return;
 		}
-	}
-	// RAIZAN
-	else if (enemyToSpawn == 10)
-	{
+		break;
+	case 10:
 		startTime = clock();
 		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
 		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
@@ -897,10 +949,8 @@ void EnemySpawner::Spawn()
 			}
 			return;
 		}
-	}
-	// FUKUSUKE
-	else if (enemyToSpawn == 11)
-	{
+		break;
+	case 11:
 		startTime = clock();
 		// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
 		if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
@@ -936,10 +986,8 @@ void EnemySpawner::Spawn()
 			}
 			return;
 		}
-	}
-	// AYAKO
-	else if (enemyToSpawn == 12)
-	{
+		break;
+	case 12:
 		// IF CAN SPAWN THIS ENEMY
 		if (rand() % 25 == 0 && !bossSpawned)
 		{
@@ -947,6 +995,10 @@ void EnemySpawner::Spawn()
 			enemys.push_back(new Ayako());
 			bossSpawned = true;
 		}
+		break;
+	default:
+		std::cout << "ERROR: This is not a valid random enemy to spawn";
+		break;
 	}
 }
 
@@ -962,41 +1014,40 @@ void EnemySpawner::spawnEnemy()
 	{
 		currentLevel += 32;
 	}
-	// IF THERE IS A MINI BOSS
-	if (miniBossSpawned)
+	// IF THERE IS A MINI BOSS AND PAST LEVEL 5
+	if (miniBossSpawned && currentLevel >= 5)
 	{
+		float val = float(clock() - startTime4) / CLOCKS_PER_SEC * 1000;
+		int val2 = rand() % 3;
 		// IF ENOUGH TIME HAS PASSED SINCE LAST MINI BOSS SPAWNED
-		if (float(clock() - startTime4) / CLOCKS_PER_SEC * 1000 >= timeToWaitMiniBoss)
+		if (val >= timeToWaitMiniBoss)
 		{
-			// 1 IN 3 CHANCE TO SPAWN
-			if (rand() % 3 == 0)
+			if (val2 != 0)
 			{
 				// RESET CLOCK
 				startTime4 = clock();
-				// IF PAST LEVEL 5
-				if (currentLevel >= 5)
-				{
-					// CALCULATE SPAWN POSITION
-					int temp1 = rand() % (daihiryuMaxX + 1 - daihiryuMinX) + daihiryuMinX;
-					int temp2 = rand() % (daihiryuMaxY + 1 - daihiryuMinY) + daihiryuMinY;
-					// SPAWN ENEMY
-					enemys.push_back(new Daihiryu(temp1, temp2));
-					miniBossSpawned = true;
-				}
 			}
-			// CANT SPAWN
 			else
 			{
 				// RESET CLOCK
 				startTime4 = clock();
+
+				// CALCULATE SPAWN POSITION
+				int temp1 = rand() % (daihiryuMaxX + 1 - daihiryuMinX) + daihiryuMinX;
+				int temp2 = rand() % (daihiryuMaxY + 1 - daihiryuMinY) + daihiryuMinY;
+
+				// SPAWN ENEMY
+				enemys.push_back(new Daihiryu(temp1, temp2));
+				miniBossSpawned = true;
 			}
 		}
 	}
 	// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
 	if (currentAmmountOfSpecialEnemy < 1 && !noPowerUpsMode)
 	{
+		float val = float(clock() - startTime3) / CLOCKS_PER_SEC * 1000;
 		// IF ENOUGH TIME HAS PASSED SINCE LAST SPECIAL ENEMY SPAWNED
-		if (float(clock() - startTime3) / CLOCKS_PER_SEC * 1000 >= timeToWaitSpecialEnemy)
+		if (val >= timeToWaitSpecialEnemy)
 		{
 			// 1 IN 3 CHANCE TO SPAWN
 			if (rand() % 3 == 0)
@@ -1010,11 +1061,17 @@ void EnemySpawner::spawnEnemy()
 				// CALCULATE WHICH ENEMIES CAN BE SPAWNED BASED ON THE LEVEL
 				int specialsAvailable = 0;
 				if (currentLevel >= 15)
+				{
 					specialsAvailable = 3;
+				}
 				else if (currentLevel >= 7)
+				{
 					specialsAvailable = 2;
+				}
 				else if (currentLevel >= 1)
+				{
 					specialsAvailable = 1;
+				}
 				
 				// IF CAN SWAP
 				if (ran <= swapSpecialChance * 100)
@@ -1087,8 +1144,9 @@ void EnemySpawner::spawnEnemy()
 	// IF THERE IS ONLY 1 MEDIUM ENEMY LEFT ON THE BOARD
 	if (currentAmmountOfMediumEnemy < mediumMinToSpawnMore)
 	{
+		float val = float(clock() - startTime2) / CLOCKS_PER_SEC * 1000;
 		// IF ENOUGH TIME HAS PASSED TO SPAWN ANOTHER MEDIUM ENEMY
-		if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWaitMediumEnemy)
+		if (val >= timeToWaitMediumEnemy)
 		{
 			// THERE IS A 1/3 CHANCE TO SPAWN A MEDIUM ENEMY
 			if (rand() % 3 == 0)
@@ -1102,11 +1160,17 @@ void EnemySpawner::spawnEnemy()
 				// CALCULATE WHICH ENEMIES CAN BE SPAWNED BASED ON THE LEVEL
 				int mediumsAvailable = 0;
 				if (currentLevel >= 20)
+				{
 					mediumsAvailable = 2;
+				}
 				else if (currentLevel >= 15)
+				{
 					mediumsAvailable = 1;
+				}
 				else if (currentLevel >= 0)
+				{
 					mediumsAvailable = 0;
+				}
 
 				// IF CAN SWAP
 				if (ran <= swapMediumChance * 100)
@@ -1187,8 +1251,9 @@ void EnemySpawner::spawnEnemy()
 	// IF THERE ARE LESS THAN 2 SMALL ENEMYS LEFT ON THE BOARD
 	if (curreentAmmountOfSmallEnemy <= smallMinToSpawnMore)
 	{
+		float val = float(clock() - startTime) / CLOCKS_PER_SEC * 1000;
 		// IF ENOUGH TIME HAS PASSED SINCE THE LAST SMALL ENEMY HAS SPAWNED
-		if (float(clock() - startTime) / CLOCKS_PER_SEC * 1000 >= timeToWaitSmallEnemy)
+		if (val >= timeToWaitSmallEnemy)
 		{
 			// RESET CLOCK
 			startTime = clock();
@@ -1199,13 +1264,21 @@ void EnemySpawner::spawnEnemy()
 			// CALCULATE WHICH ENEMIES CAN BE SPAWNED BASED ON THE LEVEL
 			int smallsAvailable = 0;
 			if (currentLevel >= 25)
+			{
 				smallsAvailable = 3;
+			}
 			else if (currentLevel >= 10)
+			{
 				smallsAvailable = 2;
+			}
 			else if (currentLevel >= 5)
+			{
 				smallsAvailable = 1;
+			}
 			else if (currentLevel >= 0)
+			{
 				smallsAvailable = 0;
+			}
 
 			// IF CAN SWAP
 			if (ran <= swapSmallChance * 100)

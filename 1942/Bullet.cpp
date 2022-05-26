@@ -59,12 +59,10 @@ void Bullet::update()
 	{
 		// MOVE THE BALL UPWARDS WITH THE MOVEMENT SPEED
 		this->shape.move(sf::Vector2f{ 0,-1 } *this->movementSpeed);
+		return;
 	}
-	else
-	{
-		// MOVE THE BALL AT THE CORRECT ANGLE WITH THE MOVEMENT SPEED
-		this->shape.move(angle * movementSpeed);
-	}
+	// MOVE THE BALL AT THE CORRECT ANGLE WITH THE MOVEMENT SPEED
+	this->shape.move(angle * movementSpeed);
 }
 
 /*

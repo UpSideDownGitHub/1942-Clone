@@ -21,7 +21,7 @@ THIS FUNCTION WILL HANDLE THE INPUT FOR THE ENTIRE GAME
 */
 void Input::pollEvents(sf::RenderWindow *window)
 {
-	// RESET ALL INPUT
+	// RESETS ALL INPUTS
 	buttonPresses[0] = false;
 	buttonPresses[1] = false;
 	buttonPresses[2] = false;

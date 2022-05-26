@@ -21,7 +21,7 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 */
 SaveData::SaveData()
 {
-	// LOAD THE SAVE DATA
+	// LOAD THE SAVE DATA FILE
 	loadFile();
 }
 

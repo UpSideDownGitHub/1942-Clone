@@ -84,11 +84,8 @@ void PopUp::render(sf::RenderTarget *target)
 	{
 		// DRAW EXPLOSION
 		target->draw(shape);
+		return;
 	}
-	// TEXT
-	else
-	{
-		// DRAW TEXT
-		target->draw(text);
-	}
+	// DRAW TEXT
+	target->draw(text);
 }

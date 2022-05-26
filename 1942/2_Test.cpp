@@ -19,7 +19,6 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 // MAIN METHOD
 int main()
 {
-	// Just Checking
 	// INITILISE A RANDOM SEED
 	srand(static_cast<unsigned>(time(0)));
 

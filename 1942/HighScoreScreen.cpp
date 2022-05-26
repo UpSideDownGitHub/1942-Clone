@@ -40,15 +40,25 @@ void HighScoreScreen::initilise(int score, int lives)
 	SaveData::PlayerInfo* leaderboard;
 	// SET WHICH GAME MODE HAS BEEN USED THEN FETCH THE LEADERBOARD FOR THAT GAMEMODE
 	if (endless)
+	{
 		leaderboard = saveData.getLeaderboardEndless();
+	}
 	else if (noPowerUps)
+	{
 		leaderboard = saveData.getLeaderboardNoPowerUps();
+	}
 	else if (insane)
+	{
 		leaderboard = saveData.getLeaderboardInsane();
+	}
 	else if (random)
+	{
 		leaderboard = saveData.getLeaderboardRandom();
+	}
 	else
+	{
 		leaderboard = saveData.getLeaderboard();
+	}
 	
 	// FOR EACH POSITION IN THE LEADERBAORD
 	for (int i = 0; i < 5; i++)
@@ -224,12 +234,12 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 	if (float(clock() - startTime2) / CLOCKS_PER_SEC * 1000 >= timeToWait2)
 	{
 		// Z - ADD
-		if (input.buttonPresses[4])
+		if (input.buttonPresses[4] && currentCharacters < maxCharacters)
 		{
 			// RESET CLOCK
 			startTime2 = clock();
 			// SELECTED LEADERBOARD IS 1
-			if (currentSelectScoreToChange == 0 && currentCharacters < maxCharacters)
+			if (currentSelectScoreToChange == 0)
 			{
 				// ADD CHARACTER
 				currentCharacters++;
@@ -237,7 +247,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				topName.setString(ssTopName.str());
 			}
 			// SELECTED LEADERBOARD IS 2
-			else if (currentSelectScoreToChange == 1 && currentCharacters < maxCharacters)
+			else if (currentSelectScoreToChange == 1)
 			{
 				// ADD CHARACTER
 				currentCharacters++;
@@ -245,7 +255,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				secondName.setString(ssSecondName.str());
 			}
 			// SELECTED LEADERBOARD IS 3
-			else if (currentSelectScoreToChange == 2 && currentCharacters < maxCharacters)
+			else if (currentSelectScoreToChange == 2)
 			{
 				// ADD CHARACTER
 				currentCharacters++;
@@ -253,7 +263,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				thirdName.setString(ssThirdName.str());
 			}
 			// SELECTED LEADERBOARD IS 4
-			else if (currentSelectScoreToChange == 3 && currentCharacters < maxCharacters)
+			else if (currentSelectScoreToChange == 3)
 			{
 				// ADD CHARACTER
 				currentCharacters++;
@@ -261,7 +271,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				forthName.setString(ssForthName.str());
 			}
 			// SELECTED LEADERBOARD IS 5
-			else if (currentSelectScoreToChange == 4 && currentCharacters < maxCharacters)
+			else if (currentSelectScoreToChange == 4)
 			{
 				// ADD CHARACTER
 				currentCharacters++;
@@ -270,12 +280,12 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 			}
 		}
 		// X - REMOVE
-		else if (input.buttonPresses[5]) 
+		else if (input.buttonPresses[5] && currentCharacters > 0)
 		{
 			// RESET CLOCK
 			startTime2 = clock();
 			// IF SELECTED LEADERBOARD IS 1
-			if (currentSelectScoreToChange == 0 && currentCharacters > 0)
+			if (currentSelectScoreToChange == 0)
 			{
 				// REMOVE A CHARACTER
 				currentCharacters--;
@@ -286,7 +296,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				topName.setString(ssTopName.str());
 			}
 			// IF SELECTED LEADERBOARD IS 2
-			else if (currentSelectScoreToChange == 1 && currentCharacters > 0)
+			else if (currentSelectScoreToChange == 1)
 			{
 				// REMOVE A CHARACTER
 				currentCharacters--;
@@ -297,7 +307,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				secondName.setString(ssSecondName.str());
 			}
 			// IF SELECTED LEADERBOARD IS 3
-			else if (currentSelectScoreToChange == 2 && currentCharacters > 0)
+			else if (currentSelectScoreToChange == 2)
 			{
 				// REMOVE A CHARACTER
 				currentCharacters--;
@@ -308,7 +318,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				thirdName.setString(ssThirdName.str());
 			}
 			// IF SELECTED LEADERBOARD IS 4
-			else if (currentSelectScoreToChange == 3 && currentCharacters > 0)
+			else if (currentSelectScoreToChange == 3)
 			{
 				// REMOVE A CHARACTER
 				currentCharacters--;
@@ -319,7 +329,7 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 				forthName.setString(ssForthName.str());
 			}
 			// IF SELECTED LEADERBOARD IS 5
-			else if (currentSelectScoreToChange == 4 && currentCharacters > 0)
+			else if (currentSelectScoreToChange == 4)
 			{
 				// REMOVE A CHARACTER
 				currentCharacters--;
@@ -367,15 +377,25 @@ void HighScoreScreen::update(sf::RenderWindow* win)
 		// SELECT THE SCORE TO CHANGE FROM THE LEADERBOARD
 		std::string temp;
 		if (currentSelectScoreToChange == 0)
+		{
 			temp = topName.getString();
+		}
 		else if (currentSelectScoreToChange == 1)
+		{
 			temp = secondName.getString();
+		}
 		else if (currentSelectScoreToChange == 2)
+		{
 			temp = thirdName.getString();
+		}
 		else if (currentSelectScoreToChange == 3)
+		{
 			temp = forthName.getString();
+		}
 		else if (currentSelectScoreToChange == 4)
+		{
 			temp = fithName.getString();
+		}
 
 		// CHANGE THE NAME IN THE LEADERBOARD AND SAVE THE SAVE DATA FILE
 		leaderboard[currentSelectScoreToChange].Name = temp;

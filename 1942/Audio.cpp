@@ -17,9 +17,19 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 #include "Audio.h"
 
 /*
+	DEFAULT CONSTRUCTOR
+*/
+Audio::Audio()
+{
+	// No code as this is just a default constructor for when the audio object is first
+	// instantinated in the game it will use this then the game object will create all
+	// the other objects from this class
+}
+
+/*
 	CONSTRUCTOR (TO SET ALL THE INITIAL VARIABLES)
 */
-void Audio::init(std::string loc, bool music)
+Audio::Audio(std::string loc, bool music)
 {
 	// SET VARIABLES
 	isMusic = music;
@@ -31,14 +41,11 @@ void Audio::init(std::string loc, bool music)
 	{
 		buffer.loadFromFile(location);
 		sound.setBuffer(buffer);
+		return;
 	}
 	// OTHER WISE LOAD THE MUSIC
-	else
-	{
-		musicPlayer.openFromFile(location);
-	}
+	musicPlayer.openFromFile(location);
 }
-
 
 /*
 	PLAYS THE SELECTED MUSIC/SOUND CLIP
@@ -50,12 +57,10 @@ void Audio::play()
 	{
 		musicPlayer.setLoop(true);
 		musicPlayer.play();
+		return;
 	}
 	// OTHERWISE PLAY THE SOUND EFFECT SELECTED
-	else
-	{
-		sound.play();
-	}
+	sound.play();
 }
 
 /*
@@ -67,12 +72,10 @@ void Audio::stop()
 	if (isMusic)
 	{
 		musicPlayer.stop();
+		return;
 	}
 	// OTHERWISE STOP THE SOUND CLIP
-	else
-	{
-		sound.stop();
-	}
+	sound.stop();
 }
 
 /*
@@ -82,8 +85,7 @@ void Audio::stop()
 */
 void Audio::loadAudio(std::string loc, bool music)
 {
-	audio.push_back(new Audio());
-	audio.back()->init(loc, music);
+	audio.push_back(new Audio(loc, music));
 }
 
 /*

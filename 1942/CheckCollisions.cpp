@@ -105,15 +105,19 @@ void CheckCollisions::checkEnemyBulletCollisions(std::vector<Bullet *> enemyBull
 		{
 			// TAKE A LIFE OF THE PLAYER
 			player->lives--;
+			
+			// SET TO TRUE TO UPDATE PLAYER HEALTH UI
+			changedLives = true;
+			
 			// IF THE ENEMY BULLET IS ON THE LEFT OF THE PLAYER
 			if (enemyBullets[i]->getPosition().x < player->getPosition().x)
 			{
 				// SET TO REMOVE THE LEFT FIGHTER (THIS WILL ONLY BE REMOVED IF THE PLAYER
 				// HAS THE ENEMY FIGHTERS EQUIPPED)
 				player->leftFighter = false;
+				continue;
 			}
-			// SET TO TRUE TO UPDATE PLAYER HEALTH UI
-			changedLives = true;
+			return;
 		}
 	}
 }
