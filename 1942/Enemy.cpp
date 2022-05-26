@@ -1662,7 +1662,7 @@ void Shoryu::update(Player *player)
 	
 		// IF THE HORIZONTAL SPEED IS GREATER THAN 0 &
 		// THE PLANE IS DECREASING LEFT OR RIGHT (SLOWING DOWN HORISZONTALLY)
-		if (horMoveSpeed >= 0 (decLeft || decRight))
+		if (horMoveSpeed >= 0 && (decLeft || decRight))
 		{
 			// DECREASE THE HORIZONTAL SPEED
 			horMoveSpeed -= rateOfChange;

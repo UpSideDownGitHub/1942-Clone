@@ -20,20 +20,20 @@ Copyright (C) Reuben Miller. All Rights Reserved.
 int main()
 {
 	// INITILISE A RANDOM SEED
-	srand(static_cast<unsigned>(time(0)));
+	srand(static_cast<unsigned>(time(nullptr)));
 
 	// INSTANCE OF GAME CLASS 
 	//		MAIN CLASS THAT WILL HANDLE THE GAME
-	Game game;
+	Game* game = new Game();
 
 	// WHILST THE GAME IS OPEN CALL THE UPDATE AND RENDER METHODS OF GAME
-	while (game.running())
+	while (game->running())
 	{
 		// FOR THE GAMEPLAY
-		game.update();
+		game->update();
 
 		// RENDERING THE UI
-		game.render();
+		game->render();
 	}
 	// END OF APPLICATION
 	return 0;

@@ -424,9 +424,9 @@ void Game::update()
 						// MUTE THE GAME
 						for (int i = 0; i < 9; i += 3)
 						{
-							audio.audio[i]->setVolume(0);
-							audio.audio[i + 1]->setVolume(0);
-							audio.audio[i + 2]->setVolume(0);
+							audio.audio[i]->setVolume(0.f);
+							audio.audio[size_t(i + 1)]->setVolume(0.f);
+							audio.audio[size_t(i + 2)]->setVolume(0.f);
 						}
 					}
 					// NOT MUTED
@@ -435,9 +435,9 @@ void Game::update()
 						// MUTE THE GAME
 						for (int i = 0; i < 9; i += 3)
 						{
-							audio.audio[i]->setVolume(100);
-							audio.audio[i + 1]->setVolume(100);
-							audio.audio[i + 2]->setVolume(100);
+							audio.audio[i]->setVolume(100.f);
+							audio.audio[i + 1]->setVolume(100.f);
+							audio.audio[i + 2]->setVolume(100.f);
 						}
 					}
 					muted = !muted;

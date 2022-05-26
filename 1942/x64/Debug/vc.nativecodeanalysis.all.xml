@@ -1,14 +1,1 @@
-﻿<?xml version="1.0" encoding="utf-8"?><DEFECTS><DEFECT>
-    <SFA>
-      <FILEPATH>c:\users\reuben miller\desktop\video games architecture and optimisation\assignment\1942-clone\1942</FILEPATH>
-      <FILENAME>2_test.cpp</FILENAME>
-      <LINE>20</LINE>
-      <COLUMN>4</COLUMN>
-    </SFA>
-    <DEFECTCODE>6262</DEFECTCODE>
-    <DESCRIPTION>Function uses '48840' bytes of stack:  exceeds /analyze:stacksize '16384'.  Consider moving some data to heap.</DESCRIPTION>
-    <FUNCTION>main</FUNCTION>
-    <DECORATED>main</DECORATED>
-    <FUNCLINE>20</FUNCLINE>
-    <PATH></PATH>
-  </DEFECT></DEFECTS>
+﻿<?xml version="1.0" encoding="utf-8"?><DEFECTS />

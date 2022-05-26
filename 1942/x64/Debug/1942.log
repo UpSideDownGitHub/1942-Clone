@@ -1,2 +1,17 @@
-﻿  Game.cpp
+﻿  2_Test.cpp
+  Audio.cpp
+  Bullet.cpp
+  CheckCollisions.cpp
+  Enemy.cpp
+  EnemySpawner.cpp
+  Game.cpp
+  HighScoreScreen.cpp
+  Input.cpp
+  Player.cpp
+  PopUp.cpp
+  PowerUp.cpp
+  SaveData.cpp
+  StartScreens.cpp
+  Compiling...
+  Generating Code...
   1942.vcxproj -> C:\Users\Reuben Miller\Desktop\Video Games Architecture and Optimisation\Assignment\1942-Clone\x64\Debug\1942.exe
