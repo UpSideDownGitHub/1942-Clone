@@ -38,4 +38,3 @@ int main()
 	// END OF APPLICATION
 	return 0;
 }
-

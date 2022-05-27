@@ -523,7 +523,7 @@ void BVD::nextMove(Player *player)
 
 
 /*
-	DEIHIRYU CLASS METHODS
+	DAIHIRYU CLASS METHODS
 */
 /*
 	REUTRN THE TYPE (INT) THAT THIS ENEMY IS
@@ -1847,10 +1847,8 @@ void Shoryu::nextMove(Player *player)
 			right = true;
 			return;
 		}
-		
-		
-			// SET LEFT TO TRUE
-			left = true;
+		// SET LEFT TO TRUE
+		left = true;
 		
 		// RETURN
 		return;
@@ -1959,13 +1957,12 @@ void BounsFighter::update(Player *player)
 		}
 		return;
 	}
-		// IF THE HORIZONTAL MOVE SPEED IS GREATER THAN 0
-		if (horMoveSpeed >= 0)
-		{
-			// DECREASE HORIZONTAL MOVEMENT SPEED
-			horMoveSpeed -= rateOfChange;
-		}
-	
+	// IF THE HORIZONTAL MOVE SPEED IS GREATER THAN 0
+	if (horMoveSpeed >= 0)
+	{
+		// DECREASE HORIZONTAL MOVEMENT SPEED
+		horMoveSpeed -= rateOfChange;
+	}	
 }
 
 /*

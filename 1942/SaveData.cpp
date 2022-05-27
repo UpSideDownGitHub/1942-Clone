@@ -159,4 +159,3 @@ void SaveData::setLeaderboardRandom(PlayerInfo info[5])
 	savedata.leaderboardRandom[3] = info[3];
 	savedata.leaderboardRandom[4] = info[4];
 }
-
